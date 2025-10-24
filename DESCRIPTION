@@ -1,0 +1,35 @@
+Package: MONIKAraporty
+Title: Generowanie raportów automatycznych na potrzeby Monitoringu Karier (MoniKA)
+Version: 5.0.1
+Authors@R: 
+    person("Bartłomiej", "Płatkowski", 
+           email = "b.platkowski@ibe.edu.pl", role = c("aut", "cre"),
+           comment = c(GitHub = "bartplat"))
+Description: Pakiet zawiera zestaw funkcji oraz szablonów raportów szkolnych
+    potrzebnych do wygenerowania automatycznych raportów dla danych agregatów
+    oraz dokumentację na potrzeby Monitoringu Karier (MoniKA).
+License: MIT + file LICENSE
+Encoding: UTF-8
+Depends:
+    R (>= 4.3.1),
+    dplyr (>= 1.1.4),
+    MLASZraporty (>= 0.4.1)
+Imports:
+    rlang (>= 1.1.2),
+    tibble (>= 3.2.1),
+    tidyr (>= 1.3.0),
+    ggplot2 (>= 3.4.4),
+    knitr (>= 1.45),
+    kableExtra (>= 1.4.0),
+    rmarkdown (>= 2.25)
+Remotes: bartplat/MLASZraporty
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Suggests: 
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+VignetteBuilder: knitr
+LazyData: true
+Language: pl

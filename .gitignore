@@ -1,0 +1,14 @@
+.Rproj.user
+.Rhistory
+.Ruserdata
+*.zip
+*logfile*.txt
+*.pdf
+*.csv
+tests/testthat/helper_local.R
+R/helpers.R
+man/parametry.Rd
+/Meta/
+dev/
+.DS_Store
+.quarto
