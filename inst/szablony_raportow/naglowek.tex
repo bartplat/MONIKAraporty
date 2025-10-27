@@ -1,0 +1,20 @@
+% https://community.rstudio.com/t/cant-control-position-of-tables-and-figures-in-knitted-pdf-document/37364/2
+\usepackage{float}
+\let\origfigure\figure
+\let\endorigfigure\endfigure
+\renewenvironment{figure}[1][2] {
+    \expandafter\origfigure\expandafter[H]
+} {
+    \endorigfigure
+}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{makecell}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[scaled]{helvet}
+\renewcommand*{\familydefault}{\sfdefault}
+\floatplacement{figure}{H}
+% https://tex.stackexchange.com/questions/406349/how-to-change-some-part-of-example-block-body-text-size-in-beamer
+\usepackage{relsize}
+\usepackage{tabu}
