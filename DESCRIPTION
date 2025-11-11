@@ -13,7 +13,7 @@ Encoding: UTF-8
 Depends:
     R (>= 4.3.1),
     dplyr (>= 1.1.4),
-    MLASZraporty (>= 0.4.1)
+    MLASZraporty (>= 0.2.0)
 Imports:
     rlang (>= 1.1.2),
     tibble (>= 3.2.1),

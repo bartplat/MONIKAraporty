@@ -66,8 +66,8 @@ cat("\n\n## Absolwenci Państwa szkoły uwzględnieni w raporcie\n\n",
     " roku. Absolwentami są uczniowie ostatnich klas Państwa szkoły, którym w SIO zakończono przypisanie do oddziału wybierając status „Ukończył szkołę”. Ze względu na zapewnienie kompletności danych w kolejnych raportach, ważne jest nadawanie przez szkoły takiego statusu absolwentom do końca roku kalendarzowego, w którym zakończyli naukę.",
     "\n\nLiczebność grup, dla których prezentowane są wyniki, zależy od dostępności informacji o Państwa absolwentach w poszczególnych rejestrach.",
     "\n\n* Ośrodek Przetwarzania Informacji przekazał dane dotyczące **",
-    szk$l_abs_zrodla[[1]]$n_opi,
-    szk$odmiany[[1]]$abs_opi,
+    szk$l_abs_zrodla[[1]]$n_polon,
+    szk$odmiany[[1]]$abs_polon,
     "** Państwa szkoły, którzy rozpoczęli naukę w szkołach wyższych do końca grudnia ", 
     params$rok,
     " roku (według stanu na 31 grudnia ",
@@ -84,8 +84,13 @@ cat("\n\n## Absolwenci Państwa szkoły uwzględnieni w raporcie\n\n",
 
 ```{r sposob_prezentowania_wynikow}
 cat("\n\n## Sposób prezentowania wyników\n\n",
-    "Raport dotyczy absolwentów, którzy ukończyli szkołę w roku szkolnym 2022/2023. W dalszej części raportu nazywamy ich „absolwentami z rocznika 2022/2023”. Okres monitoringu, jakim zostali oni objęci, to półrocze po zakończeniu nauki, czyli okres lipiec - grudzień 2023.\n\n",
-    "W monitoringu, każdemu z absolwentów przypisany zostaje status, określający jego sytuację edukacyjną i zawodową. W tegorocznej edycji raportów szkolnych, absolwentowi mógł zostać przypisany jeden z następujących statusów:\n\n",
+    "Raport dotyczy absolwentów, którzy ukończyli szkołę w roku szkolnym ",
+    params$rok - 1, "/", params$rok,
+    ". W dalszej części raportu nazywamy ich „absolwentami z rocznika ”",
+    params$rok - 1, "/", params$rok,
+    ". Okres monitoringu, jakim zostali oni objęci, to półrocze po zakończeniu nauki, czyli okres lipiec - grudzień ",
+    params$rok,
+    ".\n\nW monitoringu, każdemu z absolwentów przypisany zostaje status, określający jego sytuację edukacyjną i zawodową. W tegorocznej edycji raportów szkolnych, absolwentowi mógł zostać przypisany jeden z następujących statusów:\n\n",
     "* Nauka\n",
     "* Praca\n",
     "* Nauka i praca\n",
@@ -102,7 +107,7 @@ cat("\n\n## Sposób prezentowania wyników\n\n",
     "* Zbiorczo dla okresu od września do grudnia ", params$rok, " roku. Niektóre wskaźniki są zdefiniowane jako średnia wartość w tym okresie (przychód uzyskiwany z pracy) lub jako liczba miesięcy, w którym absolwent miał określony status (praca, zarejestrowane bezrobocie). Takie wskaźniki obliczyliśmy dla okresu od września do grudnia ", params$rok, " roku. Wrzesień jest pierwszym miesiącem, w którym absolwenci formalnie nie byli już uczniami Państwa szkoły, a grudzień ostatnim, dla którego w momencie sporządzania tego raportu dysponujemy kompletnymi danymi o absolwentach figurujących w rejestrach.\n\n",
     "Niektóre wyniki dotyczące absolwentów Państwa szkoły zostały zestawione z wynikami dotyczącymi grupy odniesienia. Grupę odniesienia stanowią absolwenci, którzy ukończyli inne ", typ_szk_mian_lm, " – niezależnie od tego czy były to szkoły publiczne czy niepubliczne i jaki podmiot był ich organem prowadzącym. W rozdziale „Ścieżki edukacyjno-zawodowe” grupa odniesienia jest dynamiczna: dobierana z najmniejszego obszaru – powiatu, podregionu^[Informacje nt. administracyjnego podziału Polski na podregiony (jednostki NUTS 3) są dostępne na stronie: https://stat.gov.pl/statystyka-regionalna/jednostki-terytorialne/klasyfikacja-nuts/klasyfikacja-nuts-w-polsce/], województwa lub kraju – w którym jest łącznie co najmniej 10 absolwentów co najmniej 3 ", typ_szk_dop_lm, " innych^[Absolwenci Państwa szkoły są wykluczani z grupy odniesienia, ponieważ w niektórych przypadkach ich sytuacja mogłaby w dużym stopniu rzutować na wyniki dotyczące tej grupy.] niż Państwa szkoła. Zasada ta chroni anonimowość absolwentów, a także uniemożliwia przypisanie wyników dotyczących grupy odniesienia do konkretnej szkoły.",
     ifelse(zawodowa == 1,
-           " Absolwenci Państwa szkoły mogą być zestawiani z różnymi grupami odniesienia, w zależności od tego, czy prezentowane są wyniki dla ogółu absolwentów, czy w podziale ze względu na wyuczony zawód^[Na przykład dla ogółu absolwentów szkoły, której dotyczy raport, grupę odniesienia mogą stanowić absolwenci pozostałych techników z danego powiatu, ale dla absolwentów wykształconych w danym zawodzie grupa odniesienia z poziomu powiatu mogłaby nie spełniać wymogów dotyczących liczebności. W takiej sytuacji zostałaby dobrana z poziomu podregionu, województwa lub kraju - w zależności od tego, na ile powszechne jest kształcenie w danym zawodzie.]\n\n.",
+           " Absolwenci Państwa szkoły mogą być zestawiani z różnymi grupami odniesienia, w zależności od tego, czy prezentowane są wyniki dla ogółu absolwentów, czy w podziale ze względu na wyuczony zawód^[Na przykład dla ogółu absolwentów szkoły, której dotyczy raport, grupę odniesienia mogą stanowić absolwenci pozostałych techników z danego powiatu, ale dla absolwentów wykształconych w danym zawodzie grupa odniesienia z poziomu powiatu mogłaby nie spełniać wymogów dotyczących liczebności. W takiej sytuacji zostałaby dobrana z poziomu podregionu, województwa lub kraju - w zależności od tego, na ile powszechne jest kształcenie w danym zawodzie.].\n\n",
            "\n\n"),
     "**Ze względu na potrzebę zachowania anonimowości absolwentów, dane dla grup liczących poniżej 10 osób nie są prezentowane również w przypadku absolwentów Państwa szkoły.** W celu zachowania czytelności, na wykresach nie są umieszczane wartości etykiet poniżej 6%.\n\n",
     sep = "")
@@ -118,7 +123,7 @@ cat("\n\n## Prośba o wypełnienie krótkiej ankiety zwrotnej dla IBE\n\n",
     "\n\n",
     sep = "")
 ```
-```{r qr_code1, out.width = '100%'}
+```{r qr_code1}
 knitr::include_graphics(szk$qr_code)
 ```
 ```{r prosba_o_wypelnienie_ankiety_cz2}

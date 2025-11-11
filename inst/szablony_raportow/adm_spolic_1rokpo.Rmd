@@ -6,18 +6,21 @@ subtitle: |
   | `r get(params$obiektWskazniki)$dane_szkoly[[1]]$adres`
 output:
   pdf_document:
+    latex_engine: lualatex
     dev: cairo_pdf
     fig_caption: no
     includes:
       in_header: naglowek.tex
     toc: yes
     toc_depth: 2
+mainfont: "TeX Gyre Heros"
+sansfont: "TeX Gyre Heros"
 lang: pl
 papersize: a4
 fontsize: 11pt
 geometry: margin=20mm
 params:
-  plikZObiektami: ../../data/wskaznikiAdm4.RData
+  plikZObiektami: ../../data/wskaznikiAdm5.RData
   obiektWskazniki: szk
   obiektWskaznikiPorownanie: god
   obiektWskaznikiKraj1: god1
@@ -27,18 +30,28 @@ params:
   progLiczebnosci: 10
   typDokumentu: pdf
   wyrownanieTabWykr: center
-  rok: 2023
+  rok: 2024
 ---
 
 ```{r setup, echo=FALSE, include=FALSE}
 source("setup.R",
        echo = FALSE,
        local = TRUE)
+
+knitr::opts_chunk$set(
+  echo = FALSE,
+  results = "asis",
+  message = FALSE,
+  warning = FALSE,
+  error = FALSE,
+  fig.align = wyrownanieTabWykr,
+  dev = "cairo_pdf"
+)
 ```
 
 `r ifelse(typDokumentu %in% "pdf", "---", "")`
 
-`r ifelse(typDokumentu %in% "pdf", "\\vfill\n\\includegraphics{Belka-Losy-absolwentow-Kolor-PL}", "")`
+`r ifelse(typDokumentu %in% "pdf", "\\vfill\n\\includegraphics[width=\\textwidth, keepaspectratio]{Belka-Losy-absolwentow-Kolor-PL}", "")`
 
 `r ifelse(typDokumentu %in% "pdf", "\\newpage", "")`
 
@@ -113,9 +126,9 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
     "W grudniu ",
     params$rok,
     " nie odnotowano żadnej aktywności związanej z pracą zawodową lub nauką (tj. wykonywania pracy, kontynuowania edukacji formalnej ani zarejestrowanego bezrobocia) w przypadku ",
-    round(szk$S3_12[[1]]$neet * 100),
+    round(szk$S3_12[[1]]$brak_danych * 100),
     "% absolwentów Państwa szkoły policealnej oraz ",
-    round(god$S3_12[[1]]$neet * 100),
+    round(god$S3_12[[1]]$brak_danych * 100),
     "% absolwentów pozostałych szkół policealnych z ",
     powiaty_dop,
     ".\n",
@@ -128,14 +141,14 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
 
 ```{r}
 if (szk$S3_12[[1]]$n >= progLiczebnosci) {
-  nazwy_wierszy = c(
+  nazwy_wierszy <- c(
     "Tylko nauka",
     "Nauka i praca",
     "Tylko praca",
     "Bezrobocie",
     "Brak danych o aktywności")
   
-  tab = tab_wykres(szk$S3_12[[1]],
+  tab <- tab_wykres(szk$S3_12[[1]],
                    god$S3_12[[1]],
                    NULL,
                    powiaty_dop,
@@ -148,7 +161,7 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
                                            "Nauka i praca",
                                            "Tylko nauka")))
   
-  wykres = wykres_poziomy_statusy(
+  wykres <- wykres_poziomy_statusy(
     tab,
     wrapper(paste0("Wykres ",
                    wyk_num(),
@@ -158,9 +171,9 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
                    params$rok,
                    " roku - ogółem"), 80))
   
-  levels(tab$typ) = linebreak(levels(tab$typ), align = "l")
+  levels(tab$typ) <- linebreak(levels(tab$typ), align = "l")
   
-  tabela = tab %>% 
+  tabela <- tab %>% 
     mutate(across(name,
                   ~ordered(name,
                            levels = c("Brak danych o aktywności",
@@ -168,13 +181,13 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
                                       "Tylko praca",
                                       "Nauka i praca",
                                       "Tylko nauka"),
-                           labels = c("neet", "bezrob", "tylko_prac", "ucz_prac", "tylko_ucz")))) %>% 
+                           labels = c("brak_danych", "bezrob", "tylko_prac", "ucz_prac", "tylko_ucz")))) %>% 
     select(-lab) %>% 
     pivot_wider(names_from = name) %>% 
-    select(typ, tylko_ucz, ucz_prac, tylko_prac, bezrob, neet) %>% 
-    mutate(across(tylko_ucz:neet,
+    select(typ, tylko_ucz, ucz_prac, tylko_prac, bezrob, brak_danych) %>% 
+    mutate(across(tylko_ucz:brak_danych,
                   ~ round(. * 100))) %>%
-    mutate(across(tylko_ucz:neet,
+    mutate(across(tylko_ucz:brak_danych,
                   ~ paste0(., "\\%"))) %>%
     kable(format = "latex", booktabs = TRUE, escape = FALSE, longtable = TRUE,
           linesep = "",
@@ -204,17 +217,17 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
 
 ```{r}
 if (szk$S3_12[[1]]$n >= progLiczebnosci) {
-  tab_s3_zaw_check = szk$tab_s3_zaw[[1]] %>% 
+  tab_s3_zaw_check <- szk$tab_s3_zaw[[1]] %>% 
     as_tibble()
   if (nrow(tab_s3_zaw_check) > 0) {
-    tab_s3_zaw_check = tab_s3_zaw_check %>%  
+    tab_s3_zaw_check <- tab_s3_zaw_check %>%  
       filter(!row_number() %in% nrow(.)) %>%
       filter(n >= 10) %>% 
       arrange(n, nazwa_zaw) %>%
       mutate(typ = ordered(.$nazwa_zaw, levels = unique(.$nazwa_zaw))) %>% 
       select(-c(n, nazwa_zaw))
   } else {
-    tab_s3_zaw_check = tibble()
+    tab_s3_zaw_check <- tibble()
   }
   
   if (nrow(tab_s3_zaw_check) %in% 0) {
@@ -230,44 +243,44 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
 ```{r petla_zawody_S3}
 if (szk$S3_12[[1]]$n >= progLiczebnosci) {
   if (nrow(tab_s3_zaw_check) > 0) {
-    szkozaw = szkozaw %>% 
-      filter(id_szk %in% szk$id_szk)
+    szkozaw <- szkozaw %>% 
+      filter(id_szk %in% szk$id_szk[[1]])
     
     for (i in tab_s3_zaw_check$typ) {
-      tab_szk = tab_s3_zaw_check[tab_s3_zaw_check$typ %in% i,]
+      tab_szk <- tab_s3_zaw_check[tab_s3_zaw_check$typ %in% i,]
       
-      tab_god = szkozaw %>% 
+      tab_god <- szkozaw %>% 
         filter(nazwa_zaw %in% i)
       
       if (nrow(tab_god) > 0) {
-        zawod = wrapper(unique(tab_god$nazwa_zaw), 35)
+        zawod <- wrapper(unique(tab_god$nazwa_zaw), 35)
         
-        terytorium = tab_god$odniesieniePoziom[[1]]
+        terytorium <- tab_god$odniesieniePoziom[[1]]
         
-        tab_god = tab_god$S3_12[[1]] %>% 
+        tab_god <- tab_god$S3_12[[1]] %>% 
           as_tibble() %>% 
           cbind(., zawod) %>% 
           rename(nazwa_zaw = zawod) %>% 
           mutate(typ = ordered(x = .$nazwa_zaw, levels = unique(.$nazwa_zaw))) %>% 
           select(-c(n, nazwa_zaw))
         
-        powiaty_dop_petla = powiaty %>%
-          filter(teryt_pow %in% szk$teryt_pow[[1]]) %>%
+        powiaty_dop_petla <- powiaty %>%
+          filter(teryt_pow %in% szk$teryt_pow_szk[[1]]) %>%
           select(starts_with(terytorium)) %>%
           as.character()
         
-        tab_szk$typ = "Państwa szkoła"
-        tab_god$typ = paste0("Pozostałe szkoły policealne\nz ", powiaty_dop_petla)
+        tab_szk$typ <- "Państwa szkoła"
+        tab_god$typ <- paste0("Pozostałe szkoły policealne\nz ", powiaty_dop_petla)
         
-        tabela = rbind(tab_szk, tab_god) %>% 
-          pivot_longer(cols = tylko_ucz:neet, names_to = "name") %>% 
+        tabela <- rbind(tab_szk, tab_god) %>% 
+          pivot_longer(cols = tylko_ucz:brak_danych, names_to = "name") %>% 
           mutate(across(name,
                         ~case_when(
                           . %in% "tylko_ucz" ~ "Tylko nauka",
                           . %in% "ucz_prac" ~ "Nauka i praca",
                           . %in% "tylko_prac" ~ "Tylko praca",
                           . %in% "bezrob" ~ "Bezrobocie",
-                          . %in% "neet" ~ "Brak danych o aktywności"))) %>% 
+                          . %in% "brak_danych" ~ "Brak danych o aktywności"))) %>% 
           mutate(lab = ifelse(round(value, 2) >= 0.06,
                               paste0(round(value * 100), "%"),
                               ""),
@@ -277,7 +290,7 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
                                                  "Nauka i praca",
                                                  "Tylko nauka")))
         
-        wyk_tyt = wrapper(paste0("Wykres ",
+        wyk_tyt <- wrapper(paste0("Wykres ",
                                  wyk_num(),
                                  ": Status edukacyjno-zawodowy absolwentów Państwa szkoły oraz absolwentów pozostałych szkół policealnych z ",
                                  powiaty_dop_petla,
@@ -286,18 +299,18 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
                                  " roku - w zawodzie ",
                                  i), 85)
       } else {
-        tab_szk$typ = "Państwa szkoła"
-        zawod = wrapper(paste0(i), 35)
+        tab_szk$typ <- "Państwa szkoła"
+        zawod <- wrapper(paste0(i), 35)
         
-        tabela = tab_szk %>% 
-          pivot_longer(cols = tylko_ucz:neet, names_to = "name") %>% 
+        tabela <- tab_szk %>% 
+          pivot_longer(cols = tylko_ucz:brak_danych, names_to = "name") %>% 
           mutate(across(name,
                         ~case_when(
                           . %in% "tylko_ucz" ~ "Tylko nauka",
                           . %in% "ucz_prac" ~ "Nauka i praca",
                           . %in% "tylko_prac" ~ "Tylko praca",
                           . %in% "bezrob" ~ "Bezrobocie",
-                          . %in% "neet" ~ "Brak danych o aktywności"))) %>% 
+                          . %in% "brak_danych" ~ "Brak danych o aktywności"))) %>% 
           mutate(lab = ifelse(round(value, 2) >= 0.06,
                               paste0(round(value * 100), "%"),
                               ""),
@@ -307,7 +320,7 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
                                                  "Nauka i praca",
                                                  "Tylko nauka")))
         
-        wyk_tyt = wrapper(paste0("Wykres ",
+        wyk_tyt <- wrapper(paste0("Wykres ",
                                  wyk_num(),
                                  ": Status edukacyjno-zawodowy absolwentów Państwa szkoły w grudniu ",
                                  params$rok,
@@ -315,17 +328,17 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
                                  i), 85)
       }
       
-      wykres = wykres_poziomy_statusy(
+      wykres <- wykres_poziomy_statusy(
         tabela,
         wyk_tyt)
       
-      levels(tabela$typ) = linebreak(levels(tabela$typ), align = "l")
+      levels(tabela$typ) <- linebreak(levels(tabela$typ), align = "l")
       
-      tabela = rbind(tab_szk, tab_god) %>% 
-        select(typ, tylko_ucz, ucz_prac, tylko_prac, bezrob, neet) %>% 
-        mutate(across(tylko_ucz:neet,
+      tabela <- rbind(tab_szk, tab_god) %>% 
+        select(typ, tylko_ucz, ucz_prac, tylko_prac, bezrob, brak_danych) %>% 
+        mutate(across(tylko_ucz:brak_danych,
                       ~ round(. * 100))) %>%
-        mutate(across(tylko_ucz:neet,
+        mutate(across(tylko_ucz:brak_danych,
                       ~ paste0(., "\\%"))) %>%
         kable(format = "latex", booktabs = TRUE, escape = FALSE, longtable = TRUE,
               linesep = "",
@@ -361,11 +374,11 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
 
 ```{r}
 if (szk$S3_12[[1]]$n >= progLiczebnosci) {
-  lip_sier = c(
+  lip_sier <- c(
     "lipcu" = round(szk$S3_07[[1]]$ucz_prac * 100) + round(szk$S3_07[[1]]$tylko_prac * 100),
     "sierpniu" = round(szk$S3_08[[1]]$ucz_prac * 100) + round(szk$S3_08[[1]]$tylko_prac * 100))
   
-  wrz_gru = c(
+  wrz_gru <- c(
     "wrześniu" = round(szk$S3_09[[1]]$ucz_prac * 100) + round(szk$S3_09[[1]]$tylko_prac * 100),
     "październiku" = round(szk$S3_10[[1]]$ucz_prac * 100) + round(szk$S3_10[[1]]$tylko_prac * 100), 
     "listopadzie" = round(szk$S3_11[[1]]$ucz_prac * 100) + round(szk$S3_11[[1]]$tylko_prac * 100),
@@ -419,7 +432,7 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
 ```
 
 ```{r}
-szkoly_month = rbind(
+szkoly_month <- rbind(
   as_tibble(szk$S3_07[[1]]),
   as_tibble(szk$S3_08[[1]]),
   as_tibble(szk$S3_09[[1]]),
@@ -428,17 +441,17 @@ szkoly_month = rbind(
   as_tibble(szk$S3_12[[1]]))
 
 if (min(szkoly_month$n) >= progLiczebnosci) {
-  tab_szk = szkoly_month %>%
+  tab_szk <- szkoly_month %>%
     mutate(month = 7:12) %>% 
     select(-n) %>% 
-    pivot_longer(tylko_ucz:neet) %>% 
+    pivot_longer(tylko_ucz:brak_danych) %>% 
     mutate(across(name,
                   ~case_when(
                     . %in% "tylko_ucz" ~ "Tylko nauka",
                     . %in% "ucz_prac" ~ "Nauka i praca",
                     . %in% "tylko_prac" ~ "Tylko praca",
                     . %in% "bezrob" ~ "Bezrobocie",
-                    . %in% "neet" ~ "Brak danych o aktywności"))) %>% 
+                    . %in% "brak_danych" ~ "Brak danych o aktywności"))) %>% 
     mutate(lab = ifelse(round(value, 2) >= 0.06,
                         paste0(round(value * 100), "%"),
                         "")) %>% 
@@ -448,9 +461,9 @@ if (min(szkoly_month$n) >= progLiczebnosci) {
                                            "Nauka i praca",
                                            "Tylko nauka")))
   
-  tab_szk$month = factor(tab_szk$month, ordered = TRUE)
+  tab_szk$month <- factor(tab_szk$month, ordered = TRUE)
   
-  wykres = wykres_pionowy_statusy(tab_szk,
+  wykres <- wykres_pionowy_statusy(tab_szk,
                                   wrapper(paste0("Wykres ",
                                                  wyk_num(),
                                                  ": Status edukacyjno-zawodowy absolwentów Państwa szkoły w poszczególnych miesiącach ",
@@ -458,12 +471,12 @@ if (min(szkoly_month$n) >= progLiczebnosci) {
                                                  " roku - ogółem (%)"), 80)) +
     scale_x_discrete(labels = c("7" = "lip", "8" = "sie", "9" = "wrz", "10" = "paź", "11" = "lis", "12" = "gru"))
   
-  tabelka = szkoly_month %>%
+  tabelka <- szkoly_month %>%
     mutate(month = 7:12) %>% 
     select(-n) %>% 
-    mutate(across(tylko_ucz:neet,
+    mutate(across(tylko_ucz:brak_danych,
                   ~ round(. * 100))) %>%
-    mutate(across(tylko_ucz:neet,
+    mutate(across(tylko_ucz:brak_danych,
                   ~ paste0(., "\\%"))) %>% 
     pivot_longer(-month, names_to = "mies") %>%
     pivot_wider(names_from = month, values_from = value) %>% 
@@ -473,7 +486,7 @@ if (min(szkoly_month$n) >= progLiczebnosci) {
                             "ucz_prac",
                             "tylko_prac",
                             "bezrob",
-                            "neet"),
+                            "brak_danych"),
                           labels = c(
                             "Tylko nauka",
                             "Nauka i praca",
@@ -493,7 +506,7 @@ if (min(szkoly_month$n) >= progLiczebnosci) {
                   repeat_header_text = "(ciąg dalszy tabeli)") %>% 
     add_header_above(c("", "lip" = 1, "sie" = 1, "wrz" = 1, "paź" = 1, "lis" = 1, "gru" = 1),
                      align = c("l", "c", "c", "c", "c", "c", "c")) %>% 
-    column_spec(1, width = "3.9cm") %>%
+    column_spec(1, width = "5cm") %>%
     column_spec(2, width = "0.8cm") %>%
     column_spec(3, width = "0.8cm") %>%
     column_spec(4, width = "0.8cm") %>%
@@ -514,18 +527,19 @@ if (min(szkoly_month$n) >= progLiczebnosci) {
 
 ```{r}
 if (szk$E2_nauka_kontyn[[1]]$n >= progLiczebnosci) {
-  kontyn = as_tibble(szk$E2_nauka_kontyn[[1]]) %>% 
+  kontyn <- as_tibble(szk$E2_nauka_kontyn[[1]]) %>% 
     select(-c(n, brak)) %>% 
     pivot_longer(everything()) %>% 
     mutate(nazwa = case_when(
-      name %in% "bs2" ~ paste0("* w branżowych szkołach II stopnia (", round(szk$E2_nauka_kontyn[[1]]$bs2 * 100), "%)"),
-      name %in% "lodd" ~ paste0("* w liceach dla dorosłych (", round(szk$E2_nauka_kontyn[[1]]$lodd * 100), "%)"),
-      name %in% "spolic" ~ paste0("* w szkole policealnej (", round(szk$E2_nauka_kontyn[[1]]$spolic * 100), "%)"),
-      name %in% "studia" ~ paste0("* studiując na uczelni (", round(szk$E2_nauka_kontyn[[1]]$studia * 100), "%)"),
-      name %in% "kkz" ~ paste0("* na KKZ (", round(szk$E2_nauka_kontyn[[1]]$kkz * 100), "%)"),
-      name %in% "kuz" ~ paste0("* na KUZ (", round(szk$E2_nauka_kontyn[[1]]$kuz * 100), "%)")))
+      name %in% "Branżowa szkoła II stopnia" ~ paste0("* w branżowych szkołach II stopnia (", round(value[name == "Branżowa szkoła II stopnia"] * 100), "%)"),
+      name %in% "Liceum dla dorosłych" ~ paste0("* w liceach dla dorosłych (", round(value[name == "Liceum dla dorosłych"] * 100), "%)"),
+      name %in% "Szkoła policealna" ~ paste0("* w szkole policealnej (", round(value[name == "Szkoła policealna"] * 100), "%)"),
+      name %in% "Studia" ~ paste0("* studiując na uczelni (", round(value[name == "Studia"] * 100), "%)"),
+      name %in% "KKZ" ~ paste0("* na KKZ (", round(value[name == "KKZ"] * 100), "%)"),
+      name %in% "KUZ" ~ paste0("* na KUZ (", round(value[name == "KUZ"] * 100), "%)"))
+    )
   
-  sposoby = kontyn %>% 
+  sposoby <- kontyn %>% 
     pull(value) %>% 
     sum(. * 100) %>% 
     round()
@@ -547,7 +561,7 @@ if (szk$E2_nauka_kontyn[[1]]$n >= progLiczebnosci) {
       )
       
       cat("Absolwenci Państwa szkoły kontynuowali naukę:\n\n")
-      kontyn = kontyn %>% 
+      kontyn <- kontyn %>% 
         arrange(desc(value)) %>% 
         filter(round(value * 100) > 0)
       cat(
@@ -588,16 +602,16 @@ if (szk$E2_nauka_kontyn[[1]]$n >= progLiczebnosci) {
 
 ```{r, fig.height=3}
 if (szk$E2_nauka_kontyn[[1]]$n >= progLiczebnosci) {
-  nazwy_wierszy = c(
-    "bs2", # tej etykiety nie będzie bo nie biorę tej kolumny
-    "lodd", # tej etykiety nie będzie bo nie biorę tej kolumny
+  nazwy_wierszy <- c(
+    "Branżowa szkoła II stopnia", # tej etykiety nie będzie bo nie biorę tej kolumny
+    "Liceum dla dorosłych", # tej etykiety nie będzie bo nie biorę tej kolumny
     "Szkoła policealna",
     "Szkoła wyższa",
     "Kwalifikacyjny Kurs Zawodowy",
     "Kurs Umiejętności Zawodowych",
     "Nie kontynuują kształcenia")
   
-  tab = tab_wykres(szk$E2_nauka_kontyn[[1]],
+  tab <- tab_wykres(szk$E2_nauka_kontyn[[1]],
                    NULL,
                    NULL,
                    powiaty_dop,
@@ -605,22 +619,19 @@ if (szk$E2_nauka_kontyn[[1]]$n >= progLiczebnosci) {
                    szk$typ_szk[[1]],
                    80) %>%
     select(-typ) %>% 
-    filter(!(name %in% c("bs2", "lodd"))) %>% 
+    filter(!(name %in% c("Branżowa szkoła II stopnia", "Liceum dla dorosłych"))) %>% 
     arrange(desc(value))
   
-  tab_brak_kont = tab %>% 
-    filter(name %in% "Nie kontynuują kształcenia")
-  
-  tab = rbind(
+  tab <- rbind(
     tab %>% filter(name != "Nie kontynuują kształcenia"),
-    tab_brak_kont
+    tab %>% filter(name == "Nie kontynuują kształcenia")
   ) %>% 
     mutate(lab = ifelse(round(value, 2) > 0,
                           paste0(round(value * 100), "%"),
                           ""))
-  tab$name = ordered(tab$name, tab$name)
+  tab$name <- ordered(tab$name, tab$name)
   
-  wykres = wykres_poziomy_slupki(
+  wykres <- wykres_poziomy_slupki(
     tab,
     wrapper(paste0("Wykres ",
                    wyk_num(),
@@ -698,7 +709,7 @@ if (any(!is.na(szk$liczebnosc_dziedziny[[1]]$odsetek))) {
         " roku - ogółem (%) - maksymalnie 10",
         sep = "")
     
-    tabelka = szk$liczebnosc_dziedziny[[1]] %>% 
+    tabelka <- szk$liczebnosc_dziedziny[[1]] %>% 
       as_tibble() %>% 
       select(-n) %>% 
       slice_max(order_by = odsetek, n = 10, with_ties = FALSE) %>% 
@@ -778,7 +789,7 @@ if (any(!is.na(szk$liczebnosc_dyscypliny[[1]]$odsetek))) {
         " roku - ogółem (%) - maksymalnie 10",
         sep = "")
     
-    tabelka = szk$liczebnosc_dyscypliny[[1]] %>% 
+    tabelka <- szk$liczebnosc_dyscypliny[[1]] %>% 
       as_tibble() %>% 
       select(-n) %>% 
       slice_max(order_by = odsetek, n = 10, with_ties = FALSE) %>%
@@ -812,22 +823,22 @@ if (any(!is.na(szk$liczebnosc_dyscypliny[[1]]$odsetek))) {
 
 ```{r}
 if (round(szk$E2_nauka_kontyn[[1]]$studia * szk$E2_nauka_kontyn[[1]]$n) >= progLiczebnosci) {
-  l_col = length(szk$dyscypliny_zawody[[1]]) - 1
+  l_col <- length(szk$dyscypliny_zawody[[1]]) - 1
   if (length(szk$dyscypliny_zawody[[1]]) > 1 & l_col > 0) {
     cat(
       "W poniższej tabeli przedstawione zostały informacje o dyscyplinach, w których studiowali absolwenci Państwa szkoły, należący do poszczególnych grup (liczących co najmniej 10 osób) wyróżnionych ze względu na zawód, w którym się kształcili.")
     
-    naz_wiersze_nag = character()
+    naz_wiersze_nag <- character()
     for (i in 1:l_col) {
-      naz_wiersze_nag = paste(
+      naz_wiersze_nag <- paste(
         c(naz_wiersze_nag, paste(i, "-", names(szk$dyscypliny_zawody[[1]])[i + 1])),
         collapse = "\n")
     }
-    wiersze_nag = l_col
-    names(wiersze_nag) = paste0("% wśród studiujących absolwentów Państwa\nszkoły, którzy kształcili się w niej w zawodzie:\n", naz_wiersze_nag)
+    wiersze_nag <- l_col
+    names(wiersze_nag) <- paste0("% wśród studiujących absolwentów Państwa\nszkoły, którzy kształcili się w niej w zawodzie:\n", naz_wiersze_nag)
     
-    nagl = rep(1, l_col, by = 1)
-    names(nagl) = lapply(1:l_col, as.character)
+    nagl <- rep(1, l_col, by = 1)
+    names(nagl) <- lapply(1:l_col, as.character)
     
     cat("\n\nTabela ",
         tab_num(),
@@ -837,16 +848,16 @@ if (round(szk$E2_nauka_kontyn[[1]]$studia * szk$E2_nauka_kontyn[[1]]$n) >= progL
         sep = "")
     
     # tu nie ma ograniczenia na max 10 dyscyplin, natomiast jest ograniczenie na liczbę zawodów
-    tab = szk$dyscypliny_zawody[[1]] %>% 
+    tab <- szk$dyscypliny_zawody[[1]] %>% 
       as_tibble() %>% 
       mutate(across(2:ncol(.),
                     ~paste0(round(. * 100), "\\%")))
     
     
-    tab$dyscyplina_wiodaca_kont = unname(sapply(tab$dyscyplina_wiodaca_kont, wrapper, width = 50))
-    tab$dyscyplina_wiodaca_kont = linebreak(tab$dyscyplina_wiodaca_kont, align = "l")
+    tab$dyscyplina_wiodaca_kont <- unname(sapply(tab$dyscyplina_wiodaca_kont, wrapper, width = 50))
+    tab$dyscyplina_wiodaca_kont <- linebreak(tab$dyscyplina_wiodaca_kont, align = "l")
     
-    tab = tab %>% 
+    tab <- tab %>% 
       kable(format = "latex",
             booktabs = TRUE,
             escape = FALSE,
@@ -886,12 +897,12 @@ W związku z tym wskaźnik jest prezentowany oddzielnie dla każdej z tych grup^
 
 ```{r}
 if (szk$Z4_ucz[[1]]$n >= progLiczebnosci) {
-  przeprac_ods = szk$Z4_ucz[[1]] %>% 
+  przeprac_ods <- szk$Z4_ucz[[1]] %>% 
     as_tibble() %>% 
-    select(-c(n, srednia, med)) %>% 
+    select(-n) %>% 
     pivot_longer(everything()) %>% 
     as.list()
-  przeprac_ods$name = c(
+  przeprac_ods$name <- c(
     paste0("od września do grudnia ", params$rok, " roku nie pracowały"),
     paste0("pracowały przez część miesięcy w okresie od września do grudnia ", params$rok),
     paste0("pracowały w każdym miesiącu w okresie od września do grudnia ", params$rok))
@@ -931,9 +942,9 @@ if (szk$Z4_ucz[[1]]$n >= progLiczebnosci) {
 
 ```{r}
 if (szk$Z4_ucz[[1]]$n >= progLiczebnosci) { 
-  etykiety = c("srednia", "mediana", "p0", "czesc", "p100")
+  etykiety <- c("p0", "czesc", "p100")
   
-  tab_wyk = tab_wykres(szk$Z4_ucz[[1]],
+  tab_wyk <- tab_wykres(szk$Z4_ucz[[1]],
                        god$Z4_ucz[[1]],
                        NULL,
                        powiaty_dop,
@@ -941,18 +952,17 @@ if (szk$Z4_ucz[[1]]$n >= progLiczebnosci) {
                        szk$typ_szk[[1]],
                        80) %>% 
     select(-lab) %>% 
-    filter(!(name %in% c("srednia", "mediana"))) %>% 
     pivot_wider() %>% 
     pivot_longer(cols = p0:p100) %>%  
     mutate(lab = ifelse(round(value, 2) >= 0.06,
                               paste0(round(value * 100), "%"),
                               ""))
   
-  tab_wyk$name = ordered(tab_wyk$name,
+  tab_wyk$name <- ordered(tab_wyk$name,
                          levels = c("p0", "czesc", "p100"),
                          labels = c("brak pracy", "praca przez część okresu", "praca przez cały okres"))
   
-  wykres = wykres_pion_skum(tab_wyk,
+  wykres <- wykres_pion_skum(tab_wyk,
                               wrapper(paste0("Wykres ",
                                     wyk_num(),
                                     ": Procentowy udział grup wyróżnionych ze względu na część przepracowanego okresu wśród absolwentów Państwa szkoły oraz absolwentów pozostałych szkół policealnych z ",
@@ -967,9 +977,9 @@ if (szk$Z4_ucz[[1]]$n >= progLiczebnosci) {
       ylab("Odsetek absolwentów") + 
       guides(fill = guide_legend(nrow = 1, byrow = TRUE))
   
-  levels(tab_wyk$typ) = linebreak(levels(tab_wyk$typ), align = "l")
+  levels(tab_wyk$typ) <- linebreak(levels(tab_wyk$typ), align = "l")
   
-  tab_wyk = tab_wyk %>%
+  tab_wyk <- tab_wyk %>%
     select(-lab) %>% 
     pivot_wider(names_from = name) %>%
     mutate(across(2:4,
@@ -997,12 +1007,12 @@ if (szk$Z4_ucz[[1]]$n >= progLiczebnosci) {
 
 ```{r}
 if (szk$Z4_nie_ucz[[1]]$n >= progLiczebnosci) {
-  przeprac_ods = szk$Z4_nie_ucz[[1]] %>% 
+  przeprac_ods <- szk$Z4_nie_ucz[[1]] %>% 
     as_tibble() %>% 
-    select(-c(n, srednia, med)) %>% 
+    select(-n) %>% 
     pivot_longer(everything()) %>% 
     as.list()
-  przeprac_ods$name = c(
+  przeprac_ods$name <- c(
     paste0("od września do grudnia ", params$rok, " roku nie pracowały"),
     paste0("pracowały przez część miesięcy w okresie od września do grudnia ", params$rok),
     paste0("pracowały w każdym miesiącu w okresie od września do grudnia ", params$rok))
@@ -1042,9 +1052,9 @@ if (szk$Z4_nie_ucz[[1]]$n >= progLiczebnosci) {
 
 ```{r}
 if (szk$Z4_nie_ucz[[1]]$n >= progLiczebnosci) {
-  etykiety = c("srednia", "mediana", "p0", "czesc", "p100")
+  etykiety <- c("p0", "czesc", "p100")
   
-  tab_wyk = tab_wykres(szk$Z4_nie_ucz[[1]],
+  tab_wyk <- tab_wykres(szk$Z4_nie_ucz[[1]],
                        god$Z4_nie_ucz[[1]],
                        NULL,
                        powiaty_dop,
@@ -1052,18 +1062,17 @@ if (szk$Z4_nie_ucz[[1]]$n >= progLiczebnosci) {
                        szk$typ_szk[[1]],
                        80) %>% 
     select(-lab) %>% 
-    filter(!(name %in% c("srednia", "mediana"))) %>% 
     pivot_wider() %>% 
     pivot_longer(cols = p0:p100) %>% 
     mutate(lab = ifelse(round(value, 2) >= 0.06,
                               paste0(round(value * 100), "%"),
                               ""))
   
-  tab_wyk$name = ordered(tab_wyk$name,
+  tab_wyk$name <- ordered(tab_wyk$name,
                          levels = c("p0", "czesc", "p100"),
                          labels = c("brak pracy", "praca przez część okresu", "praca przez cały okres"))
   
-  wykres = wykres_pion_skum(tab_wyk,
+  wykres <- wykres_pion_skum(tab_wyk,
                               wrapper(paste0("Wykres ",
                                     wyk_num(),
                                     ": Procentowy udział grup wyróżnionych ze względu na część przepracowanego okresu wśród absolwentów Państwa szkoły oraz absolwentów pozostałych szkół policealnych z ",
@@ -1078,9 +1087,9 @@ if (szk$Z4_nie_ucz[[1]]$n >= progLiczebnosci) {
       ylab("Odsetek absolwentów") + 
       guides(fill = guide_legend(nrow = 1, byrow = TRUE))
   
-  levels(tab_wyk$typ) = linebreak(levels(tab_wyk$typ), align = "l")
+  levels(tab_wyk$typ) <- linebreak(levels(tab_wyk$typ), align = "l")
   
-  tab_wyk = tab_wyk %>%
+  tab_wyk <- tab_wyk %>%
     select(-lab) %>% 
     pivot_wider(names_from = name) %>%
     mutate(across(2:4,
@@ -1144,12 +1153,12 @@ if (szk$Z8_formy_ucz[[1]]$n >= progLiczebnosci) {
 
 ```{r, fig.height=6}
 if (szk$Z8_formy_ucz[[1]]$n >= progLiczebnosci) {
-  etykiety = c("Zatrudnieni tylko na podstawie umowy o pracę",
+  etykiety <- c("Zatrudnieni tylko na podstawie umowy o pracę",
                "Tylko samozatrudnieni",
                "Tylko zatrudnieni na podstawie innej formy umowy niż umowa o pracę",
                "Zatrudnieni na podstawie więcej niż jednej formy umowy")
   
-  tab_wyk = tab_wykres(szk$Z8_formy_ucz[[1]],
+  tab_wyk <- tab_wykres(szk$Z8_formy_ucz[[1]],
                        god$Z8_formy_ucz[[1]],
                        NULL,
                        powiaty_dop,
@@ -1157,7 +1166,7 @@ if (szk$Z8_formy_ucz[[1]]$n >= progLiczebnosci) {
                        szk$typ_szk[[1]],
                        80)
   
-  wyk_tyt = wrapper(paste0("Wykres ",
+  wyk_tyt <- wrapper(paste0("Wykres ",
                            wyk_num(),
                            ": Formy wykonywania pracy przez pracujących absolwentów Państwa szkoły oraz pozostałych szkół policealnych z ",
                            powiaty_dop,
@@ -1166,13 +1175,13 @@ if (szk$Z8_formy_ucz[[1]]$n >= progLiczebnosci) {
                            " roku - kontynuujący naukę"),
            width = 85)
   
-  wykres = wykres_pion_skum(tab_wyk, wyk_tyt) +
+  wykres <- wykres_pion_skum(tab_wyk, wyk_tyt) +
     scale_fill_manual(values = c("#90cf60", "#d8ef8a", "#f8dd00", "#fb8c59")) +
     ylab("Odsetek absolwentów")
   
-  levels(tab_wyk$typ) = linebreak(levels(tab_wyk$typ), align = "l")
+  levels(tab_wyk$typ) <- linebreak(levels(tab_wyk$typ), align = "l")
   
-  tab_wyk = tab_wyk %>%
+  tab_wyk <- tab_wyk %>%
     select(-lab) %>%
     pivot_wider(names_from = name) %>%
     mutate(across(2:5,
@@ -1205,7 +1214,7 @@ if (szk$Z8_formy_ucz[[1]]$n >= progLiczebnosci) {
 
 ```{r}
 if (szk$Z8_formy_nie_ucz[[1]]$n >= progLiczebnosci) {
-  szk_minus_god = list(
+  szk_minus_god <- list(
     nieucz_uop = round(szk$Z8_formy_nie_ucz[[1]]$nieucz_uop * 100) - round(god$Z8_formy_nie_ucz[[1]]$nieucz_uop * 100),
     nieucz_samoz = round(szk$Z8_formy_nie_ucz[[1]]$nieucz_samoz * 100) - round(god$Z8_formy_nie_ucz[[1]]$nieucz_samoz * 100),
     nieucz_inna = round(szk$Z8_formy_nie_ucz[[1]]$nieucz_inna * 100) - round(god$Z8_formy_nie_ucz[[1]]$nieucz_inna * 100),
@@ -1248,12 +1257,12 @@ if (szk$Z8_formy_nie_ucz[[1]]$n >= progLiczebnosci) {
 
 ```{r, fig.height=6}
 if (szk$Z8_formy_nie_ucz[[1]]$n >= progLiczebnosci) {
-  etykiety = c("Zatrudnieni tylko na podstawie umowy o pracę",
+  etykiety <- c("Zatrudnieni tylko na podstawie umowy o pracę",
                "Tylko samozatrudnieni",
                "Tylko zatrudnieni na podstawie innej formy umowy niż umowa o pracę",
                "Zatrudnieni na podstawie więcej niż jednej formy umowy")
   
-  tab_wyk = tab_wykres(szk$Z8_formy_nie_ucz[[1]],
+  tab_wyk <- tab_wykres(szk$Z8_formy_nie_ucz[[1]],
                        god$Z8_formy_nie_ucz[[1]],
                        NULL,
                        powiaty_dop,
@@ -1261,7 +1270,7 @@ if (szk$Z8_formy_nie_ucz[[1]]$n >= progLiczebnosci) {
                        szk$typ_szk[[1]],
                        80)
   
-  wyk_tyt = wrapper(paste0("Wykres ",
+  wyk_tyt <- wrapper(paste0("Wykres ",
                            wyk_num(),
                            ": Formy wykonywania pracy przez pracujących absolwentów Państwa szkoły oraz pozostałych szkół policealnych z ",
                            powiaty_dop,
@@ -1270,13 +1279,13 @@ if (szk$Z8_formy_nie_ucz[[1]]$n >= progLiczebnosci) {
                            " roku - pracujący i niekontynuujący nauki"),
            width = 85)
   
-  wykres = wykres_pion_skum(tab_wyk, wyk_tyt) +
+  wykres <- wykres_pion_skum(tab_wyk, wyk_tyt) +
     scale_fill_manual(values = c("#90cf60", "#d8ef8a", "#f8dd00", "#fb8c59")) +
     ylab("Odsetek absolwentów")
   
-  levels(tab_wyk$typ) = linebreak(levels(tab_wyk$typ), align = "l")
+  levels(tab_wyk$typ) <- linebreak(levels(tab_wyk$typ), align = "l")
   
-  tab_wyk = tab_wyk %>%
+  tab_wyk <- tab_wyk %>%
     select(-lab) %>%
     pivot_wider(names_from = name) %>%
     mutate(across(2:5,
@@ -1314,7 +1323,7 @@ Należy zastrzec, że kwoty te nie są porównywalne, ze względu na różnice w
 Na poniższej ilustracji opisano sposób prezentowania danych na wykresie typu boxplot wraz z ich interpretacją. Dane na tym wykresie są fikcyjne – służy on tylko objaśnieniu jakiego rodzaju informacje można znaleźć na tego typu wykresach.
 
 ```{r, out.width='100%'}
-knitr::include_graphics("../boxplot_edycja4.png")
+knitr::include_graphics("../boxplot_wzor.png")
 ```
 
 ### Absolwenci kontynuujący naukę
@@ -1338,9 +1347,9 @@ if (szk$W3_ucz[[1]]$n >= progLiczebnosci) {
 
 ```{r}
 if (szk$W3_ucz[[1]]$n >= progLiczebnosci) {
-  etykiety = c("sred", "q5", "q25", "med", "q75", "q95")
+  etykiety <- c("sred", "q5", "q25", "med", "q75", "q95")
   
-  tab_wyk = tab_wykres(szk$W3_ucz[[1]],
+  tab_wyk <- tab_wykres(szk$W3_ucz[[1]],
                        god$W3_ucz[[1]],
                        NULL,
                        powiaty_dop,
@@ -1351,13 +1360,13 @@ if (szk$W3_ucz[[1]]$n >= progLiczebnosci) {
     pivot_wider(names_from = name) %>% 
     select(-sred)
   
-  wyk_lab = tab_wyk %>% 
+  wyk_lab <- tab_wyk %>% 
     group_by(typ) %>% 
     summarise(value = list(q5, q25, med, q75, q95)) %>% 
     unnest() %>% 
     mutate(lab = paste0(round(value * 100), "%"))
   
-  wyk_tyt = wrapper(paste0("Wykres ",
+  wyk_tyt <- wrapper(paste0("Wykres ",
                            wyk_num(),
                            ": Średni miesięczny przychód brutto z pracy uzyskiwany przez absolwentów Państwa szkoły oraz pozostałych szkół policealnych z ",
                            powiaty_dop,
@@ -1366,7 +1375,7 @@ if (szk$W3_ucz[[1]]$n >= progLiczebnosci) {
                            " roku - pracujący i kontynuujący naukę"),
                     width = 85)
   
-  wykres = boxplot_proc(tab_wyk, wyk_tyt) +
+  wykres <- boxplot_proc(tab_wyk, wyk_tyt) +
     ylab("Przychody absolwentów z pracy etatowej\nw odniesieniu do przeciętnego\nwynagrodzenia w powiatach") +
     geom_text(data = wyk_lab,
               aes(x = typ, y = value, label = lab),
@@ -1403,9 +1412,9 @@ if (szk$W3_nie_ucz[[1]]$n >= progLiczebnosci) {
 
 ```{r}
 if (szk$W3_nie_ucz[[1]]$n >= progLiczebnosci) {
-  etykiety = c("sred", "q5", "q25", "med", "q75", "q95")
+  etykiety <- c("sred", "q5", "q25", "med", "q75", "q95")
   
-  tab_wyk = tab_wykres(szk$W3_nie_ucz[[1]],
+  tab_wyk <- tab_wykres(szk$W3_nie_ucz[[1]],
                        god$W3_nie_ucz[[1]],
                        NULL,
                        powiaty_dop,
@@ -1416,13 +1425,13 @@ if (szk$W3_nie_ucz[[1]]$n >= progLiczebnosci) {
     pivot_wider(names_from = name) %>% 
     select(-sred)
   
-  wyk_lab = tab_wyk %>% 
+  wyk_lab <- tab_wyk %>% 
     group_by(typ) %>% 
     summarise(value = list(q5, q25, med, q75, q95)) %>% 
     unnest() %>% 
     mutate(lab = paste0(round(value * 100), "%"))
   
-  wyk_tyt = wrapper(paste0("Wykres ",
+  wyk_tyt <- wrapper(paste0("Wykres ",
                            wyk_num(),
                            ": Średni miesięczny przychód brutto z pracy uzyskiwany przez absolwentów Państwa szkoły oraz pozostałych szkół policealnych z ",
                            powiaty_dop,
@@ -1431,7 +1440,7 @@ if (szk$W3_nie_ucz[[1]]$n >= progLiczebnosci) {
                            " roku - pracujący i niekontynuujący nauki"),
            width = 85)
   
-  wykres = boxplot_proc(tab_wyk, wyk_tyt) +
+  wykres <- boxplot_proc(tab_wyk, wyk_tyt) +
     ylab("Przychody absolwentów z pracy etatowej\nw odniesieniu do przeciętnego\nwynagrodzenia w powiatach") +
     geom_text(data = wyk_lab,
               aes(x = typ, y = value, label = lab),
@@ -1457,15 +1466,15 @@ Poszczególni absolwenci Państwa szkoły pomiędzy jej ukończeniem a końcem r
 if (szk$l_abs[[1]] >= progLiczebnosci) {
   cat(
     "Wśród absolwentów Państwa szkoły ",
-    round(szk$B2_bezrob[[1]]$value[szk$B2_bezrob[[1]]$l_mies_bezrob %in% 0] * 100),
+    round(szk$B2_bezrob[[1]]$pct[szk$B2_bezrob[[1]]$bezrobocie_r0_wrzgru == "Brak bezrobocia"] * 100),
     "% absolwentów w rozpatrywanym okresie w ogóle nie było zarejestrowanych jako osoby bezrobotne, natomiast ",
-    round(szk$B2_bezrob[[1]]$value[szk$B2_bezrob[[1]]$l_mies_bezrob %in% 4] * 100),
+    round(szk$B2_bezrob[[1]]$pct[szk$B2_bezrob[[1]]$bezrobocie_r0_wrzgru == "4 miesiące"] * 100),
     "% pozostawało w rejestrze osób bezrobotnych przez cały ten okres.\n\nWśród absolwentów pozostałych szkół policealnych z ",
     powiaty_dop,
     " analogiczne wartości wynosiły ",
-    round(god$B2_bezrob[[1]]$value[god$B2_bezrob[[1]]$l_mies_bezrob %in% 0] * 100),
+    round(god$B2_bezrob[[1]]$pct[god$B2_bezrob[[1]]$bezrobocie_r0_wrzgru == "Brak bezrobocia"] * 100),
     "% i ",
-    round(god$B2_bezrob[[1]]$value[god$B2_bezrob[[1]]$l_mies_bezrob %in% 4] * 100),
+    round(god$B2_bezrob[[1]]$pct[god$B2_bezrob[[1]]$bezrobocie_r0_wrzgru == "4 miesiące"] * 100),
     "%.\n\n",
     sep = ""
   )
@@ -1476,17 +1485,17 @@ if (szk$l_abs[[1]] >= progLiczebnosci) {
 
 ```{r, fig.height=3}
 if (szk$l_abs[[1]] >= progLiczebnosci) {
-  tab_wyk = tab_facet(szk$B2_bezrob[[1]],
+  tab_wyk <- tab_facet(szk$B2_bezrob[[1]],
                       god$B2_bezrob[[1]],
                       NULL,
                       powiaty_dop,
                       szk$typ_szk[[1]],
                       80)
   
-  tab_wyk$mies = ordered(tab_wyk$mies, labels = c(
+  tab_wyk$mies <- ordered(tab_wyk$mies, labels = c(
     "brak\nbezrobocia", "1 msc.", "2 msc.", "3 msc.", "4 msc."))
   
-  wyk_tyt = wrapper(paste0("Wykres ",
+  wyk_tyt <- wrapper(paste0("Wykres ",
                            wyk_num(),
                            ": Odsetek absolwentów Państwa szkoły oraz pozostałych szkół policealnych z ",
                            powiaty_dop,
@@ -1495,7 +1504,7 @@ if (szk$l_abs[[1]] >= progLiczebnosci) {
                            " roku"),
            width = 85)
   
-  wykres = wyk_facet(tab_wyk,
+  wykres <- wyk_facet(tab_wyk,
             wyk_tyt,
             "mies",
             "Liczba miesięcy bezrobocia") +
@@ -1504,9 +1513,9 @@ if (szk$l_abs[[1]] >= progLiczebnosci) {
               nudge_y = 0.03,
               size = 2.5)
   
-  levels(tab_wyk$typ) = linebreak(levels(tab_wyk$typ), align = "l")
+  levels(tab_wyk$typ) <- linebreak(levels(tab_wyk$typ), align = "l")
   
-  tab_wyk = tab_wyk %>%
+  tab_wyk <- tab_wyk %>%
     select(-lab) %>% 
     pivot_wider(names_from = mies) %>%
     mutate(across(2:6,
@@ -1541,14 +1550,14 @@ Więcej informacji o monitorowaniu karier absolwentów znajdą Państwo na stron
 # 6. Aneks: wyniki dla absolwentów szkół policealnych `r ifelse(woj$l_abs[[1]] < progLiczebnosci, paste0(""), paste0("z województwa i", "\u00A0"))`z`r paste0("\u00A0")`całego kraju
 
 ```{r}
-god1 = god1 %>% 
+god1 <- god1 %>% 
   filter(typ_szk %in% szk$typ_szk[[1]],
          nazwa_zaw %in% unique(szk$tab_s3_zaw[[1]]$nazwa_zaw))
 
-god2 = god2 %>% 
+god2 <- god2 %>% 
   filter(typ_szk %in% szk$typ_szk[[1]])
 
-woj = woj %>% 
+woj <- woj %>% 
   filter(teryt_woj %in% szk$teryt_woj[[1]],
          typ_szk %in% szk$typ_szk[[1]])
 ```
@@ -1563,9 +1572,9 @@ W aneksie zaprezentowano tabelaryczne rozkłady wybranych wskaźników przedstaw
 if (woj$l_abs[[1]] < progLiczebnosci | woj$S3_12[[1]]$n < progLiczebnosci) {
   god2$S3_12[[1]] %>%
     as_tibble() %>% 
-    select(n, tylko_ucz, ucz_prac, tylko_prac, bezrob, neet) %>% 
+    select(n, tylko_ucz, ucz_prac, tylko_prac, bezrob, brak_danych) %>% 
     mutate(across(n, ~linebreak(paste0("Absolwenci szkół\npolicealnych\nw całym kraju"), align = "l"))) %>%
-    mutate(across(tylko_ucz:neet,
+    mutate(across(tylko_ucz:brak_danych,
                   ~paste0(round(. * 100), "\\%"))) %>%
     kable(format = "latex", booktabs = TRUE, escape = FALSE, longtable = TRUE,
           linesep = "",
@@ -1579,19 +1588,19 @@ if (woj$l_abs[[1]] < progLiczebnosci | woj$S3_12[[1]]$n < progLiczebnosci) {
     aadd_header_above(c(" ", "1. Tylko nauka" = 1, "2. Nauka i praca" = 1, "3. Tylko praca" = 1, "4. Bezrobocie" = 1, "5. Brak danych\no aktywności" = 1),
                      align = c("l", "c", "c", "c", "c", "c"))
 } else if (woj$l_abs[[1]] >= progLiczebnosci & woj$S3_12[[1]]$n >= progLiczebnosci) {
-  tabela_woj = woj$S3_12[[1]] %>% 
+  tabela_woj <- woj$S3_12[[1]] %>% 
     as_tibble() %>% 
-    select(n, tylko_ucz, ucz_prac, tylko_prac, bezrob, neet) %>% 
+    select(n, tylko_ucz, ucz_prac, tylko_prac, bezrob, brak_danych) %>% 
     mutate(across(n, ~linebreak(paste0("Absolwenci szkół\npolicealnych\nw województwie\n",
                                        woj$odmiany$nazwa_dop[[1]]), align = "l"))) %>%
-    mutate(across(tylko_ucz:neet,
+    mutate(across(tylko_ucz:brak_danych,
                   ~paste0(round(. * 100), "\\%")))
   
-  tabela_kraj = god2$S3_12[[1]] %>%
+  tabela_kraj <- god2$S3_12[[1]] %>%
     as_tibble() %>% 
-    select(n, tylko_ucz, ucz_prac, tylko_prac, bezrob, neet) %>% 
+    select(n, tylko_ucz, ucz_prac, tylko_prac, bezrob, brak_danych) %>% 
     mutate(across(n, ~linebreak(paste0("Absolwenci szkół\npolicealnych\nw całym kraju"), align = "l"))) %>%
-    mutate(across(tylko_ucz:neet,
+    mutate(across(tylko_ucz:brak_danych,
                   ~paste0(round(. * 100), "\\%")))
   
   
@@ -1613,27 +1622,27 @@ if (woj$l_abs[[1]] < progLiczebnosci | woj$S3_12[[1]]$n < progLiczebnosci) {
   b) w poszczególnych zawodach - tylko na poziomie całego kraju
     
 ```{r}
-tabela = tibble()
+tabela <- tibble()
 for (i in 1:nrow(god1)) {
-  wiersz = cbind(
+  wiersz <- cbind(
       god1$nazwa_zaw[[i]] %>% as_tibble() %>% rename(nazwa_zaw = value),
       god1$S3_12[[i]] %>% as_tibble())
   
-  tabela = rbind(
+  tabela <- rbind(
     tabela,
     wiersz)
 }
-tabela = tabela %>% 
+tabela <- tabela %>% 
   filter(n >= progLiczebnosci) %>% 
   arrange(desc(n)) %>% 
-  select(nazwa_zaw, tylko_ucz, ucz_prac, tylko_prac, bezrob, neet)
+  select(nazwa_zaw, tylko_ucz, ucz_prac, tylko_prac, bezrob, brak_danych)
 
 if (nrow(tabela) > 0) {
   cat(
     "Poniższa tabela przedstawia sytuację edukacyjno-zawodową absolwentów wykształconych w poszczególnych zawodach w szkołach policealnych w całym kraju. Prezentowane są zawody, w których absolwentami zostali uczniowie Państwa szkoły, pod warunkiem, że na poziomie kraju w danym zawodzie kształciło się co najmniej 10 absolwentów. W przeciwnym razie sytuacja absolwentów wykształconych w danym zawodzie nie została przedstawiona.\n\n")
   
   tabela %>% 
-    mutate(across(tylko_ucz:neet,
+    mutate(across(tylko_ucz:brak_danych,
                   ~paste0(round(. * 100), "\\%"))) %>%
     kable(format = "latex", booktabs = TRUE, escape = FALSE, longtable = TRUE,
           linesep = "",
@@ -1664,20 +1673,20 @@ if (nrow(tabela) > 0) {
 
 ```{r}
 if (woj$l_abs[[1]] < progLiczebnosci | woj$E2_nauka_kontyn[[1]]$n < progLiczebnosci) {
-  tabelka_bez_brak = god2$E2_nauka_kontyn[[1]][-1] %>% 
+  tabelka_bez_brak <- god2$E2_nauka_kontyn[[1]][-1] %>% 
     as_tibble() %>% 
     pivot_longer(everything()) %>% 
     filter(!name %in% "brak") %>% 
     arrange(desc(value))
   
-  tabelka = rbind(
+  tabelka <- rbind(
     tabelka_bez_brak,
     god2$E2_nauka_kontyn[[1]][-1] %>% 
       as_tibble() %>% 
       pivot_longer(everything()) %>% 
       filter(name %in% "brak"))
   
-  tabelka$name = factor(tabelka$name,
+  tabelka$name <- factor(tabelka$name,
                         levels = c("studia",
                                    "spolic",
                                    "kkz",
@@ -1693,7 +1702,7 @@ if (woj$l_abs[[1]] < progLiczebnosci | woj$E2_nauka_kontyn[[1]]$n < progLiczebno
                                    "Kurs Umiejętności Zawodowych (KUZ)",
                                    "Nie kontynuują kształcenia"))
   
-  tabelka = tabelka %>% 
+  tabelka <- tabelka %>% 
     mutate(across(value,
                   ~paste0(round(. * 100), "\\%"))) %>%
     kable(format = "latex", booktabs = TRUE, escape = FALSE, longtable = TRUE,
@@ -1717,20 +1726,20 @@ if (woj$l_abs[[1]] < progLiczebnosci | woj$E2_nauka_kontyn[[1]]$n < progLiczebno
       "\n\n",
       sep = "")
   
-  tabelka_bez_brak = woj$E2_nauka_kontyn[[1]][-1] %>% 
+  tabelka_bez_brak <- woj$E2_nauka_kontyn[[1]][-1] %>% 
     as_tibble() %>% 
     pivot_longer(everything()) %>% 
     filter(!name %in% "brak") %>% 
     arrange(desc(value))
   
-  tabelka = rbind(
+  tabelka <- rbind(
     tabelka_bez_brak,
     woj$E2_nauka_kontyn[[1]][-1] %>% 
       as_tibble() %>% 
       pivot_longer(everything()) %>% 
       filter(name %in% "brak"))
   
-  tabelka$name = factor(tabelka$name,
+  tabelka$name <- factor(tabelka$name,
                         levels = c("studia",
                                    "spolic",
                                    "kkz",
@@ -1746,9 +1755,9 @@ if (woj$l_abs[[1]] < progLiczebnosci | woj$E2_nauka_kontyn[[1]]$n < progLiczebno
                                    "Kurs Umiejętności Zawodowych (KUZ)",
                                    "Nie kontynuują kształcenia"))
   
-  nagl = paste0("Udział kontynuujących kształcenie wśród\nabsolwentów szkół policealnych z województwa\n", woj$odmiany[[1]]$nazwa_dop)
+  nagl <- paste0("Udział kontynuujących kształcenie wśród\nabsolwentów szkół policealnych z województwa\n", woj$odmiany[[1]]$nazwa_dop)
   
-  tabelka = tabelka %>% 
+  tabelka <- tabelka %>% 
     mutate(across(value,
                   ~paste0(round(. * 100), "\\%"))) %>%
     kable(format = "latex", booktabs = TRUE, escape = FALSE, longtable = TRUE,
@@ -1769,20 +1778,20 @@ if (woj$l_abs[[1]] < progLiczebnosci | woj$E2_nauka_kontyn[[1]]$n < progLiczebno
       "  b) cały kraj\n\n",
       sep = "")
   
-  tabelka_bez_brak = god2$E2_nauka_kontyn[[1]][-1] %>% 
+  tabelka_bez_brak <- god2$E2_nauka_kontyn[[1]][-1] %>% 
     as_tibble() %>% 
     pivot_longer(everything()) %>% 
     filter(!name %in% "brak") %>% 
     arrange(desc(value))
   
-  tabelka = rbind(
+  tabelka <- rbind(
     tabelka_bez_brak,
     god2$E2_nauka_kontyn[[1]][-1] %>% 
       as_tibble() %>% 
       pivot_longer(everything()) %>% 
       filter(name %in% "brak"))
   
-  tabelka$name = factor(tabelka$name,
+  tabelka$name <- factor(tabelka$name,
                         levels = c("studia",
                                    "spolic",
                                    "kkz",
@@ -1798,7 +1807,7 @@ if (woj$l_abs[[1]] < progLiczebnosci | woj$E2_nauka_kontyn[[1]]$n < progLiczebno
                                    "Kurs Umiejętności Zawodowych (KUZ)",
                                    "Nie kontynuują kształcenia"))
   
-  tabelka = tabelka %>% 
+  tabelka <- tabelka %>% 
     mutate(across(value,
                   ~paste0(round(. * 100), "\\%"))) %>%
     kable(format = "latex", booktabs = TRUE, escape = FALSE, longtable = TRUE,
@@ -1834,23 +1843,23 @@ if (woj$l_abs[[1]] < progLiczebnosci | woj$Z4_ucz[[1]]$n < progLiczebnosci) {
       "  a) Część przepracowanego okresu\n\n",
       sep = "")
   
-  ucz = god2$Z4_ucz[[1]] %>% 
+  ucz <- god2$Z4_ucz[[1]] %>% 
     as_tibble() %>% 
-    select(-c(n, srednia, med)) %>% 
+    select(-n) %>% 
     pivot_longer(everything()) %>% 
     rename(ucz = value)
   
-  ucz$name = c("Brak pracy", "Praca przez\nczęść okresu", "Praca przez\ncały okres")
+  ucz$name <- c("Brak pracy", "Praca przez\nczęść okresu", "Praca przez\ncały okres")
   
-  n_ucz = god2$Z4_nie_ucz[[1]] %>% 
+  n_ucz <- god2$Z4_nie_ucz[[1]] %>% 
     as_tibble() %>% 
-    select(-c(n, srednia, med)) %>% 
+    select(-n) %>% 
     pivot_longer(everything()) %>% 
     rename(nie_ucz = value)
   
-  tabelka = cbind(ucz, n_ucz[,2]) 
+  tabelka <- cbind(ucz, n_ucz[,2]) 
   
-  tabelka = tabelka %>% 
+  tabelka <- tabelka %>% 
     mutate(across(2:3,
                   ~paste0(round(. * 100), "\\%"))) %>%
     kable("latex", booktabs = TRUE, escape = FALSE, longtable = TRUE,
@@ -1872,23 +1881,23 @@ if (woj$l_abs[[1]] < progLiczebnosci | woj$Z4_ucz[[1]]$n < progLiczebnosci) {
       " roku\n\n",
       "Procentowy udział grup wyróżnionych ze względu na formę wykonywania pracy wśród pracujących absolwentów szkół policealnych z całego kraju.\n\n")
   
-  ucz = god2$Z8_formy_ucz[[1]] %>% 
+  ucz <- god2$Z8_formy_ucz[[1]] %>% 
     as_tibble() %>% 
     select(-n) %>% 
     pivot_longer(everything()) %>% 
     rename(ucz = value)
   
-  ucz$name = c("Zatrudnieni tylko na UOP", "Tylko samozatrudnieni", "Tylko inna forma", "Więcej niż jedna forma")
+  ucz$name <- c("Zatrudnieni tylko na UOP", "Tylko samozatrudnieni", "Tylko inna forma", "Więcej niż jedna forma")
   
-  n_ucz = god2$Z8_formy_nie_ucz[[1]] %>% 
+  n_ucz <- god2$Z8_formy_nie_ucz[[1]] %>% 
     as_tibble() %>% 
     select(-c(n)) %>% 
     pivot_longer(everything()) %>% 
     rename(nie_ucz = value)
   
-  tabelka = cbind(ucz, n_ucz[,2])
+  tabelka <- cbind(ucz, n_ucz[,2])
   
-  tabelka = tabelka %>% 
+  tabelka <- tabelka %>% 
     mutate(across(2:3,
                   ~paste0(round(. * 100), "\\%"))) %>%
     kable("latex", booktabs = TRUE, escape = FALSE, longtable = TRUE,
@@ -1916,23 +1925,23 @@ if (woj$l_abs[[1]] >= progLiczebnosci & woj$Z4_ucz[[1]]$n >= progLiczebnosci) {
       "\n\n",
       sep = "")
   
-  ucz = woj$Z4_ucz[[1]] %>% 
+  ucz <- woj$Z4_ucz[[1]] %>% 
     as_tibble() %>% 
-    select(-c(n, srednia, med)) %>% 
+    select(-n) %>% 
     pivot_longer(everything()) %>% 
     rename(ucz = value)
   
-  ucz$name = c("Brak pracy", "Praca przez\nczęść okresu", "Praca przez\ncały okres")
+  ucz$name <- c("Brak pracy", "Praca przez\nczęść okresu", "Praca przez\ncały okres")
   
-  n_ucz = woj$Z4_nie_ucz[[1]] %>% 
+  n_ucz <- woj$Z4_nie_ucz[[1]] %>% 
     as_tibble() %>% 
-    select(-c(n, srednia, med)) %>% 
+    select(-n) %>% 
     pivot_longer(everything()) %>% 
     rename(nie_ucz = value)
   
-  tabelka = cbind(ucz, n_ucz[,2])
+  tabelka <- cbind(ucz, n_ucz[,2])
   
-  tabelka = tabelka %>% 
+  tabelka <- tabelka %>% 
     mutate(across(2:3,
                   ~paste0(round(. * 100), "\\%"))) %>%
     kable("latex", booktabs = TRUE, escape = FALSE, longtable = TRUE,
@@ -1956,23 +1965,23 @@ if (woj$l_abs[[1]] >= progLiczebnosci & woj$Z4_ucz[[1]]$n >= progLiczebnosci) {
       "\n\n",
       sep = "")
   
-  ucz = woj$Z8_formy_ucz[[1]] %>% 
+  ucz <- woj$Z8_formy_ucz[[1]] %>% 
     as_tibble() %>% 
     select(-n) %>% 
     pivot_longer(everything()) %>% 
     rename(ucz = value)
   
-  ucz$name = c("Zatrudnieni tylko na UOP", "Tylko samozatrudnieni", "Tylko inna forma", "Więcej niż jedna forma")
+  ucz$name <- c("Zatrudnieni tylko na UOP", "Tylko samozatrudnieni", "Tylko inna forma", "Więcej niż jedna forma")
   
-  n_ucz = god2$Z8_formy_nie_ucz[[1]] %>% 
+  n_ucz <- god2$Z8_formy_nie_ucz[[1]] %>% 
     as_tibble() %>% 
     select(-c(n)) %>% 
     pivot_longer(everything()) %>% 
     rename(nie_ucz = value)
   
-  tabelka = cbind(ucz, n_ucz[,2])
+  tabelka <- cbind(ucz, n_ucz[,2])
   
-  tabelka = tabelka %>% 
+  tabelka <- tabelka %>% 
     mutate(across(2:3,
                   ~paste0(round(. * 100), "\\%"))) %>%
     kable("latex", booktabs = TRUE, escape = FALSE, longtable = TRUE,
@@ -1991,23 +2000,23 @@ if (woj$l_abs[[1]] >= progLiczebnosci & woj$Z4_ucz[[1]]$n >= progLiczebnosci) {
   
   cat("\n\n  b) cały kraj\n\n* Część przepracowanego okresu - procentowy udział grup wyróżnionych ze względu na część przepracowanego okresu wśród absolwentów szkół policealnych z całego kraju.\n\n")
   
-  ucz = god2$Z4_ucz[[1]] %>% 
+  ucz <- god2$Z4_ucz[[1]] %>% 
     as_tibble() %>% 
-    select(-c(n, srednia, med)) %>% 
+    select(-n) %>% 
     pivot_longer(everything()) %>% 
     rename(ucz = value)
   
-  ucz$name = c("Brak pracy", "Praca przez\nczęść okresu", "Praca przez\ncały okres")
+  ucz$name <- c("Brak pracy", "Praca przez\nczęść okresu", "Praca przez\ncały okres")
   
-  n_ucz = god2$Z4_nie_ucz[[1]] %>% 
+  n_ucz <- god2$Z4_nie_ucz[[1]] %>% 
     as_tibble() %>% 
-    select(-c(n, srednia, med)) %>% 
+    select(-n) %>% 
     pivot_longer(everything()) %>% 
     rename(nie_ucz = value)
   
-  tabelka = cbind(ucz, n_ucz[,2])
+  tabelka <- cbind(ucz, n_ucz[,2])
   
-  tabelka = tabelka %>% 
+  tabelka <- tabelka %>% 
     mutate(across(2:3,
                   ~paste0(round(. * 100), "\\%"))) %>%
     kable("latex", booktabs = TRUE, escape = FALSE, longtable = TRUE,
@@ -2029,23 +2038,23 @@ if (woj$l_abs[[1]] >= progLiczebnosci & woj$Z4_ucz[[1]]$n >= progLiczebnosci) {
       " roku - procentowy udział grup wyróżnionych ze względu na formę wykonywania pracy wśród pracujących absolwentów szkół policealnych z całego kraju.\n\n",
       sep = "")
   
-  ucz = god2$Z8_formy_ucz[[1]] %>% 
+  ucz <- god2$Z8_formy_ucz[[1]] %>% 
     as_tibble() %>% 
     select(-n) %>% 
     pivot_longer(everything()) %>% 
     rename(ucz = value)
   
-  ucz$name = c("Zatrudnieni tylko na UOP", "Tylko samozatrudnieni", "Tylko inna forma", "Więcej niż jedna forma")
+  ucz$name <- c("Zatrudnieni tylko na UOP", "Tylko samozatrudnieni", "Tylko inna forma", "Więcej niż jedna forma")
   
-  n_ucz = god2$Z8_formy_nie_ucz[[1]] %>% 
+  n_ucz <- god2$Z8_formy_nie_ucz[[1]] %>% 
     as_tibble() %>% 
     select(-c(n)) %>% 
     pivot_longer(everything()) %>% 
     rename(nie_ucz = value)
   
-  tabelka = cbind(ucz, n_ucz[,2])
+  tabelka <- cbind(ucz, n_ucz[,2])
   
-  tabelka = tabelka %>% 
+  tabelka <- tabelka %>% 
     mutate(across(2:3,
                   ~paste0(round(. * 100), "\\%"))) %>%
     kable("latex", booktabs = TRUE, escape = FALSE, longtable = TRUE,
@@ -2070,9 +2079,9 @@ if (woj$l_abs[[1]] >= progLiczebnosci & woj$Z4_ucz[[1]]$n >= progLiczebnosci) {
 if (woj$l_abs[[1]] < progLiczebnosci | sum(woj$B2_bezrob[[1]]$n) < progLiczebnosci) {
   cat("Procentowy udział grup wyróżnionych ze względu na część okresu, w ciągu którego byli zarejestrowani jako bezrobotni, wśród absolwentów szkół policealnych z całego kraju.")
   
-  god2$B2_bezrob[[1]]$l_mies_bezrob[1] = "0 (brak bezrobocia)"
+  god2$B2_bezrob[[1]]$l_mies_bezrob[1] <- "0 (brak bezrobocia)"
   
-  tabelka = god2$B2_bezrob[[1]] %>% 
+  tabelka <- god2$B2_bezrob[[1]] %>% 
     as_tibble() %>% 
     select(l_mies_bezrob, value) %>% 
     mutate(across(value,
@@ -2098,9 +2107,9 @@ if (woj$l_abs[[1]] < progLiczebnosci | sum(woj$B2_bezrob[[1]]$n) < progLiczebnos
       ".\n\n",
       sep = "")
   
-  woj$B2_bezrob[[1]]$l_mies_bezrob[1] = "0 (brak bezrobocia)"
+  woj$B2_bezrob[[1]]$l_mies_bezrob[1] <- "0 (brak bezrobocia)"
   
-  tabelka = woj$B2_bezrob[[1]] %>% 
+  tabelka <- woj$B2_bezrob[[1]] %>% 
     as_tibble() %>% 
     select(l_mies_bezrob, value) %>% 
     mutate(across(value,
@@ -2121,9 +2130,9 @@ if (woj$l_abs[[1]] < progLiczebnosci | sum(woj$B2_bezrob[[1]]$n) < progLiczebnos
   
   cat("  b) cały kraj\n\nProcentowy udział grup wyróżnionych ze względu na część okresu, w ciągu którego byli zarejestrowani jako bezrobotni, wśród absolwentów szkół policealnych z całego kraju.")
   
-  god2$B2_bezrob[[1]]$l_mies_bezrob[1] = "0 (brak bezrobocia)"
+  god2$B2_bezrob[[1]]$l_mies_bezrob[1] <- "0 (brak bezrobocia)"
   
-  tabelka = god2$B2_bezrob[[1]] %>% 
+  tabelka <- god2$B2_bezrob[[1]] %>% 
     as_tibble() %>% 
     select(l_mies_bezrob, value) %>% 
     mutate(across(value,
@@ -2150,6 +2159,6 @@ if (woj$l_abs[[1]] < progLiczebnosci | sum(woj$B2_bezrob[[1]]$n) < progLiczebnos
 
 Link do ankiety:
 
-```{r qr_code2, out.width = '150%'}
+```{r qr_code2}
 knitr::include_graphics(szk$qr_code)
 ```
