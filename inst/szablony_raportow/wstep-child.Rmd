@@ -105,7 +105,7 @@ cat("\n\n## Sposób prezentowania wyników\n\n",
            ", co pozwala na uwzględnienie m.in. kontynuowania przez część absolwentów nauki na studiach.\n\n"),
     "* W ujęciu miesięcznym (lipiec - grudzień ", params$rok, "). Wartości danego wskaźnika opisującego status edukacyjno-zawodowy absolwentów w kolejnych miesiącach pozwalają śledzić, jak zmieniała się sytuacja absolwentów Państwa szkoły.\n\n",
     "* Zbiorczo dla okresu od września do grudnia ", params$rok, " roku. Niektóre wskaźniki są zdefiniowane jako średnia wartość w tym okresie (przychód uzyskiwany z pracy) lub jako liczba miesięcy, w którym absolwent miał określony status (praca, zarejestrowane bezrobocie). Takie wskaźniki obliczyliśmy dla okresu od września do grudnia ", params$rok, " roku. Wrzesień jest pierwszym miesiącem, w którym absolwenci formalnie nie byli już uczniami Państwa szkoły, a grudzień ostatnim, dla którego w momencie sporządzania tego raportu dysponujemy kompletnymi danymi o absolwentach figurujących w rejestrach.\n\n",
-    "Niektóre wyniki dotyczące absolwentów Państwa szkoły zostały zestawione z wynikami dotyczącymi grupy odniesienia. Grupę odniesienia stanowią absolwenci, którzy ukończyli inne ", typ_szk_mian_lm, " – niezależnie od tego czy były to szkoły publiczne czy niepubliczne i jaki podmiot był ich organem prowadzącym. W rozdziale „Ścieżki edukacyjno-zawodowe” grupa odniesienia jest dynamiczna: dobierana z najmniejszego obszaru – powiatu, podregionu^[Informacje nt. administracyjnego podziału Polski na podregiony (jednostki NUTS 3) są dostępne na stronie: https://stat.gov.pl/statystyka-regionalna/jednostki-terytorialne/klasyfikacja-nuts/klasyfikacja-nuts-w-polsce/], województwa lub kraju – w którym jest łącznie co najmniej 10 absolwentów co najmniej 3 ", typ_szk_dop_lm, " innych^[Absolwenci Państwa szkoły są wykluczani z grupy odniesienia, ponieważ w niektórych przypadkach ich sytuacja mogłaby w dużym stopniu rzutować na wyniki dotyczące tej grupy.] niż Państwa szkoła. Zasada ta chroni anonimowość absolwentów, a także uniemożliwia przypisanie wyników dotyczących grupy odniesienia do konkretnej szkoły.",
+    "Niektóre wyniki dotyczące absolwentów Państwa szkoły zostały zestawione z wynikami dotyczącymi grupy odniesienia. Grupę odniesienia stanowią absolwenci, którzy ukończyli inne ", typ_szk_mian_lm, " – niezależnie od tego czy były to szkoły publiczne czy niepubliczne i jaki podmiot był ich organem prowadzącym. W rozdziale „Ścieżki edukacyjno-zawodowe” grupa odniesienia jest dynamiczna: dobierana z najmniejszego obszaru – powiatu, podregionu^[Informacje nt. administracyjnego podziału Polski na podregiony (jednostki NUTS 3) są dostępne na stronie:\nhttps://stat.gov.pl/statystyka-regionalna/jednostki-terytorialne/klasyfikacja-nuts/klasyfikacja-nuts-w-polsce/], województwa lub kraju – w którym jest łącznie co najmniej 10 absolwentów co najmniej 3 ", typ_szk_dop_lm, " innych^[Absolwenci Państwa szkoły są wykluczani z grupy odniesienia, ponieważ w niektórych przypadkach ich sytuacja mogłaby w dużym stopniu rzutować na wyniki dotyczące tej grupy.] niż Państwa szkoła. Zasada ta chroni anonimowość absolwentów, a także uniemożliwia przypisanie wyników dotyczących grupy odniesienia do konkretnej szkoły.",
     ifelse(zawodowa == 1,
            " Absolwenci Państwa szkoły mogą być zestawiani z różnymi grupami odniesienia, w zależności od tego, czy prezentowane są wyniki dla ogółu absolwentów, czy w podziale ze względu na wyuczony zawód^[Na przykład dla ogółu absolwentów szkoły, której dotyczy raport, grupę odniesienia mogą stanowić absolwenci pozostałych techników z danego powiatu, ale dla absolwentów wykształconych w danym zawodzie grupa odniesienia z poziomu powiatu mogłaby nie spełniać wymogów dotyczących liczebności. W takiej sytuacji zostałaby dobrana z poziomu podregionu, województwa lub kraju - w zależności od tego, na ile powszechne jest kształcenie w danym zawodzie.].\n\n",
            "\n\n"),
@@ -119,7 +119,7 @@ cat("\n\n## Prośba o wypełnienie krótkiej ankiety zwrotnej dla IBE\n\n",
     "Ankieta dotyczy Państwa opinii i uwag odnośnie raportu (dlatego przed wypełnieniem ankiety prosimy się z nim zapoznać), potrzeb dotyczących monitorowania losów absolwentów oraz wykorzystania wyników.\n\n",
     "Wyniki wypełnionej przez Państwa ankiety nie będą prezentowane w powiązaniu z konkretnymi szkołami.\n\n",
     "**Ankieta otworzy się w przeglądarce internetowej po kliknięciu w link:**\n\n",
-    szk$link,
+    szk$link[[1]],
     "\n\n",
     sep = "")
 ```
@@ -128,7 +128,9 @@ knitr::include_graphics(szk$qr_code)
 ```
 ```{r prosba_o_wypelnienie_ankiety_cz2}
 cat("\n\nW każdym raporcie szkolnym umieszczono inny link do ankiety. Po wypełnieniu, ankieta nie będzie już dla Państwa dostępna. W przypadku prośby o podanie kodu dostępu prosimy wpisać następujący ciąg znaków: ", szk$token, "\n\n",
-    "Wypełnienie ankiety zajmie około 10 minut. Ankieta będzie dostępna do końca sierpnia 2025 roku.",
+    "Wypełnienie ankiety zajmie około 10 minut. Ankieta będzie dostępna do końca sierpnia ",
+    params$rok + 1,
+    " roku.",
     ifelse(typDokumentu %in% "pdf", "\\newpage", ""),
     sep = "")
 ```

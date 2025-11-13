@@ -426,7 +426,7 @@ dodaj_odmiany <- function(wskazniki, rodzaj_wsk) {
     
     odmiany <- wskazniki %>% 
       group_by(id_szk) %>%
-      reframe(
+      summarise(
         abs = ifelse(l_abs %in% 1, " absolwenta", " absolwentów"),
         kob = if (l_kobiet %in% c(0:19)) {
           case_when(
@@ -452,13 +452,20 @@ dodaj_odmiany <- function(wskazniki, rodzaj_wsk) {
             (l_abs_zrodla[[row_number()]]$n_zus %% 10) %in% c(0, 1, 5:9) ~ " osoby",
             (l_abs_zrodla[[row_number()]]$n_zus %% 10) %in% c(2:4) ~ " osób")
         }
-      )
+      ) %>% 
+      ungroup()
     
     odmiany <- odmiany %>% 
-      nest(.by = id_szk, .key = "odmiany")
+      nest(
+        .by = id_szk,
+        .key = "odmiany"
+      )
     
     wskazniki <- wskazniki %>% 
-      left_join(odmiany)
+      left_join(
+        odmiany,
+        join_by(id_szk)
+      )
     
     return(wskazniki)
   } else if (rodzaj_wsk == "woj") {

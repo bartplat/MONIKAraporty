@@ -369,7 +369,8 @@ if (szk$E2_nauka_kontyn[[1]]$n >= progLiczebnosci) {
       name %in% "Szkoła policealna" ~ paste0("* w szkole policealnej (", round(value[name == "Szkoła policealna"] * 100), "%)"),
       name %in% "Studia" ~ paste0("* studiując na uczelni (", round(value[name == "Studia"] * 100), "%)"),
       name %in% "KKZ" ~ paste0("* na KKZ (", round(value[name == "KKZ"] * 100), "%)"),
-      name %in% "KUZ" ~ paste0("* na KUZ (", round(value[name == "KUZ"] * 100), "%)")))
+      name %in% "KUZ" ~ paste0("* na KUZ (", round(value[name == "KUZ"] * 100), "%)"))
+    )
   
   sposoby <- kontyn %>% 
     pull(value) %>% 
@@ -1433,7 +1434,7 @@ god2 <- god2 %>%
   filter(typ_szk %in% szk$typ_szk[[1]])
 
 woj <- woj %>% 
-  filter(teryt_woj %in% szk$teryt_woj[[1]],
+  filter(teryt_woj_szk %in% szk$teryt_woj_szk[[1]],
          typ_szk %in% szk$typ_szk[[1]])
 ```
 

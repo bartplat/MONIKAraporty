@@ -528,7 +528,7 @@ if (min(szkoly_month$n) >= progLiczebnosci) {
 ```{r}
 if (szk$E2_nauka_kontyn[[1]]$n >= progLiczebnosci) {
   kontyn <- as_tibble(szk$E2_nauka_kontyn[[1]]) %>% 
-    select(-c(n, brak)) %>% 
+    select(-c(n, `Brak kontynuacji nauki`)) %>% 
     pivot_longer(everything()) %>% 
     mutate(nazwa = case_when(
       name %in% "Branżowa szkoła II stopnia" ~ paste0("* w branżowych szkołach II stopnia (", round(value[name == "Branżowa szkoła II stopnia"] * 100), "%)"),
@@ -1558,7 +1558,7 @@ god2 <- god2 %>%
   filter(typ_szk %in% szk$typ_szk[[1]])
 
 woj <- woj %>% 
-  filter(teryt_woj %in% szk$teryt_woj[[1]],
+  filter(teryt_woj_szk %in% szk$teryt_woj_szk[[1]],
          typ_szk %in% szk$typ_szk[[1]])
 ```
 
