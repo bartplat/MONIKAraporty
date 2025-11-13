@@ -2184,7 +2184,7 @@ if (woj$l_abs[[1]] >= progLiczebnosci & woj$Z4_ucz[[1]]$n >= progLiczebnosci) {
 if (woj$l_abs[[1]] < progLiczebnosci | sum(woj$B2_bezrob[[1]]$n) < progLiczebnosci) {
   cat("Procentowy udział grup wyróżnionych ze względu na część okresu, w ciągu którego byli zarejestrowani jako bezrobotni, wśród absolwentów branżowych szkół II stopnia z całego kraju.")
   
-  god2$B2_bezrob[[1]]$l_mies_bezrob[1] <- "0 (brak bezrobocia)"
+  # god2$B2_bezrob[[1]]$bezrobocie_r0_wrzgru[1] <- "0 (brak bezrobocia)"
   
   tabelka <- god2$B2_bezrob[[1]] %>% 
     as_tibble() %>% 
@@ -2212,7 +2212,7 @@ if (woj$l_abs[[1]] < progLiczebnosci | sum(woj$B2_bezrob[[1]]$n) < progLiczebnos
       ".\n\n",
       sep = "")
   
-  woj$B2_bezrob[[1]]$l_mies_bezrob[1] <- "0 (brak bezrobocia)"
+  # woj$B2_bezrob[[1]]$bezrobocie_r0_wrzgru[1] <- "0 (brak bezrobocia)"
   
   tabelka <- woj$B2_bezrob[[1]] %>% 
     as_tibble() %>% 
@@ -2235,7 +2235,7 @@ if (woj$l_abs[[1]] < progLiczebnosci | sum(woj$B2_bezrob[[1]]$n) < progLiczebnos
   
   cat("  b) cały kraj\n\nProcentowy udział grup wyróżnionych ze względu na część okresu, w ciągu którego byli zarejestrowani jako bezrobotni, wśród absolwentów branżowych szkół II stopnia z całego kraju.")
   
-  god2$B2_bezrob[[1]]$l_mies_bezrob[1] <- "0 (brak bezrobocia)"
+  # god2$B2_bezrob[[1]]$bezrobocie_r0_wrzgru[1] <- "0 (brak bezrobocia)"
   
   tabelka <- god2$B2_bezrob[[1]] %>% 
     as_tibble() %>% 
