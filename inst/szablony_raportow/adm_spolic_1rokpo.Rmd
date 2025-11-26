@@ -830,7 +830,7 @@ if (szk$liczebnosc_dyscypliny[[1]]$n >= progLiczebnosci) {
 ## Kontynuowanie nauki na studiach w poszczególnych dyscyplinach w podziale na wyuczony zawód
 
 ```{r}
-if (round(szk$E2_nauka_kontyn[[1]]$Studia * szk$E2_nauka_kontyn[[1]]$n) >= progLiczebnosci) {
+if (round(szk$E2_nauka_kontyn[[1]]$Studia * szk$E2_nauka_kontyn[[1]]$n) >= progLiczebnosci & szk$dyscypliny_zawody[[1]]$n >= progLiczebnosci) {
   l_col <- length(szk$dyscypliny_zawody[[1]])
   if (length(szk$dyscypliny_zawody[[1]]) > 1 & l_col > 0) {
     cat(

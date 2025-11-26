@@ -830,7 +830,7 @@ if (szk$liczebnosc_dyscypliny[[1]]$n >= progLiczebnosci) {
 ## Kontynuowanie nauki na studiach w poszczególnych dyscyplinach w podziale na płeć
 
 ```{r}
-if (round(szk$E2_nauka_kontyn[[1]]$Studia * szk$E2_nauka_kontyn[[1]]$n) >= progLiczebnosci) {
+if (round(szk$E2_nauka_kontyn[[1]]$Studia * szk$E2_nauka_kontyn[[1]]$n) >= progLiczebnosci & szk$dyscypliny_kob[[1]]$n >= progLiczebnosci) {
   if (any(!is.na(szk$dyscypliny_kob[[1]]$pct))) {
     cat(
       "Poniższa tabela prezentuje rozkład dyscyplin, w których absolwentki Państwa szkoły najczęściej kontynuowały naukę.\n\nTabela ",
@@ -877,7 +877,7 @@ if (round(szk$E2_nauka_kontyn[[1]]$Studia * szk$E2_nauka_kontyn[[1]]$n) >= progL
 ```
 
 ```{r}
-if (round(szk$E2_nauka_kontyn[[1]]$Studia * szk$E2_nauka_kontyn[[1]]$n) >= progLiczebnosci) {
+if (round(szk$E2_nauka_kontyn[[1]]$Studia * szk$E2_nauka_kontyn[[1]]$n) >= progLiczebnosci & szk$dyscypliny_mez[[1]]$n >= progLiczebnosci) {
   if (any(!is.na(szk$dyscypliny_mez[[1]]$pct))) {
     cat(
       "Poniższa tabela prezentuje rozkład dyscyplin, w których absolwenci Państwa szkoły najczęściej kontynuowali naukę.\n\nTabela ",
@@ -926,7 +926,7 @@ if (round(szk$E2_nauka_kontyn[[1]]$Studia * szk$E2_nauka_kontyn[[1]]$n) >= progL
 ## Kontynuowanie nauki na studiach w poszczególnych dyscyplinach w podziale na wyuczony zawód
 
 ```{r}
-if (round(szk$E2_nauka_kontyn[[1]]$Studia * szk$E2_nauka_kontyn[[1]]$n) >= progLiczebnosci) {
+if (round(szk$E2_nauka_kontyn[[1]]$Studia * szk$E2_nauka_kontyn[[1]]$n) >= progLiczebnosci & szk$dyscypliny_zawody[[1]]$n >= progLiczebnosci) {
  l_col <- length(szk$dyscypliny_zawody[[1]])
   if (length(szk$dyscypliny_zawody[[1]]) > 1 & l_col > 0) {
     cat(

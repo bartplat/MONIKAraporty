@@ -656,7 +656,7 @@ if (szk$E2_nauka_kontyn[[1]]$n >= progLiczebnosci) {
 ## Kontynuowanie nauki w branżowych szkołach II stopnia w poszczególnych branżach
 
 ```{r}
-if (round(szk$E2_nauka_kontyn[[1]]$`Branżowa szkoła II stopnia` * szk$E2_nauka_kontyn[[1]]$n) >= progLiczebnosci) {
+if (round(szk$E2_nauka_kontyn[[1]]$`Branżowa szkoła II stopnia` * szk$E2_nauka_kontyn[[1]]$n) >= progLiczebnosci & szk$liczebnosc_branze_kont[[1]]$n >= progLiczebnosci) {
   if (sum(szk$liczebnosc_branze_kont[[1]]$odsetek > 0) %in% 1) {
     cat(
       "Jedyną branżą, w której w grudniu ",
@@ -700,7 +700,7 @@ if (round(szk$E2_nauka_kontyn[[1]]$`Branżowa szkoła II stopnia` * szk$E2_nauka
 ```
 
 ```{r}
-if (round(szk$E2_nauka_kontyn[[1]]$`Branżowa szkoła II stopnia` * szk$E2_nauka_kontyn[[1]]$n) >= progLiczebnosci) {
+if (round(szk$E2_nauka_kontyn[[1]]$`Branżowa szkoła II stopnia` * szk$E2_nauka_kontyn[[1]]$n) >= progLiczebnosci & szk$liczebnosc_branze_kont[[1]]$n >= progLiczebnosci) {
   if (length(szk$liczebnosc_branze_kont[[1]]) > 1) {
     cat("Tabela ",
         tab_num(),
@@ -738,23 +738,23 @@ if (round(szk$E2_nauka_kontyn[[1]]$`Branżowa szkoła II stopnia` * szk$E2_nauka
 ## Kontynuowanie nauki w branżowych szkołach II stopnia w podziale na wyuczony zawód
 
 ```{r}
-if (round(szk$E2_nauka_kontyn[[1]]$`Branżowa szkoła II stopnia` * szk$E2_nauka_kontyn[[1]]$n) >= progLiczebnosci) {
-  l_col <- length(szk$branze_zawody[[1]]) - 1
+if (round(szk$E2_nauka_kontyn[[1]]$`Branżowa szkoła II stopnia` * szk$E2_nauka_kontyn[[1]]$n) >= progLiczebnosci & szk$branze_zawody[[1]]$n >= progLiczebnosci) {
+  l_col <- length(szk$branze_zawody[[1]])
   if (length(szk$branze_zawody[[1]]) > 1 & l_col > 0) {
     cat(
       "W poniższej tabeli przedstawione zostały informacje o branżach, w których w branżowych szkołach II stopnia uczyli się absolwenci Państwa szkoły, należący do poszczególnych grup (liczących co najmniej 10 osób) wyróżnionych ze względu na zawód, w którym się kształcili.")
     
     naz_wiersze_nag <- character()
-    for (i in 1:l_col) {
+    for (i in 3:l_col) {
       naz_wiersze_nag <- paste(
-        c(naz_wiersze_nag, paste(i, "-", names(szk$branze_zawody[[1]])[i + 1])),
+        c(naz_wiersze_nag, paste(i - 2, "-", names(szk$branze_zawody[[1]])[i])),
         collapse = "\n")
     }
-    wiersze_nag <- l_col
+    wiersze_nag <- l_col - 2
     names(wiersze_nag) <- paste0("% wśród uczących się w BS II absolwentów Państwa\nszkoły, którzy kształcili się w niej w zawodzie:\n", naz_wiersze_nag)
     
-    nagl <- rep(1, l_col, by = 1)
-    names(nagl) <- lapply(1:l_col, as.character)
+    nagl <- rep(1, l_col - 2, by = 1)
+    names(nagl) <- lapply(1:(l_col - 2), as.character)
     
     cat("\n\nTabela ",
         tab_num(),
@@ -764,10 +764,15 @@ if (round(szk$E2_nauka_kontyn[[1]]$`Branżowa szkoła II stopnia` * szk$E2_nauka
         sep = "")
     
     # tu nie ma ograniczenia na max 10 branż, natomiast jest ograniczenie na liczbę zawodów
-    szk$branze_zawody[[1]] %>% 
+    tab <- szk$branze_zawody[[1]][-1] %>% 
       as_tibble() %>% 
       mutate(across(2:ncol(.),
-                    ~paste0(round(. * 100), "\\%"))) %>% 
+                    ~paste0(round(. * 100), "\\%")))
+
+    tab$kont <- unname(sapply(tab$kont, wrapper, width = 50))
+    tab$kont <- linebreak(tab$kont, align = "l")
+    
+    tab <- tab %>% 
       kable(format = "latex",
             booktabs = TRUE,
             escape = FALSE,
