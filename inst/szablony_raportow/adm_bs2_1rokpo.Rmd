@@ -63,7 +63,7 @@ knitr::opts_chunk$set(
 
 # 2. Ścieżki edukacyjno-zawodowe
 
-W porównaniu z raportami z wcześniejszych edycji monitoringu karier, zwiększono liczbę prezentowanych statusów, opisujących sytuację edukacyjno-zawodową absolwentów. Status „Brak nauki i brak pracy” rozdzielono na „Bezrobocie” oraz „Brak danych o aktywności”. Poniższa tabela objaśnia konstrukcję poszczególnych statusów.
+W porównaniu z raportami przygotowywanymi w latach 2021-2023, zwiększono liczbę prezentowanych statusów, opisujących sytuację edukacyjno-zawodową absolwentów. Status „Brak nauki i brak pracy” rozdzielono na „Bezrobocie” oraz „Brak danych o aktywności”. Poniższa tabela objaśnia konstrukcję poszczególnych statusów.
 
 ```{r}
 statusy_df %>% 
@@ -80,6 +80,8 @@ statusy_df %>%
   column_spec(2, width = "12cm")
 ```
 
+## Status edukacyjno-zawodowy absolwentów ogółem
+
 ```{r}
 if (szk$S3_12[[1]]$n >= progLiczebnosci) {
   cat(
@@ -94,7 +96,7 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
     " ",
     round((god$S3_12[[1]]$ucz_prac + god$S3_12[[1]]$tylko_ucz) * 100),
     "%.\n\n",
-    "Naukę w systemie edukacji formalnej z zatrudnieniem na podstawie umowy o pracę lub z wykonywaniem własnej działalności gospodarczej (samozatrudnieniem)^[W przypadku uczniów i studentów do 26. roku życia nie są dostępne dane dotyczące ewentualnego wykonywania pracy na podstawie umów cywilnoprawnych.] łączyło ",
+    "Naukę w systemie edukacji formalnej z zatrudnieniem na podstawie umowy o pracę lub z wykonywaniem własnej działalności gospodarczej (samozatrudnieniem) łączyło ",
     round(szk$S3_12[[1]]$ucz_prac * 100),
     "% absolwentów Państwa szkoły. Odsetek takich osób wśród absolwentów Państwa szkoły był ",
     case_when(
@@ -109,9 +111,9 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
     "%) z tego samego rocznika.\n\n",
     "W tym samym miesiącu ",
     round(szk$S3_12[[1]]$tylko_prac * 100),
-    "% absolwentów Państwa branżowej szkoły II stopnia pracowało^[Na podstawie umowy o pracę, umowy zlecenia lub prowadząc własną działalność gospodarczą.], ale nie kontynuowało nauki. Do grupy pracujących, ale nie kontynuujących edukacji formalnej należało ",
+    "% absolwentów Państwa branżowej szkoły II stopnia pracowało^[Wskaźnik osób pracujących i uczących się obejmuje jedynie osoby pracujące na podstawie umowy o pracę lub w ramach samozatrudnienia, ponieważ w przypadku umowy zlecenia osoba ucząca się zwolniona jest z opłacania składek. Z kolei wskaźnik osób pracujących, ale nie uczących się obejmuje także osoby pracujące na umowy zlecenia, ponieważ osoby te zobligowane są do samodzielnego odprowadzania składek do ZUS.], ale nie kontynuowało nauki. Do grupy pracujących, ale nie kontynuujących edukacji formalnej należało ",
     round(god$S3_12[[1]]$tylko_prac * 100),
-    "% absolwentów z ",
+    "% absolwentów z ",
     powiaty_dop,
     ".\n\n",
     "Spośród absolwentów Państwa szkoły w grudniu ",
@@ -165,9 +167,9 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
     tab,
     wrapper(paste0("Wykres ",
                    wyk_num(),
-                   ": Status edukacyjno-zawodowy absolwentów Państwa szkoły oraz absolwentów pozostałych branżowych szkół II stopnia z ",
+                   ": Status edukacyjno-zawodowy absolwentów Państwa szkoły oraz absolwentów pozostałych branżowych szkół II stopnia z ",
                    powiaty_dop,
-                   ", w grudniu ",
+                   " w grudniu ",
                    params$rok,
                    " roku - ogółem"), 80))
   
@@ -233,12 +235,14 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
   if (nrow(tab_s3_zaw_check) %in% 0) {
     cat("W przypadku żadnego zawodu liczba absolwentów Państwa szkoły nie była wystarczająca, żeby możliwe było przedstawienie wyników w tym ujęciu zgodnie z zasadą chroniącą anonimowość absolwentów.")
   } else if (nrow(tab_s3_zaw_check) %in% 1) {
-    cat("Poniższy wykres przedstawia sytuację absolwentów wykształconych w Państwa szkole w zawodzie, w którym kształciło się co najmniej 10 osób.")
+    cat("Poniższy wykres przedstawia sytuację absolwentów wykształconych w Państwa szkole w zawodzie, w którym kształciło się co najmniej 10 osób.")
   } else if (nrow(tab_s3_zaw_check) > 1) {
-    cat("Poniższe tabele i wykresy przedstawiają sytuację absolwentów Państwa szkoły wykształconych w poszczególnych zawodach, o ile kształciło się w nich co najmniej 10 osób.")
+    cat("Poniższe tabele i wykresy przedstawiają sytuację absolwentów Państwa szkoły wykształconych w poszczególnych zawodach, o ile kształciło się w nich co najmniej 10 osób.")
   }
 }
 ```
+
+## Status edukacyjno-zawodowy absolwentów według zawodu kształcenia
 
 ```{r petla_zawody_S3}
 if (szk$S3_12[[1]]$n >= progLiczebnosci) {
@@ -292,11 +296,11 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
         
         wyk_tyt <- wrapper(paste0("Wykres ",
                                  wyk_num(),
-                                 ": Status edukacyjno-zawodowy absolwentów Państwa szkoły oraz absolwentów pozostałych branżowych szkół II stopnia z ",
+                                 ": Status edukacyjno-zawodowy absolwentów Państwa szkoły oraz absolwentów pozostałych branżowych szkół II stopnia z ",
                                  powiaty_dop_petla,
-                                 ", w grudniu ",
+                                 " w grudniu ",
                                  params$rok,
-                                 " roku - w zawodzie ",
+                                 " roku - w zawodzie ",
                                  i), 85)
       } else {
         tab_szk$typ <- "Państwa szkoła"
@@ -322,9 +326,9 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
         
         wyk_tyt <- wrapper(paste0("Wykres ",
                                  wyk_num(),
-                                 ": Status edukacyjno-zawodowy absolwentów Państwa szkoły w grudniu ",
+                                 ": Status edukacyjno-zawodowy absolwentów Państwa szkoły w grudniu ",
                                  params$rok,
-                                 " roku - w zawodzie ",
+                                 " roku - w zawodzie ",
                                  i), 85)
       }
       
@@ -372,6 +376,8 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
 }
 ```
 
+## Status edukacyjno-zawodowy absolwentów miesiąc po miesiącu
+
 ```{r}
 if (szk$S3_12[[1]]$n >= progLiczebnosci) {
   lip_sier <- c(
@@ -389,9 +395,9 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
     params$rok,
     " roku zmieniały się proporcje pomiędzy grupami uczniów i absolwentów Państwa szkoły, wyodrębnionymi ze względu na aktywność edukacyjną i zawodową.\n\nW okresie od lipca do sierpnia ",
     params$rok,
-    " roku^[Tj. do momentu, kiedy obecni absolwenci Państwa szkoły przestali być jej uczniami.] odsetek uczniów ostatnich klas Państwa szkoły pracujących na podstawie umowy o pracę^[W tym okresie dla żadnego z obecnych absolwentów Państwa szkoły nie możemy zaobserwować zatrudnienia na podstawie umowy zlecenia, ponieważ byli jeszcze uczniami - w przypadku uczniów i studentów do 26. roku życia nie są dostępne dane dotyczące ewentualnego wykonywania pracy na podstawie umów zleceń] lub samozatrudnionych wynosił ",
+    " roku^[Tj. do momentu, kiedy obecni absolwenci Państwa szkoły przestali być jej uczniami.] odsetek uczniów ostatnich klas Państwa szkoły pracujących na podstawie umowy o pracę^[W tym okresie dla żadnego z obecnych absolwentów Państwa szkoły nie możemy zaobserwować zatrudnienia na podstawie umowy zlecenia, ponieważ byli jeszcze uczniami - w przypadku uczniów i studentów do 26. roku życia nie są dostępne dane dotyczące ewentualnego wykonywania pracy na podstawie umów zleceń.] lub samozatrudnionych wynosił ",
     if (length(unique(lip_sier)) %in% 1) {
-      paste0(round(szk$S3_07[[1]]$ucz_prac * 100), "%.\n\n")
+      paste0(round(szk$S3_07[[1]]$ucz_prac * 100) + round(szk$S3_07[[1]]$tylko_prac * 100), "%.\n\n")
     } else {
       paste0(
         "od ",
@@ -415,17 +421,17 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
       paste0(
         "od ",
         min(wrz_gru),
-        ifelse(any(names(wrz_gru)[wrz_gru == min(wrz_gru)] %in% "wrześniu"), paste0("% (we "), paste0("% (w ")),
+        ifelse(any(names(wrz_gru)[wrz_gru == min(wrz_gru)] %in% "wrześniu"), paste0("% (we "), paste0("% (w ")),
         paste(names(wrz_gru)[wrz_gru == min(wrz_gru)], collapse = ", "),
         ") do ",
         max(wrz_gru),
-        ifelse(any(names(wrz_gru)[wrz_gru == max(wrz_gru)] %in% "wrześniu"), paste0("% (we "), paste0("% (w ")),
+        ifelse(any(names(wrz_gru)[wrz_gru == max(wrz_gru)] %in% "wrześniu"), paste0("% (we "), paste0("% (w ")),
         paste(names(wrz_gru)[wrz_gru == max(wrz_gru)], collapse = ", "),
         ").",
         sep = ""
       )
     },
-    " Bardziej szczegółowe wyniki, uwzględniające również to czy absolwenci się uczyli lub byli zarejestrowani jako osoby bezrobotne, przedstawia poniższy wykres.\n\n",
+    " Bardziej szczegółowe wyniki, uwzględniające również to, czy absolwenci się uczyli lub byli zarejestrowani jako osoby bezrobotne, przedstawia poniższy wykres.\n\n",
     sep = ""
   )
 }
@@ -466,7 +472,7 @@ if (min(szkoly_month$n) >= progLiczebnosci) {
   wykres <- wykres_pionowy_statusy(tab_szk,
                                   wrapper(paste0("Wykres ",
                                                  wyk_num(),
-                                                 ": Status edukacyjno-zawodowy absolwentów Państwa szkoły w poszczególnych miesiącach ",
+                                                 ": Status edukacyjno-zawodowy absolwentów Państwa szkoły w poszczególnych miesiącach ",
                                                  params$rok,
                                                  " roku - ogółem (%)"), 80)) +
     scale_x_discrete(labels = c("7" = "lip", "8" = "sie", "9" = "wrz", "10" = "paź", "11" = "lis", "12" = "gru"))
@@ -647,6 +653,8 @@ if (szk$E2_nauka_kontyn[[1]]$n >= progLiczebnosci) {
 
 ## Kontynuowanie nauki na studiach w poszczególnych dziedzinach i dyscyplinach
 
+Kierunki studiów są przypisane do dziedzin i dyscyplin, zgodnie z klasyfikacją ministra właściwego ds. szkolnictwa wyższego i nauki (poszczególne dziedziny obejmują od kilku do kilkunastu dyscyplin).
+
 ```{r}
 if (szk$liczebnosc_dziedziny[[1]]$n >= progLiczebnosci) {
   if (round(szk$E2_nauka_kontyn[[1]]$Studia * szk$E2_nauka_kontyn[[1]]$n) >= progLiczebnosci) {
@@ -706,7 +714,7 @@ if (szk$liczebnosc_dziedziny[[1]]$n >= progLiczebnosci) {
         tab_num(),
         ": Dziedziny, w których absolwenci Państwa szkoły najczęściej studiowali w grudniu ",
         params$rok,
-        " roku - ogółem (%) - maksymalnie 10",
+        " roku - ogółem (%) - maksymalnie 10 dziedzin",
         sep = "")
     
     tabelka <- szk$liczebnosc_dziedziny[[1]] %>% 
@@ -825,11 +833,11 @@ if (szk$liczebnosc_dyscypliny[[1]]$n >= progLiczebnosci) {
 if (round(szk$E2_nauka_kontyn[[1]]$Studia * szk$E2_nauka_kontyn[[1]]$n) >= progLiczebnosci) {
   if (any(!is.na(szk$dyscypliny_kob[[1]]$pct))) {
     cat(
-      "Poniższa tabela prezentuje rozkład dyscyplin, w których kontynuowały naukę absolwentki Państwa szkoły.\n\nTabela ",
+      "Poniższa tabela prezentuje rozkład dyscyplin, w których absolwentki Państwa szkoły najczęściej kontynuowały naukę.\n\nTabela ",
       tab_num(),
       ": Dyscypliny, w których absolwentki Państwa szkoły najczęściej studiowały w grudniu ",
       params$rok,
-      " roku - kobiety (%) - maksymalnie 10",
+      " roku - kobiety (%) - maksymalnie 10 dyscyplin",
       sep = "")
     
     tabelka <- szk$dyscypliny_kob[[1]] %>% 
@@ -872,11 +880,11 @@ if (round(szk$E2_nauka_kontyn[[1]]$Studia * szk$E2_nauka_kontyn[[1]]$n) >= progL
 if (round(szk$E2_nauka_kontyn[[1]]$Studia * szk$E2_nauka_kontyn[[1]]$n) >= progLiczebnosci) {
   if (any(!is.na(szk$dyscypliny_mez[[1]]$pct))) {
     cat(
-      "Poniższa tabela prezentuje rozkład dyscyplin, w których kontynuowali naukę absolwenci Państwa szkoły.\n\nTabela ",
+      "Poniższa tabela prezentuje rozkład dyscyplin, w których absolwenci Państwa szkoły najczęściej kontynuowali naukę.\n\nTabela ",
       tab_num(),
       ": Dyscypliny, w których absolwenci Państwa szkoły najczęściej studiowali w grudniu ",
       params$rok,
-      " roku - mężczyźni (%) - maksymalnie 10",
+      " roku - mężczyźni (%) - maksymalnie 10 dyscyplin",
       sep = "")
     
     tabelka <- szk$dyscypliny_mez[[1]] %>% 
@@ -985,13 +993,13 @@ if (round(szk$E2_nauka_kontyn[[1]]$Studia * szk$E2_nauka_kontyn[[1]]$n) >= progL
 
 Poszczególni absolwenci w okresie od września do grudnia `r params$rok` roku mogli pracować w ciągu maksymalnie 4 miesięcy. W takim przypadku wartość wskaźnika dla danego absolwenta wynosi 100%. Z kolei wartość minimalną, czyli 0%, wskaźnik przyjmuje dla absolwentów, którzy nie pracowali w tym okresie w ciągu żadnego miesiąca.
 
-W przypadku absolwentów, którzy w danym miesiącu byli studentami lub uczniami szkoły policealnej, bierzemy pod uwagę jedynie pracę na etat oraz samozatrudnienie, ponieważ w ich przypadku brak informacji na temat zatrudnienia na podstawie umów cywilnoprawnych^[Ze względu na brak w rejestrze ZUS danych dotyczące ewentualnego wykonywania pracy na podstawie umów cywilnoprawnych przez uczniów i studentów do 26. roku życia.].
+W przypadku absolwentów, którzy w danym miesiącu byli studentami lub uczniami szkoły policealnej, bierzemy pod uwagę jedynie pracę na etat oraz samozatrudnienie, ponieważ w ich przypadku brak informacji na temat zatrudnienia na podstawie umów cywilnoprawnych^[Ze względu na brak w rejestrze ZUS danych dotyczące ewentualnego wykonywania pracy na podstawie umów zlecenia przez uczniów i studentów do 26. roku życia.].
 
 W przypadku absolwentów, którzy w danym miesiącu nie kontynuowali nauki na uczelni ani w szkole policealnej, jako „pracę” uwzględniamy zarówno pracę na etat oraz samozatrudnienie, jak i pracę na podstawie umowy zlecenia. 
 
 W związku z tym wskaźnik jest prezentowany oddzielnie dla każdej z tych grup^[Ten sam absolwent, jeżeli był uczniem tylko przez część rozpatrywanego okresu, jest uwzględniany w dwóch grupach. Na przykład absolwent, który uczył się od września do listopada a pracował od października do grudnia zostanie uwzględniony z wartością wskaźnika 67% (2/3) w grupie absolwentów będących uczniami oraz z wartością wskaźnika 100% (1/1) w grupie absolwentów nieuczących się.].
 
-### Absolwenci w okresie, gdy kontynuowali naukę
+### Absolwenci kontynuujący naukę
 
 ```{r}
 if (szk$Z4_ucz[[1]]$n >= progLiczebnosci) {
@@ -1034,7 +1042,7 @@ if (szk$Z4_ucz[[1]]$n >= progLiczebnosci) {
     )
   }
 } else {
-  cat("Liczba absolwentów Państwa szkoły studiujących lub uczących się w szkole policealnej nie była wystarczająca, żeby możliwe było przedstawienie wyników dla tej grupy, zgodnie z zasadą chroniącą anonimowość absolwentów.\n\n")
+  cat("Liczba absolwentów Państwa szkoły studiujących lub uczących się w szkole policealnej nie była wystarczająca, żeby możliwe było przedstawienie wyników dla tej grupy, zgodnie z zasadą chroniącą anonimowość absolwentów.\n\n")
 }
 ```
 
@@ -1063,9 +1071,9 @@ if (szk$Z4_ucz[[1]]$n >= progLiczebnosci) {
   wykres <- wykres_pion_skum(tab_wyk,
                             wrapper(paste0("Wykres ",
                                            wyk_num(),
-                                           ": Procentowy udział grup wyróżnionych ze względu na część przepracowanego okresu wśród absolwentów Państwa szkoły oraz absolwentów pozostałych branżowych szkół II stopnia z ",
+                                           ": Procentowy udział grup wyróżnionych ze względu na część przepracowanego okresu wśród absolwentów Państwa szkoły oraz absolwentów pozostałych branżowych szkół II stopnia z ",
                                            powiaty_dop,
-                                           ", w okresie od września do grudnia ",
+                                           ", w okresie od września do grudnia ",
                                            params$rok,
                                            " roku - kontynuujący naukę"),
                                     width = 85)) +
@@ -1101,7 +1109,7 @@ if (szk$Z4_ucz[[1]]$n >= progLiczebnosci) {
 }
 ```
 
-### Absolwenci w okresie, gdy nie kontynuowali nauki
+### Absolwenci niekontynuujący nauki
 
 ```{r}
 if (szk$Z4_nie_ucz[[1]]$n >= progLiczebnosci) {
@@ -1144,7 +1152,7 @@ if (szk$Z4_nie_ucz[[1]]$n >= progLiczebnosci) {
     )
   }
 } else {
-  cat("Liczba absolwentów Państwa szkoły niestudiujących ani nieuczących się w szkole policealnej nie była wystarczająca, żeby możliwe było przedstawienie wyników dla tej grupy, zgodnie z zasadą chroniącą anonimowość absolwentów.\n\n")
+  cat("Liczba absolwentów Państwa szkoły niestudiujących ani nieuczących się w szkole policealnej nie była wystarczająca, żeby możliwe było przedstawienie wyników dla tej grupy, zgodnie z zasadą chroniącą anonimowość absolwentów.\n\n")
 }
 ```
 
@@ -1173,9 +1181,9 @@ if (szk$Z4_nie_ucz[[1]]$n >= progLiczebnosci) {
   wykres <- wykres_pion_skum(tab_wyk,
                             wrapper(paste0("Wykres ",
                                            wyk_num(),
-                                           ": Procentowy udział grup wyróżnionych ze względu na część przepracowanego okresu wśród absolwentów Państwa szkoły oraz absolwentów pozostałych branżowych szkół II stopnia z ",
+                                           ": Procentowy udział grup wyróżnionych ze względu na część przepracowanego okresu wśród absolwentów Państwa szkoły oraz absolwentów pozostałych branżowych szkół II stopnia z ",
                                            powiaty_dop,
-                                           ", w okresie od września do grudnia ",
+                                           ", w okresie od września do grudnia ",
                                            params$rok,
                                            " - niekontynuujący nauki"),
                                     width = 85)) +
@@ -1213,14 +1221,14 @@ if (szk$Z4_nie_ucz[[1]]$n >= progLiczebnosci) {
 
 ## Formy wykonywania pracy w grudniu `r params$rok` roku
 
-W tym rozdziale, do opisu sytuacji zawodowej absolwentów użyto 4 form wykonywania pracy:
+W tym rozdziale opisując sytuację zawodową absolwentów rozróżniono 4 formy wykonywania pracy:
 
 * „Zatrudnieni tylko na UOP” - osoby zatrudnione tylko na umowę o pracę (UOP)
 * „Tylko samozatrudnieni” - prowadzący własną działalność gospodarczą jako jedyną aktywność zawodową
 * „Tylko inna forma” - osoby zatrudnione wyłącznie na podstawie pozostałych form umów - np. umowa zlecenie, umowa agencyjna, umowa o świadczenie usług i inne (np. osoby zatrudnione na umowie o staż z urzędu pracy, będące w czynnej służbie wojskowej czy otrzymujący stypendia sportowe)
 * „Więcej niż jedna forma” - absolwenci łączący więcej niż jedną z powyższych form zatrudnienia
 
-### Absolwenci kontynuujący naukę
+### Absolwenci pracujący i zarazem kontynuujący naukę
 
 ```{r}
 if (szk$Z8_formy_ucz[[1]]$n >= progLiczebnosci) {
@@ -1268,9 +1276,9 @@ if (szk$Z8_formy_ucz[[1]]$n >= progLiczebnosci) {
                            wyk_num(),
                            ": Formy wykonywania pracy przez pracujących absolwentów Państwa szkoły oraz pozostałych branżowych szkół II stopnia z ",
                            powiaty_dop,
-                           ", w grudniu ",
+                           " w grudniu ",
                            params$rok,
-                           " roku - kontynuujący naukę"),
+                           " roku - pracujący i kontynuujący naukę"),
                     width = 85)
   
   wykres <- wykres_pion_skum(tab_wyk, wyk_tyt) +
@@ -1310,7 +1318,7 @@ if (szk$Z8_formy_ucz[[1]]$n >= progLiczebnosci) {
 }
 ```
 
-### Absolwenci niekontynuujący nauki
+### Absolwenci pracujący ale nie kontynuujący nauki
 
 ```{r}
 if (szk$Z8_formy_nie_ucz[[1]]$n >= progLiczebnosci) {
@@ -1329,7 +1337,7 @@ if (szk$Z8_formy_nie_ucz[[1]]$n >= progLiczebnosci) {
     round(szk$Z8_formy_nie_ucz[[1]]$nieucz_samoz * 100),
     "% pracowało wyłącznie prowadząc własną działalność gospodarczą, a ",
     round(szk$Z8_formy_nie_ucz[[1]]$nieucz_inna * 100),
-    "% było zatrudnionych tylko “w innej formie”, czyli przeważnie na podstawie umowy cywilnoprawnej. Pozostali łączyli co najmniej dwie formy zatrudnienia.\n\nNiekontynuujący nauki absolwenci Państwa szkoły pracowali wyłącznie na podstawie umowy o pracę ",
+    "% było zatrudnionych tylko „w innej formie”, czyli przeważnie na podstawie umowy cywilnoprawnej. Pozostali łączyli co najmniej dwie formy zatrudnienia.\n\nNiekontynuujący nauki absolwenci Państwa szkoły pracowali wyłącznie na podstawie umowy o pracę ",
     case_when(
       szk_minus_god$nieucz_uop >= 3 & round(szk$Z8_formy_nie_ucz[[1]]$nieucz_uop * 100) == 0 ~ "częściej niż",
       szk_minus_god$nieucz_uop > 3 ~ "częściej niż",
@@ -1374,7 +1382,7 @@ if (szk$Z8_formy_nie_ucz[[1]]$n >= progLiczebnosci) {
                            wyk_num(),
                            ": Formy wykonywania pracy przez pracujących absolwentów Państwa szkoły oraz pozostałych branżowych szkół II stopnia z ",
                            powiaty_dop,
-                           ", w grudniu ",
+                           " w grudniu ",
                            params$rok,
                            " roku - pracujący i niekontynuujący nauki"),
                     width = 85)
@@ -1418,7 +1426,7 @@ if (szk$Z8_formy_nie_ucz[[1]]$n >= progLiczebnosci) {
 
 Wskaźnik, którego wartości prezentujemy w tej części raportu, pokazuje stosunek przychodów absolwentów Państwa szkoły z pracy etatowej^[Średnią (arytmetyczną) obliczono wyłącznie dla miesięcy, w których absolwenci pracowali. Nie uwzględniono przychodów przekraczających  kwotę rocznego ograniczenia podstawy wymiaru składek na ubezpieczenie emerytalne i rentowe (tj. 30 krotność prognozowanego wynagrodzenia brutto, czyli w `r params$rok` roku 208 050 zł), w miesiącach, w których to przekroczenie wystąpiło.] do przeciętnego miesięcznego wynagrodzenia^[Według danych publikowanych w [Banku Danych Lokalnych Głównego Urzędu Statystycznego](https://stat.gov.pl/metainformacje/slownik-pojec/pojecia-stosowane-w-statystyce-publicznej/693,pojecie.html?pdf=1)] osób mieszkających w tych samych powiatach. Dla poszczególnych absolwentów wartość wskaźnika równa 100% oznaczałaby, że ich średnie zarobki z pracy etatowej były takie same, jak przeciętne wynagrodzenie mieszkańców danego powiatu. 
 
-Należy zastrzec, że kwoty te nie są porównywalne, ze względu na różnice w sposobie ich obliczania. Informacje dotyczące miesięcznych przychodów absolwentów nie uwzględniają czasu, jaki poświęcili na pracę (przychody te nie zostały przeliczone np. do wymiaru pełnego etatu). Natomiast wyrażenie przychodów z pracy uzyskiwanych przez absolwentów jako odsetka przeciętnego miesięcznego wynagrodzenia w danym powiecie podawanego przez GUS, pozwala uwzględnić lokalny kontekst. Ponadto przedstawianie wartości wskaźnika w ten sposób jest bardziej dogodne do porównywania przychodów uzyskiwanych przez absolwentów w kolejnych latach niż prezentowanie przychodów w złotych, na których wartość wpływa inflacja.
+Należy zastrzec, że kwoty te nie są porównywalne, ze względu na różnice w sposobie ich obliczania. Informacje dotyczące miesięcznych przychodów absolwentów nie uwzględniają czasu, jaki poświęcili na pracę (przychody te nie zostały przeliczone np. do wymiaru pełnego etatu). Natomiast wyrażenie przychodów z pracy uzyskiwanych przez absolwentów jako odsetka przeciętnego miesięcznego wynagrodzenia w danym powiecie podawanego przez GUS, pozwala uwzględnić lokalny kontekst. Ponadto przedstawianie wartości wskaźnika w ten sposób jest bardziej dogodne do porównywania przychodów uzyskiwanych przez absolwentów w kolejnych latach niż prezentowanie przychodów w złotych, na których wartość wpływa inflacja.
 
 Na poniższej ilustracji opisano sposób prezentowania danych na wykresie typu boxplot wraz z ich interpretacją. Dane na tym wykresie są fikcyjne – służy on tylko objaśnieniu jakiego rodzaju informacje można znaleźć na tego typu wykresach.
 
@@ -1426,7 +1434,7 @@ Na poniższej ilustracji opisano sposób prezentowania danych na wykresie typu b
 knitr::include_graphics("../boxplot_wzor.png")
 ```
 
-### Absolwenci kontynuujący naukę
+### Absolwenci zatrudnieni na umowę o pracę i zarazem kontynuujący naukę
 
 ```{r}
 if (szk$W3_ucz[[1]]$n >= progLiczebnosci) {
@@ -1468,11 +1476,11 @@ if (szk$W3_ucz[[1]]$n >= progLiczebnosci) {
   
   wyk_tyt <- wrapper(paste0("Wykres ",
                            wyk_num(),
-                           ": Średni miesięczny przychód brutto z pracy uzyskiwany przez absolwentów Państwa szkoły oraz pozostałych branżowych szkół II stopnia z ",
+                           ": Średni miesięczny przychód brutto z pracy uzyskiwany przez absolwentów Państwa szkoły oraz pozostałych branżowych szkół II stopnia z ",
                            powiaty_dop,
-                           " w odniesieniu do przeciętnego miesięcznego wynagrodzenia brutto w poszczególnych zamieszkiwanych przez nich powiatach, od września do grudnia ",
+                           " w odniesieniu do przeciętnego miesięcznego wynagrodzenia brutto w poszczególnych zamieszkiwanych przez nich powiatach, od września do grudnia ",
                            params$rok,
-                           " roku - pracujący i kontynuujący naukę"),
+                           " roku - pracujący i kontynuujący naukę"),
                     width = 85)
   
   wykres <- boxplot_proc(tab_wyk, wyk_tyt) +
@@ -1485,13 +1493,13 @@ if (szk$W3_ucz[[1]]$n >= progLiczebnosci) {
   print(wykres)
   
   cat(
-    "\\textcolor{black}{\\relscale{0.75}Na powyższym wykresie pogrubiona linia oznacza medianę wartości prezentowanego wskaźnika Elementem wykresu jest również prostokąt reprezentujący tzw. rozstęp międzyćwiartkowy. Prostokąt ten „obejmuje” 50\\% absolwentów, którzy stanowią grupę środkową pod względem wartości analizowanego wskaźnika. Z kolei nad i pod prostokątem znajdują się poziome linie (tzw. wąsy). Pomiędzy tymi liniami zawierają się wartości wskaźnika dla „środkowych” 90\\% absolwentów. Im bardziej zróżnicowane są wartości wskaźnika w danej grupie, tym prostokąt jest wyższy, a odległość pomiędzy wspomnianymi liniami większa.}\n\n",
+    "\\textcolor{black}{\\relscale{0.75}Na powyższym wykresie pogrubiona linia oznacza medianę wartości prezentowanego wskaźnika. Elementem wykresu jest również prostokąt reprezentujący tzw. rozstęp międzyćwiartkowy. Prostokąt ten „obejmuje” 50\\% absolwentów, którzy stanowią grupę środkową pod względem wartości analizowanego wskaźnika. Z kolei nad i pod prostokątem znajdują się poziome linie (tzw. wąsy). Pomiędzy tymi liniami zawierają się wartości wskaźnika dla „środkowych” 90\\% absolwentów. Im bardziej zróżnicowane są wartości wskaźnika w danej grupie, tym prostokąt jest wyższy, a odległość pomiędzy wspomnianymi liniami większa.}\n\n",
     sep = ""
   )
 }
 ```
 
-### Absolwenci niekontynuujący nauki
+### Absolwenci zatrudnieni na umowę o pracę ale nie kontynuujący nauki
 
 ```{r}
 if (szk$W3_nie_ucz[[1]]$n >= progLiczebnosci) {
@@ -1533,11 +1541,11 @@ if (szk$W3_nie_ucz[[1]]$n >= progLiczebnosci) {
   
   wyk_tyt <- wrapper(paste0("Wykres ",
                            wyk_num(),
-                           ": Średni miesięczny przychód brutto z pracy uzyskiwany przez absolwentów Państwa szkoły oraz pozostałych branżowych szkół II stopnia z ",
+                           ": Średni miesięczny przychód brutto z pracy uzyskiwany przez absolwentów Państwa szkoły oraz pozostałych branżowych szkół II stopnia z ",
                            powiaty_dop,
-                           " w odniesieniu do przeciętnego miesięcznego wynagrodzenia brutto w poszczególnych zamieszkiwanych przez nich powiatach, od września do grudnia ",
+                           " w odniesieniu do przeciętnego miesięcznego wynagrodzenia brutto w poszczególnych zamieszkiwanych przez nich powiatach, od września do grudnia ",
                            params$rok,
-                           " roku - pracujący i niekontynuujący nauki"),
+                           " roku - pracujący i niekontynuujący nauki"),
                     width = 85)
   
   wykres <- boxplot_proc(tab_wyk, wyk_tyt) +
@@ -1550,7 +1558,7 @@ if (szk$W3_nie_ucz[[1]]$n >= progLiczebnosci) {
   print(wykres)
   
   cat(
-    "\\textcolor{black}{\\relscale{0.75}Na powyższym wykresie pogrubiona linia oznacza medianę wartości prezentowanego wskaźnika Elementem wykresu jest również prostokąt reprezentujący tzw. rozstęp międzyćwiartkowy. Prostokąt ten „obejmuje” 50\\% absolwentów, którzy stanowią grupę środkową pod względem wartości analizowanego wskaźnika. Z kolei nad i pod prostokątem znajdują się poziome linie (tzw. wąsy). Pomiędzy tymi liniami zawierają się wartości wskaźnika dla „środkowych” 90\\% absolwentów. Im bardziej zróżnicowane są wartości wskaźnika w danej grupie, tym prostokąt jest wyższy, a odległość pomiędzy wspomnianymi liniami większa.}\n\n",
+    "\\textcolor{black}{\\relscale{0.75}Na powyższym wykresie pogrubiona linia oznacza medianę wartości prezentowanego wskaźnika. Elementem wykresu jest również prostokąt reprezentujący tzw. rozstęp międzyćwiartkowy. Prostokąt ten „obejmuje” 50\\% absolwentów, którzy stanowią grupę środkową pod względem wartości analizowanego wskaźnika. Z kolei nad i pod prostokątem znajdują się poziome linie (tzw. wąsy). Pomiędzy tymi liniami zawierają się wartości wskaźnika dla „środkowych” 90\\% absolwentów. Im bardziej zróżnicowane są wartości wskaźnika w danej grupie, tym prostokąt jest wyższy, a odległość pomiędzy wspomnianymi liniami większa.}\n\n",
     sep = ""
   )
 }
@@ -1664,7 +1672,7 @@ woj <- woj %>%
 
 W aneksie zaprezentowano tabelaryczne rozkłady wybranych wskaźników przedstawionych w raporcie, ale dla ogółu absolwentów, którzy w roku szkolnym `r rocznik` ukończyli branżowe szkoły II stopnia (BS II) `r ifelse(woj$l_abs[[1]] < progLiczebnosci, paste0(""), paste0("w województwie, w którym znajduje się Państwa szkoła oraz "))`w całym kraju.
 
-1. Status edukacyjno-zawodowy w grudniu `r params$rok` roku
+1. **Status edukacyjno-zawodowy w grudniu `r params$rok` roku**
 
   a) ogółem
 
@@ -1741,7 +1749,7 @@ tabela <- tabela %>%
 
 if (nrow(tabela) > 0) {
   cat(
-    "Poniższa tabela przedstawia sytuację edukacyjno-zawodową absolwentów wykształconych w poszczególnych zawodach w branżowych szkołach II stopnia w całym kraju. Prezentowane są zawody, w których absolwentami zostali uczniowie Państwa szkoły, pod warunkiem, że na poziomie kraju w danym zawodzie kształciło się co najmniej 10 absolwentów. W przeciwnym razie sytuacja absolwentów wykształconych w danym zawodzie nie została przedstawiona.\n\n")
+    "Poniższa tabela przedstawia sytuację edukacyjno-zawodową absolwentów wykształconych w poszczególnych zawodach w branżowych szkołach II stopnia w całym kraju. Prezentowane są zawody, w których absolwentami zostali uczniowie Państwa szkoły, pod warunkiem, że na poziomie kraju w danym zawodzie kształciło się co najmniej 10 absolwentów. W przeciwnym razie sytuacja absolwentów wykształconych w danym zawodzie nie została przedstawiona.\n\n")
   
   tabela %>% 
     mutate(across(tylko_ucz:brak_danych,
@@ -1771,7 +1779,7 @@ if (nrow(tabela) > 0) {
 }
 ```
 
-2. Sposoby kontynuowania nauki w grudniu `r params$rok` roku
+2. **Sposoby kontynuowania nauki w grudniu `r params$rok` roku**
 
 ```{r}
 if (woj$l_abs[[1]] < progLiczebnosci | woj$E2_nauka_kontyn[[1]]$n < progLiczebnosci) {
@@ -1807,6 +1815,7 @@ if (woj$l_abs[[1]] < progLiczebnosci | woj$E2_nauka_kontyn[[1]]$n < progLiczebno
                                    "Nie kontynuują kształcenia"))
   
   tabelka <- tabelka %>% 
+    filter(!(name %in% c("Liceum dla dorosłych", "Branżowa szkoła II stopnia"))) %>% 
     mutate(across(value,
                   ~paste0(round(. * 100), "\\%"))) %>%
     kable(format = "latex", booktabs = TRUE, escape = FALSE, longtable = TRUE,
@@ -1823,7 +1832,8 @@ if (woj$l_abs[[1]] < progLiczebnosci | woj$E2_nauka_kontyn[[1]]$n < progLiczebno
   
   cat(tabelka)
   
-  cat("\n\nOdsetki mogą sumować się do więcej niż 100% ze względu na możliwość kontynuowania edukacji w więcej niż jednej formie.\n\n")
+  # cat("\n\nOdsetki mogą sumować się do więcej niż 100% ze względu na możliwość kontynuowania edukacji w więcej niż jednej formie.\n\n")
+  cat("\n\n\\textcolor{black}{\\relscale{0.75}Odsetki mogą sumować się do więcej niż 100\\% ze względu na możliwość kontynuowania edukacji w więcej niż jednej formie.}\n\n")
 } else if (woj$l_abs[[1]] >= progLiczebnosci & woj$E2_nauka_kontyn[[1]]$n >= progLiczebnosci) {
   cat("  a) województwo ",
       woj$odmiany[[1]]$nazwa,
@@ -1863,6 +1873,7 @@ if (woj$l_abs[[1]] < progLiczebnosci | woj$E2_nauka_kontyn[[1]]$n < progLiczebno
   nagl <- paste0("Udział kontynuujących kształcenie wśród\nabsolwentów BS II z województwa\n", woj$odmiany[[1]]$nazwa_dop)
   
   tabelka <- tabelka %>% 
+    filter(!(name %in% c("Liceum dla dorosłych", "Branżowa szkoła II stopnia"))) %>% 
     mutate(across(value,
                   ~paste0(round(. * 100), "\\%"))) %>%
     kable(format = "latex", booktabs = TRUE, escape = FALSE, longtable = TRUE,
@@ -1879,7 +1890,9 @@ if (woj$l_abs[[1]] < progLiczebnosci | woj$E2_nauka_kontyn[[1]]$n < progLiczebno
   
   cat(tabelka)
   
-  cat("\n\nOdsetki mogą sumować się do więcej niż 100% ze względu na możliwość kontynuowania edukacji w więcej niż jednej formie.\n\n",
+  cat(
+    # "\n\nOdsetki mogą sumować się do więcej niż 100% ze względu na możliwość kontynuowania edukacji w więcej niż jednej formie.\n\n",
+    "\n\n\\textcolor{black}{\\relscale{0.75}Odsetki mogą sumować się do więcej niż 100\\% ze względu na możliwość kontynuowania edukacji w więcej niż jednej formie.}\n\n",
       "  b) cały kraj\n\n",
       sep = "")
   tabelka_bez_brak <- god2$E2_nauka_kontyn[[1]][-1]
@@ -1914,6 +1927,7 @@ if (woj$l_abs[[1]] < progLiczebnosci | woj$E2_nauka_kontyn[[1]]$n < progLiczebno
                                    "Nie kontynuują kształcenia"))
   
   tabelka <- tabelka %>% 
+    filter(!(name %in% c("Liceum dla dorosłych", "Branżowa szkoła II stopnia"))) %>% 
     mutate(across(value,
                   ~paste0(round(. * 100), "\\%"))) %>%
     kable(format = "latex", booktabs = TRUE, escape = FALSE, longtable = TRUE,
@@ -1930,11 +1944,12 @@ if (woj$l_abs[[1]] < progLiczebnosci | woj$E2_nauka_kontyn[[1]]$n < progLiczebno
   
   cat(tabelka)
   
-  cat("\n\nOdsetki mogą sumować się do więcej niż 100% ze względu na możliwość kontynuowania edukacji w więcej niż jednej formie.\n\n")
+  # cat("\n\nOdsetki mogą sumować się do więcej niż 100% ze względu na możliwość kontynuowania edukacji w więcej niż jednej formie.\n\n")
+  cat("\n\n\\textcolor{black}{\\relscale{0.75}Odsetki mogą sumować się do więcej niż 100\\% ze względu na możliwość kontynuowania edukacji w więcej niż jednej formie.}\n\n")
 }
 ```
 
-3. Praca po ukończeniu branżowej szkoły II stopnia w okresie od września do grudnia `r params$rok` roku
+3. **Praca po ukończeniu branżowej szkoły II stopnia w okresie od września do grudnia `r params$rok` roku**
 
 Wyróżniono 4 formy wykonywania pracy:
 
@@ -2025,7 +2040,7 @@ if (woj$l_abs[[1]] < progLiczebnosci | woj$Z4_ucz[[1]]$n < progLiczebnosci) {
 if (woj$l_abs[[1]] >= progLiczebnosci & woj$Z4_ucz[[1]]$n >= progLiczebnosci) {
   cat("  a) województwo ",
       woj$odmiany[[1]]$nazwa,
-      "\n\n* Część przepracowanego okresu - procentowy udział grup wyróżnionych ze względu na część przepracowanego okresu wśród absolwentów branżowych szkół II stopnia z województwa ",
+      "\n\nCzęść przepracowanego okresu - procentowy udział grup wyróżnionych ze względu na część przepracowanego okresu wśród absolwentów branżowych szkół II stopnia z województwa ",
       woj$odmiany[[1]]$nazwa_dop,
       "\n\n",
       sep = "")
@@ -2063,7 +2078,7 @@ if (woj$l_abs[[1]] >= progLiczebnosci & woj$Z4_ucz[[1]]$n >= progLiczebnosci) {
   
   cat(tabelka)
   
-  cat("\n\n* Formy wykonywania pracy w grudniu ",
+  cat("\n\nFormy wykonywania pracy w grudniu ",
       params$rok,
       " roku - procentowy udział grup wyróżnionych ze względu na formę wykonywania pracy wśród pracujących absolwentów branżowych szkół II stopnia z województwa ",
       woj$odmiany[[1]]$nazwa_dop,
@@ -2103,7 +2118,7 @@ if (woj$l_abs[[1]] >= progLiczebnosci & woj$Z4_ucz[[1]]$n >= progLiczebnosci) {
   
   cat(tabelka)
   
-  cat("\n\n  b) cały kraj\n\n* Część przepracowanego okresu - procentowy udział grup wyróżnionych ze względu na część przepracowanego okresu wśród absolwentów branżowych szkół II stopnia z całego kraju.\n\n")
+  cat("\n\n  b) cały kraj\n\nCzęść przepracowanego okresu - procentowy udział grup wyróżnionych ze względu na część przepracowanego okresu wśród absolwentów branżowych szkół II stopnia z całego kraju.\n\n")
   
   ucz <- god2$Z4_ucz[[1]] %>% 
     as_tibble() %>% 
@@ -2138,7 +2153,7 @@ if (woj$l_abs[[1]] >= progLiczebnosci & woj$Z4_ucz[[1]]$n >= progLiczebnosci) {
   
   cat(tabelka)
   
-  cat("\n\n* Formy wykonywania pracy w grudniu ",
+  cat("\n\nFormy wykonywania pracy w grudniu ",
       params$rok,
       " roku - procentowy udział grup wyróżnionych ze względu na formę wykonywania pracy wśród pracujących absolwentów branżowych szkół II stopnia z całego kraju.\n\n",
       sep = "")
@@ -2178,7 +2193,7 @@ if (woj$l_abs[[1]] >= progLiczebnosci & woj$Z4_ucz[[1]]$n >= progLiczebnosci) {
 }
 ```
 
-4. Bezrobocie rejestrowane od września do grudnia `r params$rok` roku
+4. **Bezrobocie rejestrowane od września do grudnia `r params$rok` roku**
 
 ```{r}
 if (woj$l_abs[[1]] < progLiczebnosci | sum(woj$B2_bezrob[[1]]$n) < progLiczebnosci) {
@@ -2262,8 +2277,9 @@ if (woj$l_abs[[1]] < progLiczebnosci | sum(woj$B2_bezrob[[1]]$n) < progLiczebnos
 
 \centering
 
-Link do ankiety:
-
 ```{r qr_code2}
-knitr::include_graphics(szk$qr_code)
+if (szk$l_abs[[1]] >= progLiczebnosci) {
+   cat("Link do ankiety:\n")
+  knitr::include_graphics(szk$qr_code)
+}
 ```

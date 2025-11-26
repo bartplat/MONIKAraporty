@@ -428,17 +428,10 @@ dodaj_odmiany <- function(wskazniki, rodzaj_wsk) {
       group_by(id_szk) %>%
       summarise(
         abs = ifelse(l_abs %in% 1, " absolwenta", " absolwentów"),
-        kob = if (l_kobiet %in% c(0:19)) {
-          case_when(
+        kob = case_when(
             l_kobiet %in% 0 ~ "kobiet",
             l_kobiet %in% 1 ~ "kobietę",
-            l_kobiet %in% c(2:4) ~ "kobiety",
-            l_kobiet %in% c(5:19) ~ "kobiet")
-        } else {
-          case_when(
-            (l_kobiet %% 10) %in% c(0, 1, 5:9) ~ "kobiet",
-            (l_kobiet %% 10) %in% c(2:4) ~ "kobiety")
-        },
+            l_kobiet > 1 ~ "kobiet"),
         abs_polon = ifelse(l_abs_zrodla[[row_number()]]$n_polon %in% 1, " absolwenta", " absolwentów"),
         abs_zus = ifelse(l_abs_zrodla[[row_number()]]$n_zus %in% 1, " absolwenta", " absolwentów"),
         osob_zus = if (l_abs_zrodla[[row_number()]]$n_zus %in% c(0:19)) {

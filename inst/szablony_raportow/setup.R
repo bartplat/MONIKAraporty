@@ -10,17 +10,19 @@ progLiczebnosci <- params$progLiczebnosci
 typDokumentu <- params$typDokumentu
 wyrownanieTabWykr <- params$wyrownanieTabWykr
 rocznik <- paste0(params$rok - 1, "/", params$rok)
-zawodowa <- ifelse(szk$typ_szk[[1]] %in% c("Branżowa szkoła I stopnia",
-                                          "Branżowa szkoła II stopnia",
-                                          "Technikum",
-                                          "Szkoła policealna"),
-                  1, 0)
 
 # dane
 szk <- get(params$obiektWskazniki)
 god <- get(params$obiektWskaznikiPorownanie) %>%
   filter(id_szk %in% szk$id_szk)
-if (zawodowa == 1) {
+
+zawodowa <- ifelse(szk$typ_szk[[1]] %in% c("Branżowa szkoła I stopnia",
+                                          "Branżowa szkoła II stopnia",
+                                          "Technikum",
+                                          "Szkoła policealna"),
+                  1L, 0L)
+
+if (zawodowa == 1L) {
   szkozaw <- szkozaw %>% 
     filter(id_szk %in% szk$id_szk)
 }

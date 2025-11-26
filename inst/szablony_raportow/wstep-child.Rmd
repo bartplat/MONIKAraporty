@@ -1,4 +1,10 @@
-```{r wprowadzenie}
+```{r}
+zawodowa <- ifelse(szk$typ_szk[[1]] %in% c("Branżowa szkoła I stopnia",
+                                          "Branżowa szkoła II stopnia",
+                                          "Technikum",
+                                          "Szkoła policealna"),
+                  1, 0)
+
 typ_szk_mian_lm = case_when(
   szk$typ_szk[[1]] == "Branżowa szkoła I stopnia" ~ "branżowe szkoły I stopnia", 
   szk$typ_szk[[1]] == "Branżowa szkoła II stopnia" ~ "branżowe szkoły II stopnia",
@@ -14,7 +20,9 @@ typ_szk_dop_lm = case_when(
   szk$typ_szk[[1]] == "Szkoła policealna" ~ "szkół policealnych",
   szk$typ_szk[[1]] == "Liceum ogólnokształcące" ~ "liceów ogólnokształcących dla młodzieży",
   szk$typ_szk[[1]] == "Liceum dla dorosłych" ~ "liceów ogólnokształcących dla dorosłych")
+```
 
+```{r wprowadzenie}
 cat("# 1. Wprowadzenie",
     sep = "")
 ```
@@ -22,7 +30,7 @@ cat("# 1. Wprowadzenie",
 ```{r wykorzystanie_raportu}
 cat("\n\n## Wykorzystanie raportu\n\n",
     "Przy wykorzystywaniu informacji z raportów prosimy o podanie źródła:\n\n",
-    "*Raport roczny z monitoringu karier absolwentów szkoły ", szk$dane_szkoly[[1]]$nazwa, ". Monitoring na podstawie danych rejestrowych. Warszawa: Instytut Badań Edukacyjnych, ",
+    "*Raport roczny z monitoringu karier absolwentów szkoły ", szk$dane_szkoly[[1]]$nazwa, ". Monitoring na podstawie danych rejestrowych. Warszawa: Instytut Badań Edukacyjnych - Państwowy Instytut Badawczy, ",
     params$rok + 1,
     ".*\n\n",
     "Raport jest dostępny na zasadach licencji [„Creative Commons Uznanie autorstwa-Użycie niekomercyjne-Na tych samych warunkach 4.0 Międzynarodowe”](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.pl).\n\n",
@@ -31,7 +39,7 @@ cat("\n\n## Wykorzystanie raportu\n\n",
 
 ```{r idea_monitoringu}
 cat("\n\n## Idea monitoringu\n\n",
-    "Monitoring karier absolwentów publicznych i niepublicznych szkół ponadpodstawowych („Monitoring karier absolwentów”) to zadanie powierzone ministrowi właściwemu do spraw oświaty w ustawie [Prawo oświatowe^[Art. 26b.1]](http://isap.sejm.gov.pl/isap.nsf/download.xsp/WDU20210000619/O/D20210619.pdf). Analogiczne rozwiązania funkcjonują od kilku lat w szkolnictwie wyższym. Celem monitoringu jest dostarczanie informacji na temat przebiegu karier absolwentów na potrzeby prowadzenia polityki oświatowej państwa na poziomie krajowym, regionalnym i lokalnym. Wiarygodne i dostarczane cyklicznie statystyki opisujące przebieg karier edukacyjno-zawodowych absolwentów szkół ponadpodstawowych w Polsce mają pomóc w dostosowywaniu kierunków i treści kształcenia do wymogów rynku pracy. Raporty, takie jak ten, są opracowywane dla poszczególnych szkół, żeby pomóc im w monitorowaniu losów kolejnych roczników absolwentów i uzyskiwaniu w ten sposób informacji pomocnych w kształtowaniu oferty oraz podnoszeniu jakości kształcenia. Informacje zawarte w raportach mogą być użyteczne również dla instytucji rynku pracy i pracodawców, a także pomóc uczniom w wyborze kierunku kształcenia.\n\n",
+    "Monitoring karier absolwentów publicznych i niepublicznych szkół ponadpodstawowych („Monitoring karier absolwentów”) to zadanie powierzone ministrowi właściwemu do spraw oświaty w ustawie [Prawo oświatowe^[Art. 26b.1]](http://isap.sejm.gov.pl/isap.nsf/download.xsp/WDU20210000619/O/D20210619.pdf). Analogiczne rozwiązania funkcjonują od kilku lat w szkolnictwie wyższym. Celem monitoringu jest dostarczanie informacji na temat przebiegu karier absolwentów na potrzeby prowadzenia polityki oświatowej państwa na poziomie krajowym, regionalnym i lokalnym. Wiarygodne i dostarczane cyklicznie statystyki opisujące przebieg karier edukacyjno-zawodowych absolwentów szkół ponadpodstawowych w Polsce mają pomóc w dostosowywaniu kierunków i treści kształcenia do wymogów rynku pracy. Raporty, takie jak ten, są opracowywane dla poszczególnych szkół, żeby pomóc im w monitorowaniu losów kolejnych roczników absolwentów i uzyskiwaniu w ten sposób informacji pomocnych w kształtowaniu oferty oraz podnoszeniu jakości kształcenia. Informacje zawarte w raportach mogą być użyteczne również dla instytucji rynku pracy i pracodawców, a także pomóc uczniom w wyborze kierunku kształcenia.\n\n",
     "Należy pamiętać, że oprócz kształcenia w szkole, na sytuację edukacyjną i zawodową absolwentów wpływa wiele innych uwarunkowań, jak m.in. sytuacja na lokalnym rynku pracy, oferta edukacyjna dostępna dla absolwentów, a także wiedza i umiejętności, z którymi uczniowie rozpoczynali naukę w szkole ponadpodstawowej. Ponadto dane, na podstawie których są sporządzane raporty, nie odzwierciedlają w pełni aktywności absolwentów. Nie uwzględniają m.in. pracy za granicą ani dalszej edukacji za granicą, pracy podejmowanej na podstawie umowy o dzieło, pracy w szarej strefie, a także - w przypadku osób poniżej 26 roku życia posiadających jednocześnie status ucznia lub studenta - umowy zlecenia. Dlatego informacji o losach absolwentów nie można, bez uwzględnienia dodatkowego kontekstu, traktować jako miary efektywności kształcenia w poszczególnych szkołach.",
     sep = "")
 ```
@@ -40,7 +48,7 @@ cat("\n\n## Idea monitoringu\n\n",
 cat("\n\n## Źródła i przetwarzanie danych\n\n",
     "Raporty są przygotowywane na podstawie danych z publicznych rejestrów. Monitoring opiera się na danych dotyczących nauki w szkołach ponadpodstawowych (dane Centrum Informatycznego Edukacji) oraz na studiach (dane Ośrodka Przetwarzania Informacji), uzyskiwania dyplomów i świadectw (dane Okręgowych Komisji Egzaminacyjnych) oraz aktywności na rynku pracy (dane Zakładu Ubezpieczeń Społecznych).\n\n",
     "Dzięki wykorzystaniu danych rejestrowych monitoring obejmuje niemal całą populację absolwentów^[Z monitoringu karier absolwentów szkół ponadpodstawowych zgodnie z ustawą *Prawo oświatowe* wyłączeni są absolwenci szkół przy zakładach karnych i aresztach śledczych. Warunkiem uwzględnienia absolwenta w monitoringu jest odnotowanie przez szkołę w SIO faktu zakończenia nauki przez daną osobę.].\n\n",
-    "Dane te przekazywane są do Centrum Informatycznego Edukacji, gdzie są przetwarzane i anonimizowane, a następnie do Instytutu Badań Edukacyjnych. Eksperci Instytutu opracowują wyniki monitoringu karier absolwentów, w szczególności w formie raportu krajowego, raportów wojewódzkich i branżowych oraz raportów dla szkół, takich jak ten, który mają Państwo przed sobą. Raporty dla poszczególnych szkół są w Instytucie Badań Edukacyjnych tworzone automatycznie, na podstawie opracowanego przez ekspertów wzoru.",
+    "Dane te przekazywane są do Centrum Informatycznego Edukacji, gdzie są przetwarzane i anonimizowane, a następnie do Instytutu Badań Edukacyjnych - Państwowego Instytutu Badawczego (IBE-PIB). Eksperci Instytutu opracowują wyniki monitoringu karier absolwentów, w szczególności w formie raportu krajowego, raportów wojewódzkich i branżowych oraz raportów dla szkół, takich jak ten, który mają Państwo przed sobą. Raporty dla poszczególnych szkół są w IBE-PIB tworzone automatycznie, na podstawie opracowanego przez ekspertów wzoru.",
     sep = "")
 ```
 
@@ -63,16 +71,20 @@ cat("\n\n## Absolwenci Państwa szkoły uwzględnieni w raporcie\n\n",
     rocznik,
     ". Informacje o absolwentach pozyskano z Systemu Informacji Oświatowej według stanu bazy na 15 marca ",
     params$rok + 1,
-    " roku. Absolwentami są uczniowie ostatnich klas Państwa szkoły, którym w SIO zakończono przypisanie do oddziału wybierając status „Ukończył szkołę”. Ze względu na zapewnienie kompletności danych w kolejnych raportach, ważne jest nadawanie przez szkoły takiego statusu absolwentom do końca roku kalendarzowego, w którym zakończyli naukę.",
+    " roku. Absolwentami są uczniowie ostatnich klas Państwa szkoły, którym w Systemie Informacji Oświatowej (SIO) zakończono przypisanie do oddziału wybierając status „Ukończył szkołę”. Ze względu na zapewnienie kompletności danych w kolejnych raportach, ważne jest nadawanie przez szkoły takiego statusu absolwentom do końca roku kalendarzowego, w którym zakończyli naukę.",
     "\n\nLiczebność grup, dla których prezentowane są wyniki, zależy od dostępności informacji o Państwa absolwentach w poszczególnych rejestrach.",
-    "\n\n* Ośrodek Przetwarzania Informacji przekazał dane dotyczące **",
-    szk$l_abs_zrodla[[1]]$n_polon,
-    szk$odmiany[[1]]$abs_polon,
-    "** Państwa szkoły, którzy rozpoczęli naukę w szkołach wyższych do końca grudnia ", 
-    params$rok,
-    " roku (według stanu na 31 grudnia ",
-    params$rok,
-    " roku).",
+    if (szk$typ_szk[[1]] != "Branżowa szkoła I stopnia") {
+      paste0(
+        "\n\n* Ośrodek Przetwarzania Informacji przekazał dane dotyczące **",
+        szk$l_abs_zrodla[[1]]$n_polon,
+        szk$odmiany[[1]]$abs_polon,
+        "** Państwa szkoły, którzy rozpoczęli naukę w szkołach wyższych do końca grudnia ", 
+        params$rok,
+        " roku (według stanu na 31 grudnia ",
+        params$rok,
+        " roku)."
+      )
+    },    
     "\n\n* Dane z Zakładu Ubezpieczeń Społecznych informują o rejestrowanej przez ZUS aktywności zawodowej **",
     szk$l_abs_zrodla[[1]]$n_zus,
     szk$odmiany[[1]]$abs_zus,
@@ -86,9 +98,9 @@ cat("\n\n## Absolwenci Państwa szkoły uwzględnieni w raporcie\n\n",
 cat("\n\n## Sposób prezentowania wyników\n\n",
     "Raport dotyczy absolwentów, którzy ukończyli szkołę w roku szkolnym ",
     params$rok - 1, "/", params$rok,
-    ". W dalszej części raportu nazywamy ich „absolwentami z rocznika ”",
+    ". W dalszej części raportu nazywamy ich „absolwentami z rocznika ",
     params$rok - 1, "/", params$rok,
-    ". Okres monitoringu, jakim zostali oni objęci, to półrocze po zakończeniu nauki, czyli okres lipiec - grudzień ",
+    "”. Okres monitoringu, jakim zostali oni objęci, to półrocze po zakończeniu nauki, czyli okres lipiec - grudzień ",
     params$rok,
     ".\n\nW monitoringu, każdemu z absolwentów przypisany zostaje status, określający jego sytuację edukacyjną i zawodową. W tegorocznej edycji raportów szkolnych, absolwentowi mógł zostać przypisany jeden z następujących statusów:\n\n",
     "* Nauka\n",
@@ -96,15 +108,15 @@ cat("\n\n## Sposób prezentowania wyników\n\n",
     "* Nauka i praca\n",
     "* Bezrobocie\n",
     "* Brak danych o aktywności.\n\n",
-    "Przypisanie absolwentowi określonego statusu w danym miesiącu oznacza, że przynajmniej przez jeden dzień w tym miesiącu miał taki status. W przypadku łączenia w tym samym miesiącu nauki lub pracy z bezrobociem absolwentowi przypisywany jest status „nauka” lub „praca”.\n\n",
+    "Przypisanie absolwentowi określonego statusu w danym miesiącu oznacza, że przynajmniej przez jeden dzień w tym miesiącu miał taki status. W przypadku łączenia w tym samym miesiącu nauki lub pracy z bezrobociem absolwentowi przypisywany jest status „nauka”, „praca” lub „nauka i praca”.\n\n",
     "Szczegółowe informacje dotyczące definiowania poszczególnych statusów edukacyjno-zawodowych w monitoringu losów absolwentów i sposobu ich przypisywania absolwentom, w tym istotne informacje o ograniczeniach danych rejestrowych, znajdują się w rozdziale 2. Ścieżki edukacyjno-zawodowe.\n\n",
     "Wyniki monitoringu prezentujemy w różnych ujęciach:\n\n",
-    "* W ujęciu na koniec roku ", params$rok, " (grudzień ", params$rok, "). Zestawienia dotyczące sytuacji edukacyjnej i zawodowej absolwentów ogółem oraz w grupach wyodrębnionych ze względu na wyuczony zawód, a także szczegółowe informacje na temat dalszej edukacji, zatrudnienia lub prowadzenia własnej działalności gospodarczej, odnoszą się do ich sytuacji w grudniu ", params$rok, " roku",
+    "* W ujęciu na koniec roku ", params$rok, " (grudzień ", params$rok, "). Zestawienia dotyczące sytuacji edukacyjnej i zawodowej absolwentów ogółem oraz w grupach wyodrębnionych ze względu na wyuczony zawód, a także szczegółowe informacje na temat dalszej edukacji, zatrudnienia lub prowadzenia własnej działalności gospodarczej, odnoszą się do ich sytuacji w grudniu ", params$rok, " roku",
     ifelse(szk$typ_szk == "Branżowa szkoła I stopnia",
            ".\n\n",
            ", co pozwala na uwzględnienie m.in. kontynuowania przez część absolwentów nauki na studiach.\n\n"),
     "* W ujęciu miesięcznym (lipiec - grudzień ", params$rok, "). Wartości danego wskaźnika opisującego status edukacyjno-zawodowy absolwentów w kolejnych miesiącach pozwalają śledzić, jak zmieniała się sytuacja absolwentów Państwa szkoły.\n\n",
-    "* Zbiorczo dla okresu od września do grudnia ", params$rok, " roku. Niektóre wskaźniki są zdefiniowane jako średnia wartość w tym okresie (przychód uzyskiwany z pracy) lub jako liczba miesięcy, w którym absolwent miał określony status (praca, zarejestrowane bezrobocie). Takie wskaźniki obliczyliśmy dla okresu od września do grudnia ", params$rok, " roku. Wrzesień jest pierwszym miesiącem, w którym absolwenci formalnie nie byli już uczniami Państwa szkoły, a grudzień ostatnim, dla którego w momencie sporządzania tego raportu dysponujemy kompletnymi danymi o absolwentach figurujących w rejestrach.\n\n",
+    "* Zbiorczo dla okresu od września do grudnia ", params$rok, " roku. Niektóre wskaźniki są zdefiniowane jako średnia wartość w tym okresie (przychód uzyskiwany z pracy) lub jako liczba miesięcy, w których absolwent miał określony status (praca, zarejestrowane bezrobocie). Wrzesień jest pierwszym miesiącem, w którym absolwenci formalnie nie byli już uczniami Państwa szkoły, a grudzień ostatnim, dla którego w momencie sporządzania tego raportu dysponujemy kompletnymi danymi o absolwentach figurujących w rejestrach.\n\n",
     "Niektóre wyniki dotyczące absolwentów Państwa szkoły zostały zestawione z wynikami dotyczącymi grupy odniesienia. Grupę odniesienia stanowią absolwenci, którzy ukończyli inne ", typ_szk_mian_lm, " – niezależnie od tego czy były to szkoły publiczne czy niepubliczne i jaki podmiot był ich organem prowadzącym. W rozdziale „Ścieżki edukacyjno-zawodowe” grupa odniesienia jest dynamiczna: dobierana z najmniejszego obszaru – powiatu, podregionu^[Informacje nt. administracyjnego podziału Polski na podregiony (jednostki NUTS 3) są dostępne na stronie:\nhttps://stat.gov.pl/statystyka-regionalna/jednostki-terytorialne/klasyfikacja-nuts/klasyfikacja-nuts-w-polsce/], województwa lub kraju – w którym jest łącznie co najmniej 10 absolwentów co najmniej 3 ", typ_szk_dop_lm, " innych^[Absolwenci Państwa szkoły są wykluczani z grupy odniesienia, ponieważ w niektórych przypadkach ich sytuacja mogłaby w dużym stopniu rzutować na wyniki dotyczące tej grupy.] niż Państwa szkoła. Zasada ta chroni anonimowość absolwentów, a także uniemożliwia przypisanie wyników dotyczących grupy odniesienia do konkretnej szkoły.",
     ifelse(zawodowa == 1,
            " Absolwenci Państwa szkoły mogą być zestawiani z różnymi grupami odniesienia, w zależności od tego, czy prezentowane są wyniki dla ogółu absolwentów, czy w podziale ze względu na wyuczony zawód^[Na przykład dla ogółu absolwentów szkoły, której dotyczy raport, grupę odniesienia mogą stanowić absolwenci pozostałych techników z danego powiatu, ale dla absolwentów wykształconych w danym zawodzie grupa odniesienia z poziomu powiatu mogłaby nie spełniać wymogów dotyczących liczebności. W takiej sytuacji zostałaby dobrana z poziomu podregionu, województwa lub kraju - w zależności od tego, na ile powszechne jest kształcenie w danym zawodzie.].\n\n",
@@ -114,35 +126,52 @@ cat("\n\n## Sposób prezentowania wyników\n\n",
 ```
 
 ```{r prosba_o_wypelnienie_ankiety_cz1}
-cat("\n\n## Prośba o wypełnienie krótkiej ankiety zwrotnej dla IBE\n\n",
-    "System monitoringu karier oparty na danych administracyjnych będzie rozwijany w kolejnych latach. W dalszym dostosowywaniu go do potrzeb szkół bardzo przydatne będą Państwa opinie. Dlatego będziemy wdzięczni za wypełnienie kolejnej ankiety on-line przygotowanej przez Instytut Badań Edukacyjnych, który jest odpowiedzialny za opracowanie wyników monitoringu i jego rozwój.\n\n",
-    "Ankieta dotyczy Państwa opinii i uwag odnośnie raportu (dlatego przed wypełnieniem ankiety prosimy się z nim zapoznać), potrzeb dotyczących monitorowania losów absolwentów oraz wykorzystania wyników.\n\n",
-    "Wyniki wypełnionej przez Państwa ankiety nie będą prezentowane w powiązaniu z konkretnymi szkołami.\n\n",
-    "**Ankieta otworzy się w przeglądarce internetowej po kliknięciu w link:**\n\n",
-    szk$link[[1]],
-    "\n\n",
-    sep = "")
+if (szk$l_abs[[1]] >= progLiczebnosci) {
+  cat("\n\n## Prośba o wypełnienie krótkiej ankiety zwrotnej dla IBE\n\n",
+      "System monitoringu karier oparty na danych administracyjnych będzie rozwijany w kolejnych latach. W dalszym dostosowywaniu go do potrzeb szkół bardzo przydatne będą Państwa opinie. Dlatego będziemy wdzięczni za wypełnienie kolejnej ankiety on-line przygotowanej przez Instytut Badań Edukacyjnych, który jest odpowiedzialny za opracowanie wyników monitoringu i jego rozwój.\n\n",
+      "Ankieta dotyczy Państwa opinii i uwag odnośnie do raportu (dlatego przed wypełnieniem ankiety prosimy się z nim zapoznać), potrzeb dotyczących monitorowania losów absolwentów oraz   wykorzystania wyników.\n\n",
+      "Wyniki wypełnionej przez Państwa ankiety nie będą prezentowane w powiązaniu z konkretnymi szkołami.\n\n",
+      "**Ankieta otworzy się w przeglądarce internetowej po kliknięciu w link:**\n\n",
+      szk$link[[1]],
+      "\n\n",
+      sep = ""
+    )
+}
 ```
 ```{r qr_code1}
-knitr::include_graphics(szk$qr_code)
+if (szk$l_abs[[1]] >= progLiczebnosci) {
+  knitr::include_graphics(szk$qr_code)
+}
 ```
 ```{r prosba_o_wypelnienie_ankiety_cz2}
-cat("\n\nW każdym raporcie szkolnym umieszczono inny link do ankiety. Po wypełnieniu, ankieta nie będzie już dla Państwa dostępna. W przypadku prośby o podanie kodu dostępu prosimy wpisać następujący ciąg znaków: ", szk$token, "\n\n",
+if (szk$l_abs[[1]] >= progLiczebnosci) {
+  cat(
+    "\n\nW każdym raporcie szkolnym umieszczono inny link do ankiety. Po wypełnieniu, ankieta nie będzie już dla Państwa dostępna. W przypadku prośby o podanie kodu dostępu prosimy wpisać następujący ciąg znaków: ", szk$token, "\n\n",
     "Wypełnienie ankiety zajmie około 10 minut. Ankieta będzie dostępna do końca sierpnia ",
-    params$rok + 1,
+    params$rok + 2,
     " roku.",
     ifelse(typDokumentu %in% "pdf", "\\newpage", ""),
-    sep = "")
+    sep = ""
+    )
+}
 ```
 
 ```{r statusy_data_frame}
 statusy_df = data.frame(
   `Kategoria` = "Znaczenie kategorii",
-  `1. Tylko nauka` = "W takiej sytuacji są osoby, o których wiadomo, że odbywają edukację formalną w Polsce i jednocześnie figurują w rejestrze ZUS z tytułu innego niż aktualne wykonywanie pracy („innym tytułem” może być w szczególności status osoby bezrobotnej, przebywanie na urlopie macierzyńskim lub wychowawczym) lub nie figurują w rejestrze ZUS z żadnego tytułu, w związku z tym ich sytuacja zawodowa nie jest znana. Nie jest wykluczone, że pracują za granicą u zagranicznego pracodawcy lub korzystając z ubezpieczenia w innym systemie niż ZUS (np. KRUS) albo na podstawie umowy o dzieło lub (jeżeli mają nie więcej niż 26 lat) umowy zlecenia, a także że wykonują działalność nierejestrowaną lub pracę „na czarno”.",
-  `2. Nauka i praca` = "W takiej sytuacji są osoby, o których wiadomo, że odbywają edukację formalną w Polsce, a zarazem figurują w rejestrze ZUS z tytułu aktualnego wykonywania pracy etatowej, prowadzenia indywidualnej działalności gospodarczej albo - ale tylko, jeśli mają więcej niż 26 lat - umowy zlecenia.  Nie jest natomiast uwzględniana praca za granicą u zagranicznego pracodawcy, praca związana z korzystaniem z ubezpieczenia w innym systemie niż ZUS (np. KRUS), praca na podstawie umowy o dzieło, praca na podstawie umowy zlecenia w przypadku osób, które mają nie więcej niż 26 lat, działalność nierejestrowana ani praca „na czarno”.",
-  `3. Tylko praca` = "W takiej sytuacji są osoby, o których wiadomo, że nie odbywają edukacji  formalnej w Polsce (ale być może uczą się w innym kraju), a zarazem figurują w rejestrze ZUS z tytułu aktualnego wykonywania pracy etatowej, umowy zlecenia lub prowadzenia indywidualnej działalności gospodarczej. Nie jest natomiast uwzględniana praca za granicą u zagranicznego pracodawcy, praca związana z korzystaniem z ubezpieczenia w innym systemie niż ZUS (np. KRUS), praca na podstawie umowy o dzieło, działalność nierejestrowana, praca „na czarno” a w przypadku osób do 26. roku życia, które kontynuują kształcenie, również praca na podstawie umowy zlecenia.",
-  `4. Bezrobocie` = "W takiej sytuacji są osoby, które figurują w rejestrze ZUS z tytułu zarejestrowania w powiatowym urzędzie pracy jako bezrobotne - z wyjątkiem osób, które jednocześnie odbywają naukę formalną w Polsce. Absolwentom łączącym status osoby bezrobotnej z odbywaniem edukacji (co jest możliwe w przypadku nauki w szkole dla dorosłych, branżowej szkole II stopnia lub szkole policealnej, a także studiowania na studiach niestacjonarnych) przypisywany jest status „Tylko nauka”. Nie jest wykluczone, że osoby zarejestrowane jako bezrobotne wykonują pracę nierejestrowaną „na czarno”.",
-  `5. Brak danych o aktywności` = "W takiej sytuacji są osoby, o których wiadomo, że nie odbywają edukacji formalnej w Polsce (ale być może uczą się  w innym kraju), a zarazem nie figurują w rejestrze ZUS z żadnego tytułu, w związku z tym ich sytuacja zawodowa nie jest znana. Nie jest wykluczone, że pracują za granicą u zagranicznego pracodawcy lub korzystając z ubezpieczenia w innym systemie niż ZUS (np. KRUS) albo na podstawie umowy o dzieło (jeżeli nie są zarejestrowane jako bezrobotne), że wykonują pracę nierejestrowaną lub pracę „na czarno”.",
+  `1. Tylko nauka` = "Status ten przypisywany jest osobom, o których wiadomo, że odbywają edukację formalną w Polsce i jednocześnie nie pracują.
+  \nStatusu tego nie można przypisać osobom, które uczą się za granicą, ze względu na brak takiej informacji w danych rejestrowych, na których opiera się monitoring.
+  \nW grupie tej mogą znaleźć się osoby pracujące, ale nie odprowadzają składek do ZUS, bowiem na podstawie tej informacji identyfikowanie są w monitoringu karier absolwentów osoby pracujące. Są to absolwenci zatrudnieni na umowy cywilnoprawne (wyjątkiem od opisanej sytuacji są osoby uczące się powyżej 26 roku życia, które przestają być zwolnienie z obowiązku opłacania składek do ZUS, a więc w monitoringu karier zaklasyfikowane są jako osoby pracujące, ale sytuacja ta dotyczyć może jedynie absolwentów liceów dla dorosłych oraz szkół policealnych), prowadzący działalność nierejestrowaną, ubezpieczeni z tytułu wykonywania pracy w innym systemie niż ZUS (np. KRUS), a także pracujący „na czarno”.
+  \nPrzebywanie na urlopie macierzyńskim, rodzicielskim lub zwolnieniu lekarskim osoby będącej uczniem/studentem nie odbiera jej statusu osoby uczącej się.
+  \nNa potrzeby wskaźnika, status „tylko nauka” przypisany jest także osobom zarejestrowanym jako bezrobotne, które jednocześnie kontynuują naukę w trybie niestacjonarnym.",
+  `2. Nauka i praca` = "Status ten przypisywany jest osobom, które łączą naukę w ramach edukacji formalnej w Polsce i pracują w kraju. Statusu tego dotyczą zastrzeżenia opisane dla statusów „Tylko nauka” i „Tylko praca”.",
+  `3. Tylko praca` = "Status ten przypisywany jest osobom, które nie odbywają edukacji formalnej w Polsce, ale pracują w kraju.
+  \nPrzydzielanie tego statusu opiera się na informacji o odprowadzaniu składek do ZUS, co oznacza, że możliwe jest zidentyfikowanie osób pracujących na umowę o pracę, osób prowadzących działalność gospodarczą, a w przypadku osób powyżej 26 roku życia także absolwentów pracujących na umowę zlecenie. Nie jest możliwe zidentyfikowanie osób pracujących na umowę o dzieło, osób pracujących na umowę zlecenie poniżej 26 roku życia, absolwentów prowadzących działalność nierejestrowaną, pracujących na czarno, a także pracujących, ale ubezpieczonych w innym systemie niż ZUS (np. KRUS).
+  \nMożliwa jest również sytuacja, w której osoby znajdujące się w tej grupie uczą się zagranicą.",
+  `4. Bezrobocie` = "Status ten przypisywany jest osobom, które figurują w rejestrze ZUS z tytułu zarejestrowania w powiatowym urzędzie pracy jako bezrobotne - z wyjątkiem osób, które jednocześnie odbywają naukę formalną w Polsce. Absolwentom łączącym status osoby bezrobotnej z odbywaniem edukacji (co jest możliwe w przypadku nauki w szkole dla dorosłych, branżowej szkole II stopnia lub szkole policealnej, a także studiowania na studiach niestacjonarnych) przypisywany jest status „Tylko nauka”.
+  \nNie jest wykluczone, że osoby zarejestrowane jako bezrobotne wykonują pracę „na czarno”.",
+  `5. Brak danych o aktywności` = "Status ten przypisywany jest osobom, dla których brak informacji o odbywaniu nauki w Polsce lub wykonywaniu pracy związanej z odprowadzeniem składek do ZUS.
+  \nNie jest wykluczone, że osoby te uczą się zagranicą, zaś jeśli się nie uczą, to pracują za granicą u zagranicznego pracodawcy, pracują na umowę o dzieło lub korzystając z ubezpieczenia w innym systemie niż ZUS (np. KRUS), wykonują pracę nierejestrowaną lub pracę „na czarno”.",
   check.names = FALSE) %>% 
   pivot_longer(everything()) %>% 
   rename(`Kategoria` = name,
