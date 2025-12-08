@@ -137,7 +137,7 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
     sep = ""
   )
 } else {
-  cat("Liczba absolwentów Państwa szkoły nie była wystarczająca, żeby możliwe było przedstawienie wyników zgodnie z zasadą chroniącą anonimowość absolwentów.")
+  cat("Liczba absolwentów Państwa szkoły nie była wystarczająca, żeby możliwe było przedstawienie wyników zgodnie z zasadą chroniącą anonimowość absolwentów.")
 }
 ```
 
@@ -217,6 +217,8 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
 }
 ```
 
+## Status edukacyjno-zawodowy absolwentów według zawodu kształcenia
+
 ```{r}
 if (szk$S3_12[[1]]$n >= progLiczebnosci) {
   tab_s3_zaw_check <- szk$tab_s3_zaw[[1]] %>% 
@@ -239,10 +241,10 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
   } else if (nrow(tab_s3_zaw_check) > 1) {
     cat("Poniższe tabele i wykresy przedstawiają sytuację absolwentów Państwa szkoły wykształconych w poszczególnych zawodach, o ile kształciło się w nich co najmniej 10 osób.")
   }
+} else {
+  cat("Liczba absolwentów Państwa szkoły nie była wystarczająca, żeby możliwe było przedstawienie wyników zgodnie z zasadą chroniącą anonimowość absolwentów.")
 }
 ```
-
-## Status edukacyjno-zawodowy absolwentów według zawodu kształcenia
 
 ```{r petla_zawody_S3}
 if (szk$S3_12[[1]]$n >= progLiczebnosci) {
@@ -434,6 +436,8 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
     " Bardziej szczegółowe wyniki, uwzględniające również to, czy absolwenci się uczyli lub byli zarejestrowani jako osoby bezrobotne, przedstawia poniższy wykres.\n\n",
     sep = ""
   )
+} else {
+  cat("Liczba absolwentów Państwa szkoły nie była wystarczająca, żeby możliwe było przedstawienie wyników zgodnie z zasadą chroniącą anonimowość absolwentów.")
 }
 ```
 
@@ -830,7 +834,7 @@ if (szk$liczebnosc_dyscypliny[[1]]$n >= progLiczebnosci) {
 ## Kontynuowanie nauki na studiach w poszczególnych dyscyplinach w podziale na płeć
 
 ```{r}
-if (round(szk$E2_nauka_kontyn[[1]]$Studia * szk$E2_nauka_kontyn[[1]]$n) >= progLiczebnosci & szk$dyscypliny_kob[[1]] >= progLiczebnosci) {
+if (round(szk$E2_nauka_kontyn[[1]]$Studia * szk$E2_nauka_kontyn[[1]]$n) >= progLiczebnosci & szk$dyscypliny_kob[[1]]$n >= progLiczebnosci) {
   if (any(!is.na(szk$dyscypliny_kob[[1]]$pct))) {
     cat(
       "Poniższa tabela prezentuje rozkład dyscyplin, w których absolwentki Państwa szkoły najczęściej kontynuowały naukę.\n\nTabela ",

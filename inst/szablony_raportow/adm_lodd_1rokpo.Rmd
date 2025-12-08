@@ -136,7 +136,7 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
     sep = ""
   )
 } else {
-  cat("Liczba absolwentów Państwa szkoły nie była wystarczająca, żeby możliwe było przedstawienie wyników zgodnie z zasadą chroniącą anonimowość absolwentów.")
+  cat("Liczba absolwentów Państwa szkoły nie była wystarczająca, żeby możliwe było przedstawienie wyników zgodnie z zasadą chroniącą anonimowość absolwentów.")
 }
 ```
 
@@ -274,6 +274,8 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
     " Bardziej szczegółowe wyniki, uwzględniające również to, czy absolwenci się uczyli lub byli zarejestrowani jako osoby bezrobotne, przedstawia poniższy wykres.\n\n",
     sep = ""
   )
+} else {
+  cat("Liczba absolwentów Państwa szkoły nie była wystarczająca, żeby możliwe było przedstawienie wyników zgodnie z zasadą chroniącą anonimowość absolwentów.")
 }
 ```
 

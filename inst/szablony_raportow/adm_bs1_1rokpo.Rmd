@@ -137,7 +137,7 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
     sep = ""
   )
 } else {
-  cat("Liczba absolwentów Państwa szkoły nie była wystarczająca, żeby możliwe było przedstawienie wyników zgodnie z zasadą chroniącą anonimowość absolwentów.")
+  cat("Liczba absolwentów Państwa szkoły nie była wystarczająca, żeby możliwe było przedstawienie wyników zgodnie z zasadą chroniącą anonimowość absolwentów.")
 }
 ```
 
@@ -217,6 +217,8 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
 }
 ```
 
+## Status edukacyjno-zawodowy absolwentów według zawodu kształcenia
+
 ```{r}
 if (szk$S3_12[[1]]$n >= progLiczebnosci) {
   tab_s3_zaw_check <- szk$tab_s3_zaw[[1]] %>% 
@@ -239,10 +241,10 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
   } else if (nrow(tab_s3_zaw_check) > 1) {
     cat("Poniższe tabele i wykresy przedstawiają sytuację absolwentów Państwa szkoły wykształconych w poszczególnych zawodach, o ile kształciło się w nich co najmniej 10 osób.")
   }
+} else {
+  cat("Liczba absolwentów Państwa szkoły nie była wystarczająca, żeby możliwe było przedstawienie wyników zgodnie z zasadą chroniącą anonimowość absolwentów.")
 }
 ```
-
-## Status edukacyjno-zawodowy absolwentów według zawodu kształcenia
 
 ```{r petla_zawody_S3}
 if (szk$S3_12[[1]]$n >= progLiczebnosci) {
@@ -434,6 +436,8 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
     " Bardziej szczegółowe wyniki, uwzględniające również to, czy absolwenci się uczyli lub byli zarejestrowani jako osoby bezrobotne, przedstawia poniższy wykres.\n\n",
     sep = ""
   )
+} else {
+  cat("Liczba absolwentów Państwa szkoły nie była wystarczająca, żeby możliwe było przedstawienie wyników zgodnie z zasadą chroniącą anonimowość absolwentów.")
 }
 ```
 
@@ -1272,7 +1276,7 @@ if (szk$Z9_mlod_ucz[[1]]$n >= progLiczebnosci) {
   )
   
   etykiety <- c(
-    "Uczący się, niekontynuujący pracy u danego\npracodawcy na podstawie umowy o pracę",
+    "Uczący się, niekontynuujący pracy u danego\npracodawcy (ale pracujący gdzie indziej)",
     "Uczący się, kontynuujący pracę u danego\npracodawcy na podstawie umowy o pracę",
     "Uczący się, kontynuujący pracę u danego pracodawcy w\nformie innej niż umowa o pracę"
   )
@@ -1312,7 +1316,7 @@ if (szk$Z9_mlod_ucz[[1]]$n >= progLiczebnosci) {
   }
   
   tab_wyk$name <- factor(tab_wyk$name, levels = c(
-    "Uczący się, niekontynuujący pracy u danego\npracodawcy na podstawie umowy o pracę",
+    "Uczący się, niekontynuujący pracy u danego\npracodawcy (ale pracujący gdzie indziej)",
     "Uczący się, kontynuujący pracę u danego\npracodawcy na podstawie umowy o pracę",
     "Uczący się, kontynuujący pracę u danego pracodawcy w\nformie innej niż umowa o pracę"
     ))
@@ -1410,7 +1414,7 @@ if (szk$Z9_mlod_nie_ucz[[1]]$n >= progLiczebnosci) {
   )
   
   etykiety <- c(
-    "Nieuczący się, niekontynuujący pracy u danego pracodawcy",
+    "Nieuczący się, niekontynuujący pracy u danego pracodawcy\n(ale pracujący gdzie indziej)",
     "Nieuczący się, kontynuujący pracę u danego pracodawcy na\npodstawie umowy o pracę",
     "Nieuczący się, kontynuujący pracę u danego pracodawcy w\nformie innej niż umowa o pracę"
   )
@@ -1450,7 +1454,7 @@ if (szk$Z9_mlod_nie_ucz[[1]]$n >= progLiczebnosci) {
   }
   
   tab_wyk$name <- factor(tab_wyk$name, levels = c(
-    "Nieuczący się, niekontynuujący pracy u danego pracodawcy",
+    "Nieuczący się, niekontynuujący pracy u danego pracodawcy\n(ale pracujący gdzie indziej)",
     "Nieuczący się, kontynuujący pracę u danego pracodawcy w\nformie innej niż umowa o pracę",
     "Nieuczący się, kontynuujący pracę u danego pracodawcy na\npodstawie umowy o pracę"
   ))
