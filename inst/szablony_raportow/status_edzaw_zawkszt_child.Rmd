@@ -1,0 +1,158 @@
+```{r}
+if (szk$S3_12[[1]]$n >= progLiczebnosci) {
+  tab_s3_zaw_check <- szk$tab_s3_zaw[[1]] %>% 
+    as_tibble()
+  if (nrow(tab_s3_zaw_check) > 0) {
+    tab_s3_zaw_check <- tab_s3_zaw_check %>%  
+      filter(!row_number() %in% nrow(.)) %>%
+      filter(n >= 10) %>% 
+      arrange(n, nazwa_zaw) %>%
+      mutate(typ = ordered(.$nazwa_zaw, levels = unique(.$nazwa_zaw))) %>% 
+      select(-c(n, nazwa_zaw))
+  } else {
+    tab_s3_zaw_check <- tibble()
+  }
+  
+  if (nrow(tab_s3_zaw_check) %in% 0) {
+    cat("W przypadku żadnego zawodu liczba absolwentów Państwa szkoły nie była wystarczająca, żeby możliwe było przedstawienie wyników w tym ujęciu zgodnie z zasadą chroniącą anonimowość absolwentów.")
+  } else if (nrow(tab_s3_zaw_check) %in% 1) {
+    cat("Poniższy wykres przedstawia sytuację absolwentów wykształconych w Państwa szkole w zawodzie, w którym kształciło się co najmniej 10 osób.")
+  } else if (nrow(tab_s3_zaw_check) > 1) {
+    cat("Poniższe tabele i wykresy przedstawiają sytuację absolwentów Państwa szkoły wykształconych w poszczególnych zawodach, o ile kształciło się w nich co najmniej 10 osób.")
+  }
+} else {
+  cat("Liczba absolwentów Państwa szkoły nie była wystarczająca, żeby możliwe było przedstawienie wyników zgodnie z zasadą chroniącą anonimowość absolwentów.")
+}
+```
+
+```{r petla_zawody_S3}
+if (szk$S3_12[[1]]$n >= progLiczebnosci) {
+  if (nrow(tab_s3_zaw_check) > 0) {
+    szkozaw <- szkozaw %>% 
+      filter(id_szk %in% szk$id_szk[[1]])
+    
+    for (i in tab_s3_zaw_check$typ) {
+      tab_szk <- tab_s3_zaw_check[tab_s3_zaw_check$typ %in% i,]
+      
+      tab_god <- szkozaw %>% 
+        filter(nazwa_zaw %in% i)
+      
+      if (nrow(tab_god) > 0) {
+        zawod <- wrapper(unique(tab_god$nazwa_zaw), 35)
+        
+        terytorium <- tab_god$odniesieniePoziom[[1]]
+        
+        tab_god <- tab_god$S3_12[[1]] %>% 
+          as_tibble() %>% 
+          cbind(., zawod) %>% 
+          rename(nazwa_zaw = zawod) %>% 
+          mutate(typ = ordered(x = .$nazwa_zaw, levels = unique(.$nazwa_zaw))) %>% 
+          select(-c(n, nazwa_zaw))
+        
+        powiaty_dop_petla <- powiaty %>%
+          filter(teryt_pow %in% szk$teryt_pow_szk[[1]]) %>%
+          select(starts_with(terytorium)) %>%
+          as.character()
+        
+        tab_szk$typ <- "Państwa szkoła"
+        tab_god$typ <- paste0("Pozostałe technika\nz ", powiaty_dop_petla)
+        
+        tabela <- rbind(tab_szk, tab_god) %>% 
+          pivot_longer(cols = tylko_ucz:brak_danych, names_to = "name") %>% 
+          mutate(across(name,
+                        ~case_when(
+                          . %in% "tylko_ucz" ~ "Tylko nauka",
+                          . %in% "ucz_prac" ~ "Nauka i praca",
+                          . %in% "tylko_prac" ~ "Tylko praca",
+                          . %in% "bezrob" ~ "Bezrobocie",
+                          . %in% "brak_danych" ~ "Brak danych o aktywności"))) %>% 
+          mutate(lab = ifelse(round(value, 2) >= 0.06,
+                              paste0(round(value * 100), "%"),
+                              ""),
+                 name = ordered(name, levels = c("Brak danych o aktywności",
+                                                 "Bezrobocie",
+                                                 "Tylko praca",
+                                                 "Nauka i praca",
+                                                 "Tylko nauka")))
+        
+        wyk_tyt <- wrapper(paste0("Wykres ",
+                                 wyk_num(),
+                                 ": Status edukacyjno-zawodowy absolwentów Państwa szkoły oraz absolwentów pozostałych techników z ",
+                                 powiaty_dop_petla,
+                                 " w grudniu ",
+                                 params$rok,
+                                 " roku - w zawodzie ",
+                                 i), 85)
+      } else {
+        tab_szk$typ <- "Państwa szkoła"
+        zawod <- wrapper(paste0(i), 35)
+        
+        tabela <- tab_szk %>% 
+          pivot_longer(cols = tylko_ucz:brak_danych, names_to = "name") %>% 
+          mutate(across(name,
+                        ~case_when(
+                          . %in% "tylko_ucz" ~ "Tylko nauka",
+                          . %in% "ucz_prac" ~ "Nauka i praca",
+                          . %in% "tylko_prac" ~ "Tylko praca",
+                          . %in% "bezrob" ~ "Bezrobocie",
+                          . %in% "brak_danych" ~ "Brak danych o aktywności"))) %>% 
+          mutate(lab = ifelse(round(value, 2) >= 0.06,
+                              paste0(round(value * 100), "%"),
+                              ""),
+                 name = ordered(name, levels = c("Brak danych o aktywności",
+                                                 "Bezrobocie",
+                                                 "Tylko praca",
+                                                 "Nauka i praca",
+                                                 "Tylko nauka")))
+        
+        wyk_tyt <- wrapper(paste0("Wykres ",
+                                 wyk_num(),
+                                 ": Status edukacyjno-zawodowy absolwentów Państwa szkoły w grudniu ",
+                                 params$rok,
+                                 " roku - w zawodzie ",
+                                 i), 85)
+      }
+      
+      wykres <- wykres_poziomy_statusy(
+        tabela,
+        wyk_tyt)
+      
+      levels(tabela$typ) <- linebreak(levels(tabela$typ), align = "l")
+      
+      tabela <- rbind(tab_szk, tab_god) %>% 
+        select(typ, tylko_ucz, ucz_prac, tylko_prac, bezrob, brak_danych) %>% 
+        mutate(across(tylko_ucz:brak_danych,
+                      ~ round(. * 100))) %>%
+        mutate(across(tylko_ucz:brak_danych,
+                      ~ paste0(., "\\%"))) %>%
+        kable(format = "latex", booktabs = TRUE, escape = FALSE, longtable = TRUE,
+              linesep = "",
+              align = "lccccc",
+              col.names = NULL,
+              digits = 0) %>% 
+        kable_styling(position = wyrownanieTabWykr,
+                      latex_options = c("hold_position", "repeat_header"),
+                      font_size = 10,
+                      full_width = TRUE,
+                      repeat_header_text = "(ciąg dalszy tabeli)") %>% 
+        add_header_above(c(zawod, "1" = 1, "2" = 1, "3" = 1, "4" = 1, "5" = 1),
+                         align = c("l", "c", "c", "c", "c", "c")) %>%
+        add_header_above(c(" ",
+                           "1. Tylko nauka\n2. Nauka i praca\n3. Tylko praca\n4. Bezrobocie\n5. Brak danych o aktywności" = 5),
+                         align = c("c", "l")) %>% 
+        column_spec(1, width = "6cm") %>%
+        column_spec(2, width = "1.75cm") %>%
+        column_spec(3, width = "1.75cm") %>%
+        column_spec(4, width = "1.75cm") %>%
+        column_spec(5, width = "1.75cm") %>% 
+        column_spec(6, width = "1.75cm")
+      
+      zwroc_wykres_tabela(wykres, tabela)
+      
+      if (nrow(tab_god) %in% 0) {
+        cat("Liczba absolwentów w grupie odniesienia lub szkół, do których uczęszczali, nie była wystarczająca, żeby możliwe było przedstawienie dla niej wyników zgodnie z zasadą chroniącą anonimowość absolwentów.")
+      }
+    }
+  }
+}
+```
