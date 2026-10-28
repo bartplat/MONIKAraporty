@@ -1,10 +1,3 @@
-# biblioteki
-library(dplyr)
-library(ggplot2)
-library(kableExtra)
-library(tidyr)
-library(MONIKAraporty)
-
 # parametry
 progLiczebnosci <- params$progLiczebnosci
 typDokumentu <- params$typDokumentu
@@ -13,7 +6,7 @@ rocznik <- paste0(params$rok - 1, "/", params$rok)
 
 # dane
 szk <- get(params$obiektWskazniki)
-god <- get(params$obiektWskaznikiPorownanie) %>%
+god <- get(params$obiektWskaznikiPorownanie) |>
   filter(id_szk %in% szk$id_szk)
 
 zawodowa <- ifelse(szk$typ_szk[[1]] %in% c("Branżowa szkoła I stopnia",
@@ -22,18 +15,19 @@ zawodowa <- ifelse(szk$typ_szk[[1]] %in% c("Branżowa szkoła I stopnia",
                                           "Szkoła policealna"),
                   1L, 0L)
 
-if (zawodowa == 1L) {
-  szkozaw <- szkozaw %>% 
-    filter(id_szk %in% szk$id_szk)
-}
+# if (zawodowa == 1L) {
+#   szkozaw <- szkozaw |> 
+#     filter(id_szk %in% szk$id_szk)
+# }
 data("powiaty")
 
 # obiekt powiaty
-powiaty_dop <- powiaty %>%
-  filter(teryt_pow %in% szk$teryt_pow_szk[[1]]) %>%
-  select(starts_with(szk$odniesieniePoziom[[1]])) %>%
+powiaty_dop <- powiaty |>
+  filter(teryt_pow %in% szk$teryt_pow_szk[[1]]) |>
+  select(starts_with(szk$odniesieniePoziom[[1]])) |>
   as.character()
 
+# to jest zdublowane, bo w szablonie na początku też to mam - co z tym robimy?
 # knitr options
 knitr::opts_chunk$set(
   echo = FALSE,
@@ -41,8 +35,8 @@ knitr::opts_chunk$set(
   message = FALSE,
   warning = FALSE,
   error = FALSE,
-  fig.align = wyrownanieTabWykr,
-  dev = "cairo_pdf"
+  dev = "png",
+  dpi = 150
 )
 
 rap_odmiany <- list(

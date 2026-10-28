@@ -1,0 +1,93 @@
+---
+title: |
+  | Raport roczny z monitoringu karier absolwentów, którzy ukończyli `r get(params$obiektWskazniki)$typ_szk` w roku szkolnym `r params$rok - 1`/`r params$rok`
+subtitle: |
+  | `r get(params$obiektWskazniki)$dane_szkoly[[1]]$nazwa`
+  | `r get(params$obiektWskazniki)$dane_szkoly[[1]]$adres`
+output:
+  pdf_document:
+    latex_engine: pdflatex
+    dev: png
+    fig_caption: no
+    includes:
+      in_header: naglowek.tex
+    toc: yes
+    toc_depth: 2
+lang: pl
+papersize: a4
+fontsize: 11pt
+geometry: margin=20mm
+params:
+  plikZObiektami: ../../data/wskaznikiAdm5.RData
+  obiektWskazniki: szk
+  obiektWskaznikiPorownanie: god
+  obiektWskaznikiKraj1: god1
+  obiektWskaznikiKraj2: god2
+  obiektSzkoloZawody: szkozaw
+  obiektWoj: woj
+  progLiczebnosci: 10
+  typDokumentu: pdf
+  wyrownanieTabWykr: center
+  rok: 2024
+---
+
+```{r setup, echo=FALSE, include=FALSE}
+source("setup.R",
+       echo = FALSE,
+       local = TRUE)
+
+# sprawdzić czy działa jeśli to jest tylko w pliku setup.R
+
+# knitr::opts_chunk$set(
+#   echo = FALSE,
+#   results = "asis",
+#   message = FALSE,
+#   warning = FALSE,
+#   error = FALSE,
+#   fig.align = wyrownanieTabWykr,
+#   dev = "cairo_pdf"
+# )
+```
+
+`r ifelse(typDokumentu %in% "pdf", "---", "")`
+
+`r if (typDokumentu == "pdf") "\\vfill"`
+
+```{r, echo=FALSE, eval=(typDokumentu == "pdf"), out.width="100%"}
+knitr::include_graphics("Belka-Losy-absolwentow-Kolor-PL.png")
+```
+
+`r ifelse(typDokumentu %in% "pdf", "\\newpage", "")`
+
+```{r, child="wstep-child.Rmd"}
+
+```
+
+`r ifelse(typDokumentu %in% "pdf", "\\newpage", "")`
+
+# 2. Ścieżki edukacyjno-zawodowe
+
+W porównaniu z raportami przygotowywanymi w latach 2021-2023, zwiększono liczbę prezentowanych statusów, opisujących sytuację edukacyjno-zawodową absolwentów. Status „Brak nauki i brak pracy” rozdzielono na „Bezrobocie” oraz „Brak danych o aktywności”. Poniższa tabela objaśnia konstrukcję poszczególnych statusów.
+
+```{r}
+statusy_df |> 
+  kable(format = "latex",
+        booktabs = TRUE,
+        escape = FALSE,
+        longtable = TRUE,
+        align = "ll",
+        linesep = "\\addlinespace") |> 
+  kable_styling(position = wyrownanieTabWykr,
+                latex_options = c("hold_position", "repeat_header"),
+                repeat_header_text = "(ciąg dalszy tabeli)") |> 
+  column_spec(1, width = "4cm") |>
+  column_spec(2, width = "12cm")
+```
+
+## Status edukacyjno-zawodowy absolwentów ogółem
+
+```{r, child="status_edzaw_child.Rmd"}
+
+```
+
+`r ifelse(typDokumentu %in% "pdf" & zawodowa == 1L, "## Status edukacyjno-zawodowy absolwentów według zawodu kształcenia", "")`

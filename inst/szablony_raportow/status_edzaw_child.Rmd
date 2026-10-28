@@ -1,5 +1,5 @@
 ```{r}
-# zamknąć w dunkcję to przejście z tabeli pod wykres do tej poniżej wykresu
+# zamknąć w funkcję to przejście z tabeli pod wykres do tej poniżej wykresu
 
 if (szk$S3_12[[1]]$n >= progLiczebnosci) {
   cat(
@@ -94,9 +94,23 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
     NULL,
     powiaty_dop,
     nazwy_wierszy,
-    szk$typ_szk[[1]],
+    rap_odmiany$typ_szk_mian_lm,
     80
-    ) %>% 
+    )
+  
+  wykres <- wykres_poziomy_statusy(
+    tab,
+    wrapper(paste0("Wykres ",
+                   wyk_num(),
+                   ": Status edukacyjno-zawodowy absolwentów Państwa szkoły oraz absolwentów pozostałych ",
+                   rap_odmiany$typ_szk_dop_lm,
+                   " z ",
+                   powiaty_dop,
+                   " w grudniu ",
+                   params$rok,
+                   " roku - ogółem"), 80))
+  
+  tab <- tab |> 
     mutate(
       name = ordered(
         name,
@@ -115,56 +129,36 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
         )
       )
   
-  wykres <- wykres_poziomy_statusy(
-    tab,
-    wrapper(paste0("Wykres ",
-                   wyk_num(),
-                   ": Status edukacyjno-zawodowy absolwentów Państwa szkoły oraz absolwentów pozostałych ",
-                   rap_odmiany$typ_szk_dop_lm,
-                   " z ",
-                   powiaty_dop,
-                   " w grudniu ",
-                   params$rok,
-                   " roku - ogółem"), 80))
-  
   levels(tab$typ) <- linebreak(levels(tab$typ), align = "l")
   
-  tabela <- tab %>% 
-    # mutate(across(name,
-    #               ~ordered(name,
-    #                        levels = c("Brak danych o aktywności",
-    #                                   "Bezrobocie",
-    #                                   "Tylko praca",
-    #                                   "Nauka i praca",
-    #                                   "Tylko nauka"),
-    #                        labels = c("brak_danych", "bezrob", "tylko_prac", "ucz_prac", "tylko_ucz")))) %>% 
-    select(-lab) %>% 
-    pivot_wider(names_from = name) %>% 
-    select(typ, tylko_ucz, ucz_prac, tylko_prac, bezrob, brak_danych) %>% 
+  tabela <- tab  |>  
+    select(-lab) |> 
+    pivot_wider(names_from = name) |> 
+    select(typ, tylko_ucz, ucz_prac, tylko_prac, bezrob, brak_danych) |> 
     mutate(across(tylko_ucz:brak_danych,
-                  ~ round(. * 100))) %>%
+                  ~ round(. * 100))) |>
     mutate(across(tylko_ucz:brak_danych,
-                  ~ paste0(., "\\%"))) %>%
-    kable(format = "latex", booktabs = TRUE, escape = FALSE, longtable = TRUE,
+                  ~ paste0(., "\\%"))) |>
+    kable(format = "latex", booktabs = TRUE, escape = FALSE, longtable = FALSE,
           linesep = "",
           align = "lccccc",
           col.names = NULL,
-          digits = 0) %>% 
+          digits = 0) |> 
     kable_styling(position = wyrownanieTabWykr,
                   latex_options = c("hold_position", "repeat_header"),
                   font_size = 10,
                   full_width = TRUE,
-                  repeat_header_text = "(ciąg dalszy tabeli)") %>% 
+                  repeat_header_text = "(ciąg dalszy tabeli)") |> 
     add_header_above(c("", "1" = 1, "2" = 1, "3" = 1, "4" = 1, "5" = 1),
-                     align = c("l", "c", "c", "c", "c", "c")) %>%
+                     align = c("l", "c", "c", "c", "c", "c")) |>
     add_header_above(c(" ",
                        "1. Tylko nauka\n2. Nauka i praca\n3. Tylko praca\n4. Bezrobocie\n5. Brak danych o aktywności" = 5),
-                     align = c("c", "l")) %>% 
-    column_spec(1, width = "6cm") %>%
-    column_spec(2, width = "1.75cm") %>%
-    column_spec(3, width = "1.75cm") %>%
-    column_spec(4, width = "1.75cm") %>%
-    column_spec(5, width = "1.75cm") %>% 
+                     align = c("c", "l")) |> 
+    column_spec(1, width = "6cm") |>
+    column_spec(2, width = "1.75cm") |>
+    column_spec(3, width = "1.75cm") |>
+    column_spec(4, width = "1.75cm") |>
+    column_spec(5, width = "1.75cm") |> 
     column_spec(6, width = "1.75cm")
   
   zwroc_wykres_tabela(wykres, tabela)
