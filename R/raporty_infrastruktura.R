@@ -4,11 +4,10 @@
 #' potrzebny do zrównoleglenia obliczeń - do stworzenia poszczególnych skryptów
 #' będących częścią infrastruktury zrównoleglającej obliczenia.
 #' @param nrow liczba wierszy w ramce danych wygenerowanej za pomocą funkcji
-#' [utworz_grupowanie_odn_teryt()]
+#' [MONIKAdane::utworz_grupowanie_odn_teryt()]
 #' @param podzial liczba opisująca na ile części ma zostać podzielona liczba
 #' wierszy (tyle będzie finalnie działających sesji R podczas zrównoleglania)
 #' @return ramka danych zawierająca zakres wierszy dla każdej jednostki podziału
-#' @importFrom
 #' @export
 skrypty_podzial <- function(wsk_szk) {
   stopifnot(
@@ -64,14 +63,14 @@ skrypty_podzial <- function(wsk_szk) {
 #'   \item{`"woj"`}{}
 #' }
 #' @param podzial_grupy_df ramka danych wygenerowana zwykle za pomocą funkcji
-#' [definicje_podzialu()]
+#' [skrypty_podzial()]
 #' @importFrom tibble is_tibble
 #' @return pliki txt będące skryptami uruchamianymi podczas zrównoleglania
-#' @seealso [definicje_podzialu()]
-#' @seealso [przygotuj_tabele_posrednie()]
+#' @seealso [skrypty_podzial()]
+#' @seealso [MONIKAdane::przygotuj_tabele_posrednie_fst()]
 #' @export
 skrypt_wzor <- function(sciezka_docelowa, plik_tab_posrednie,
-                        rok_ukonczenia = 2024, rodzaj_wsk,
+                        rok_ukonczenia = 2025, rodzaj_wsk,
                         podzial_grupy_df) {
   
   stopifnot(is.character(sciezka_docelowa) & length(sciezka_docelowa) > 0,

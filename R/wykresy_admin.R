@@ -10,15 +10,15 @@
 #' @return wykres
 #' @importFrom tibble is_tibble
 #' @importFrom ggplot2 ggplot geom_bar scale_fill_brewer scale_y_continuous
-#' labs geom_text coord_flip theme guides ylab xlab scale_x_discrete
+#'  labs geom_text coord_flip theme guides ylab xlab scale_x_discrete
 #' @importFrom dplyr .data
-wykres_poziomy_statusy = function(x, tytul) {
+wykres_poziomy_statusy <- function(x, tytul) {
   stopifnot(is_tibble(x),
             ifelse(is.null(tytul), FALSE, nchar(tytul) > 1))
   
-  kolory_slupkow = c("#d62f26", "#585cd6", "#f8dd00", "#d8ef8a", "#1a974f")
+  kolory_slupkow <- c("#d62f26", "#585cd6", "#f8dd00", "#d8ef8a", "#1a974f")
 
-  ggplot(x, aes(x = .data$typ,
+  wykres <- ggplot(x, aes(x = .data$typ,
                 y = .data$value,
                 fill = .data$name)) +
     geom_bar(width = 0.75, stat = "identity", colour = "white") +
@@ -41,8 +41,9 @@ wykres_poziomy_statusy = function(x, tytul) {
           axis.ticks.x = element_blank(),
           plot.title.position = "plot",
           plot.title = element_text(size = 11)) +
-    guides(fill = guide_legend(nrow = 4, byrow = TRUE, reverse = TRUE)) %>%
-    return()
+    guides(fill = guide_legend(nrow = 5, byrow = TRUE, reverse = TRUE))
+  
+  return(wykres)
 }
 #' @title Wykresy w raportach z 3. rundy monitoringu na danych administracyjnych
 #' @description Funkcja rysująca pionowy, skumulowany, wykres słupkowy na
@@ -56,15 +57,15 @@ wykres_poziomy_statusy = function(x, tytul) {
 #' @return wykres
 #' @importFrom tibble is_tibble
 #' @importFrom ggplot2 ggplot geom_bar scale_fill_brewer scale_y_continuous
-#' labs geom_text coord_flip theme guides ylab xlab scale_x_discrete
+#'  labs geom_text coord_flip theme guides ylab xlab scale_x_discrete
 #' @importFrom dplyr .data
-wykres_pionowy_statusy = function(x, tytul) {
+wykres_pionowy_statusy <- function(x, tytul) {
   stopifnot(is_tibble(x),
             ifelse(is.null(tytul), FALSE, nchar(tytul) > 1))
   
-  kolory_slupkow = c("#d62f26", "#585cd6", "#f8dd00", "#d8ef8a", "#1a974f")
+  kolory_slupkow <- c("#d62f26", "#585cd6", "#f8dd00", "#d8ef8a", "#1a974f")
   
-  ggplot(x, aes(x = .data$month,
+  wykres <- ggplot(x, aes(x = .data$month,
                 y = .data$value,
                 fill = .data$name)) +
     geom_bar(width = 0.75, stat = "identity", colour = "white") +
@@ -86,8 +87,9 @@ wykres_pionowy_statusy = function(x, tytul) {
           axis.ticks.x = element_blank(),
           plot.title.position = "plot",
           plot.title = element_text(size = 11)) +
-    guides(fill = guide_legend(nrow = 6, byrow = TRUE, reverse = TRUE)) %>%
-    return()
+    guides(fill = guide_legend(nrow = 3, ncol = 2, byrow = TRUE, reverse = TRUE))
+  
+  return(wykres)
 }
 #' @title Wykresy w raportach z 3. rundy monitoringu na danych administracyjnych
 #' @description Funkcja rysująca wykres warstwowy na potrzeby raportu. Jako
@@ -100,15 +102,15 @@ wykres_pionowy_statusy = function(x, tytul) {
 #' @return wykres
 #' @importFrom tibble is_tibble
 #' @importFrom ggplot2 ggplot geom_area scale_fill_brewer theme guides ylab xlab
-#' labs
+#'  labs
 #' @importFrom dplyr .data
-wave_chart = function(x, tytul) {
+wave_chart <- function(x, tytul) {
   stopifnot(is_tibble(x),
             ifelse(is.null(tytul), FALSE, nchar(tytul) > 1))
   
-  kolory_slupkow = c("#d62f26", "#585cd6", "#f8dd00", "#d8ef8a", "#1a974f")
+  kolory_slupkow <- c("#d62f26", "#585cd6", "#f8dd00", "#d8ef8a", "#1a974f")
 
-  ggplot(x, aes(x = .data$month, y = .data$value, fill = .data$name)) +
+  wykres <- ggplot(x, aes(x = .data$month, y = .data$value, fill = .data$name)) +
     geom_area(position = position_stack(reverse = TRUE), stat = "identity") +
     theme(legend.position = "bottom",
           legend.justification = "left",
@@ -116,7 +118,6 @@ wave_chart = function(x, tytul) {
           panel.background = element_rect(fill = "white"),
           axis.ticks.y = element_blank(),
           axis.ticks.x = element_blank(),
-          # plot.title.position = "plot",
           plot.title = element_text(size = 11)) +
     scale_fill_manual(values = kolory_slupkow,
                       guide = guide_legend(reverse = TRUE)) +
@@ -124,8 +125,9 @@ wave_chart = function(x, tytul) {
     scale_y_continuous(labels = scales::percent) +
     ylab("Odsetek absolwentów") +
     xlab("Miesiąc") +
-    labs(title = tytul) %>%
-    return()
+    labs(title = tytul)
+  
+  return(wykres)
 }
 #' @title Wykresy w raportach z 3. rundy monitoringu na danych administracyjnych
 #' @description Funkcja rysująca poziomy wykres na potrzeby raportu. Jako
@@ -138,13 +140,13 @@ wave_chart = function(x, tytul) {
 #' @return wykres
 #' @importFrom tibble is_tibble
 #' @importFrom ggplot2 ggplot geom_bar scale_fill_brewer scale_y_continuous
-#' labs geom_text coord_flip theme guides ylab xlab
+#'  labs geom_text coord_flip theme guides ylab xlab
 #' @importFrom dplyr .data
-wykres_poziomy_slupki = function(x, tytul) {
+wykres_poziomy_slupki <- function(x, tytul) {
   stopifnot(is_tibble(x),
             ifelse(is.null(tytul), FALSE, nchar(tytul) > 1))
 
-  ggplot(x, aes(x = .data$name, y = .data$value)) +
+  wykres <- ggplot(x, aes(x = .data$name, y = .data$value)) +
     geom_bar(width = 0.9, stat = "identity", colour = "white", fill = "#90CF60", position = position_dodge(width = 0.9)) +
     scale_y_continuous(labels = scales::percent, limits = c(0, 1)) +
     scale_x_discrete(limits = rev) +
@@ -165,8 +167,9 @@ wykres_poziomy_slupki = function(x, tytul) {
           axis.ticks.x = element_blank(),
           plot.title.position = "plot",
           plot.title = element_text(size = 11)) +
-    labs(title = tytul) %>%
-    return()
+    labs(title = tytul)
+  
+  return(wykres)
 }
 #' @title Wykresy w raportach z 3. rundy monitoringu na danych administracyjnych
 #' @description Funkcja rysująca wykres typu boxplot na potrzeby raportu. Wykres
@@ -179,11 +182,11 @@ wykres_poziomy_slupki = function(x, tytul) {
 #' @importFrom tibble is_tibble
 #' @importFrom ggplot2 ggplot geom_errorbar geom_boxplot theme xlab
 #' @importFrom dplyr .data
-boxplot_proc = function(x, tytul) {
+boxplot_proc <- function(x, tytul) {
   stopifnot(is_tibble(x),
             ifelse(is.null(tytul), FALSE, nchar(tytul) > 1))
 
-  ggplot(x, aes(x = .data$typ, fill = .data$typ)) +
+  wykres <- ggplot(x, aes(x = .data$typ, fill = .data$typ)) +
     geom_errorbar(aes(ymin = .data$q5, ymax = .data$q95), width = 0.5) +
     geom_boxplot(aes(ymin = .data$q5,
                      lower = .data$q25,
@@ -205,8 +208,9 @@ boxplot_proc = function(x, tytul) {
           axis.line.y = element_line(colour = "lightgrey", size = 1)) +
     scale_y_continuous(labels = scales::percent) +
     xlab(NULL) +
-    labs(title = tytul) %>%
-    return()
+    labs(title = tytul)
+  
+  return(wykres)
 }
 #' @title Wykresy w raportach z 3. rundy monitoringu na danych administracyjnych
 #' @description Funkcja rysująca wykres słupkowy, pionowy, skumulowany na
@@ -218,13 +222,13 @@ boxplot_proc = function(x, tytul) {
 #' @return wykres
 #' @importFrom tibble is_tibble
 #' @importFrom ggplot2 ggplot geom_bar scale_y_continuous labs geom_text ylab
-#' xlab theme
+#'  xlab theme
 #' @importFrom dplyr .data
-wykres_pion_skum = function(x, tytul) {
+wykres_pion_skum <- function(x, tytul) {
   stopifnot(is_tibble(x),
             ifelse(is.null(tytul), FALSE, nchar(tytul) > 1))
 
-  ggplot(x, aes(x = .data$typ, y = .data$value, fill = .data$name)) +
+  wykres <- ggplot(x, aes(x = .data$typ, y = .data$value, fill = .data$name)) +
     geom_bar(width = 0.75, stat = "identity", colour = "white") +
     scale_y_continuous(labels = scales::percent) +
     scale_fill_brewer(palette = "RdYlGn") +
@@ -239,8 +243,9 @@ wykres_pion_skum = function(x, tytul) {
           axis.ticks.x = element_blank(),
           plot.title.position = "plot",
           plot.title = element_text(size = 11)) +
-    guides(fill = guide_legend(nrow = 7, byrow = TRUE)) %>%
-    return()
+    guides(fill = guide_legend(nrow = 7, byrow = TRUE))
+  
+  return(wykres)
 }
 #' @title Wykresy w raportach z 3. rundy monitoringu na danych administracyjnych
 #' @description Funkcja rysująca wykres słupkowy, pionowy, skumulowany na
@@ -254,14 +259,14 @@ wykres_pion_skum = function(x, tytul) {
 #' @return wykres
 #' @importFrom tibble is_tibble
 #' @importFrom ggplot2 ggplot geom_bar scale_y_continuous labs geom_text ylab
-#' xlab theme
+#'  xlab theme
 #' @importFrom dplyr .data
-wyk_facet = function(x, tytul, os_x, tytul_x) {
+wyk_facet <- function(x, tytul, os_x, tytul_x) {
   stopifnot(is_tibble(x))
 
-  os_x = ensym(os_x)
+  os_x <- ensym(os_x)
 
-  ggplot(x, aes(x = .data[[os_x]], y = .data$pct)) +
+  wykres <- ggplot(x, aes(x = .data[[os_x]], y = .data$pct)) +
     geom_bar(aes(fill = .data$typ), stat = "identity") +
     xlab(tytul_x) +
     facet_grid(cols = vars(.data$typ)) +
@@ -280,6 +285,7 @@ wyk_facet = function(x, tytul, os_x, tytul_x) {
     scale_y_continuous(labels = scales::percent,
                        limits = c(0.0, 1.05)) +
     labs(title = tytul) +
-    ylab("Odsetek absolwentów") %>%
-    return()
+    ylab("Odsetek absolwentów")
+  
+  return(wykres)
 }
