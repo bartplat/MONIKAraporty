@@ -1,0 +1,229 @@
+### Absolwenci pracujący i zarazem kontynuujący naukę
+
+```{r}
+if (szk$Z8_formy_ucz[[1]]$n >= progLiczebnosci) {
+  cat(
+    "W grudniu ",
+    params$rok,
+    " roku spośród absolwentów Państwa szkoły, którzy studiowali lub uczyli się w szkole policealnej, a zarazem pracowali, ",
+    round(szk$Z8_formy_ucz[[1]]$ucz_uop * 100),
+    "% było zatrudnionych na umowę o pracę i nie prowadziło własnej działalności gospodarczej, a ",
+    round(szk$Z8_formy_ucz[[1]]$ucz_samoz * 100),
+    "% nie pracowało na podstawie takiej umowy, lecz prowadziło własną działalność gospodarczą. Z kolei ", 
+    round(szk$Z8_formy_ucz[[1]]$ucz_wiecej * 100),
+    "% łączyło różne formy, a ",
+    round(szk$Z8_formy_ucz[[1]]$ucz_rolnik * 100),
+    "% pracowało w rolnictwie.",
+    "\n\nWśród kontynuujących naukę absolwentów pozostałych ",
+    szk$odmiany[[1]]$typ_szk_dop_lm,
+    " z ",
+    powiaty_dop,
+    ", analogiczne odsetki wynosiły odpowiednio: ",
+    round(god$Z8_formy_ucz[[1]]$ucz_uop * 100),
+    "%, ",
+    round(god$Z8_formy_ucz[[1]]$ucz_samoz * 100),
+    "%, ",
+    round(god$Z8_formy_ucz[[1]]$ucz_wiecej * 100),
+    "% i ",
+    round(god$Z8_formy_ucz[[1]]$ucz_rolnik * 100),
+    "%.\n\n",
+    sep = ""
+  )
+} else {
+  cat("Liczba absolwentów Państwa szkoły pracujących i kontynuujących naukę na uczelni lub w szkole policealnej nie była wystarczająca, żeby możliwe było przedstawienie wyników dla tej grupy, zgodnie z zasadą chroniącą anonimowość absolwentów.\n\n")
+}
+```
+
+```{r, fig.height=6}
+if (szk$Z8_formy_ucz[[1]]$n >= progLiczebnosci) {
+  etykiety <- c("Zatrudnieni tylko na podstawie umowy o pracę",
+               "Tylko samozatrudnieni",
+               "Tylko zatrudnieni na podstawie innej formy umowy niż umowa o pracę",
+               "Zatrudnieni na podstawie więcej niż jednej formy umowy",
+               "Zatrudnieni tylko w rolnicwie")
+  
+  tab_wyk <- tab_wykres(szk$Z8_formy_ucz[[1]],
+                        god$Z8_formy_ucz[[1]],
+                        NULL,
+                        powiaty_dop,
+                        etykiety,
+                        szk$odmiany[[1]]$typ_szk_dop_lm,
+                        80)
+  
+  wyk_tyt <- wrapper(paste0("Wykres ",
+                           wyk_num(),
+                           ": Formy wykonywania pracy przez pracujących absolwentów Państwa szkoły oraz pozostałych ",
+                           szk$odmiany[[1]]$typ_szk_dop_lm,
+                           " z ",
+                           powiaty_dop,
+                           " w grudniu ",
+                           params$rok,
+                           " roku - pracujący i kontynuujący naukę"),
+           width = 85)
+  
+  wykres <- wykres_pion_skum(tab_wyk, wyk_tyt) +
+    scale_fill_manual(values = c("#90cf60", "#d8ef8a", "#f8dd00", "#fb8c59", "blue")) +
+    ylab("Odsetek absolwentów")
+  
+  levels(tab_wyk$typ) <- linebreak(levels(tab_wyk$typ), align = "l")
+  
+  tab_wyk <- tab_wyk %>%
+    select(-lab) %>%
+    pivot_wider(names_from = name) %>%
+    mutate(across(2:6,
+                  ~ round(. * 100))) %>%
+    mutate(across(2:6,
+                  ~ paste0(., "\\%"))) %>%
+    select(typ,
+           `Tylko samozatrudnieni`,
+           `Tylko zatrudnieni na podstawie innej formy umowy niż umowa o pracę`,
+           `Zatrudnieni na podstawie więcej niż jednej formy umowy`,
+           `Zatrudnieni tylko na podstawie umowy o pracę`,
+           `Zatrudnieni tylko w rolnicwie`) %>% 
+    kable("latex", booktabs = TRUE, escape = FALSE, longtable = TRUE,
+          linesep = "",
+          align = "lccccc",
+          col.names = NULL,
+          digits = 0) %>%
+    kable_styling(position = wyrownanieTabWykr,
+                  latex_options = c("hold_position", "repeat_header"),
+                  font_size = 10,
+                  full_width = FALSE,
+                  repeat_header_text = "(ciąg dalszy tabeli)") %>%
+    add_header_above(
+      c(" ",
+        "Tylko\nsamozatrudnienie" = 1,
+        "Tylko inna\nforma" = 1,
+        "Więcej niż\njedna forma" = 1,
+        "Tylko UOP" = 1,
+        "Tylko\nrolnictwo" = 1
+      ),
+      align = c("l", "c", "c", "c", "c", "c"))
+  
+  zwroc_wykres_tabela(wykres, tab_wyk)
+}
+```
+
+### Absolwenci pracujący, ale nie kontynuujący nauki
+
+```{r}
+if (szk$Z8_formy_nie_ucz[[1]]$n >= progLiczebnosci) {
+  szk_minus_god <- list(
+    nieucz_uop = round(szk$Z8_formy_nie_ucz[[1]]$nieucz_uop * 100) - round(god$Z8_formy_nie_ucz[[1]]$nieucz_uop * 100),
+    nieucz_samoz = round(szk$Z8_formy_nie_ucz[[1]]$nieucz_samoz * 100) - round(god$Z8_formy_nie_ucz[[1]]$nieucz_samoz * 100),
+    nieucz_inna = round(szk$Z8_formy_nie_ucz[[1]]$nieucz_inna * 100) - round(god$Z8_formy_nie_ucz[[1]]$nieucz_inna * 100),
+    nieucz_wiecej = round(szk$Z8_formy_nie_ucz[[1]]$nieucz_wiecej * 100) - round(god$Z8_formy_nie_ucz[[1]]$nieucz_wiecej * 100),
+    nieucz_rolnik = round(szk$Z8_formy_nie_ucz[[1]]$nieucz_rolnik * 100) - round(god$Z8_formy_nie_ucz[[1]]$nieucz_rolnik * 100)
+  )
+  
+  cat(
+    "Spośród pracujących absolwentów Państwa szkoły, którzy nie kontynuowali nauki na studiach ani w szkole policealnej, w grudniu ",
+    params$rok,
+    " roku dla ",
+    round(szk$Z8_formy_nie_ucz[[1]]$nieucz_uop * 100),
+    "% jedyną formą zatrudnienia była umowa o pracę, ",
+    round(szk$Z8_formy_nie_ucz[[1]]$nieucz_samoz * 100),
+    "% pracowało wyłącznie prowadząc własną działalność gospodarczą, ",
+    round(szk$Z8_formy_nie_ucz[[1]]$nieucz_inna * 100),
+    "% było zatrudnionych tylko „w innej formie”, czyli przeważnie na podstawie umowy cywilnoprawnej, a ",
+    round(szk$Z8_formy_nie_ucz[[1]]$nieucz_wiecej * 100),
+    "% łączyło co najmniej dwie formy zatrudnienia. Pozostali byli zatrudnieni w ronictwie.\n\nNiekontynuujący nauki absolwenci Państwa szkoły pracowali wyłącznie na podstawie umowy o pracę ",
+    case_when(
+      szk_minus_god$nieucz_uop >= 3 & round(szk$Z8_formy_nie_ucz[[1]]$nieucz_uop * 100) == 0 ~ "częściej niż",
+      szk_minus_god$nieucz_uop > 3 ~ "częściej niż",
+      szk_minus_god$nieucz_uop <= -3 & round(szk$Z8_formy_nie_ucz[[1]]$nieucz_uop * 100) == 0 ~ "rzadziej niż",
+      szk_minus_god$nieucz_uop < -3 ~ "rzadziej niż",
+      szk_minus_god$nieucz_uop >= -3 & szk_minus_god$nieucz_uop <= 3 ~ "podobnie często, co"),
+    " absolwenci pozostałych ",
+    szk$odmiany[[1]]$typ_szk_dop_lm,
+    " z ",
+    powiaty_dop,
+    ".\n\nZarazem niekontynuujący nauki absolwenci Państwa szkoły ",
+    case_when(
+      szk_minus_god$nieucz_samoz >= 3 & round(szk$Z8_formy_nie_ucz[[1]]$nieucz_samoz * 100) == 0 ~ "częściej niż",
+      szk_minus_god$nieucz_samoz > 3 ~ "częściej niż",
+      szk_minus_god$nieucz_samoz <= -3 & round(szk$Z8_formy_nie_ucz[[1]]$nieucz_samoz * 100) == 0 ~ "rzadziej niż",
+      szk_minus_god$nieucz_samoz < -3 ~ "rzadziej niż",
+      szk_minus_god$nieucz_samoz >= -3 & szk_minus_god$nieucz_samoz <= 3 ~ "podobnie często, co"),
+    " absolwenci pozostałych ",
+    szk$odmiany[[1]]$typ_szk_dop_lm,
+    " z ",
+    powiaty_dop,
+    ", pracowali wyłącznie prowadząc własną działalność gospodarczą.\n\n",
+    sep = ""
+  )
+} else {
+  cat("Liczba absolwentów Państwa szkoły pracujących i niekontynuujących nauki na uczelni ani w szkole policealnej nie była wystarczająca, żeby możliwe było przedstawienie wyników dla tej grupy, zgodnie z zasadą chroniącą anonimowość absolwentów.\n\n")
+}
+```
+
+```{r, fig.height=6}
+if (szk$Z8_formy_nie_ucz[[1]]$n >= progLiczebnosci) {
+  etykiety <- c("Zatrudnieni tylko na podstawie umowy o pracę",
+               "Tylko samozatrudnieni",
+               "Tylko zatrudnieni na podstawie innej formy umowy niż umowa o pracę",
+               "Zatrudnieni na podstawie więcej niż jednej formy umowy",
+               "Zatrudnieni tylko w rolnicwie")
+  
+  tab_wyk <- tab_wykres(szk$Z8_formy_nie_ucz[[1]],
+                        god$Z8_formy_nie_ucz[[1]],
+                        NULL,
+                        powiaty_dop,
+                        etykiety,
+                        szk$odmiany[[1]]$typ_szk_dop_lm,
+                        80)
+  
+  wyk_tyt <- wrapper(paste0("Wykres ",
+                           wyk_num(),
+                           ": Formy wykonywania pracy przez pracujących absolwentów Państwa szkoły oraz pozostałych ",
+                           szk$odmiany[[1]]$typ_szk_dop_lm,
+                           " z ",
+                           powiaty_dop,
+                           " w grudniu ",
+                           params$rok,
+                           " roku - pracujący i niekontynuujący nauki"),
+           width = 85)
+  
+  wykres <- wykres_pion_skum(tab_wyk, wyk_tyt) +
+    scale_fill_manual(values = c("#90cf60", "#d8ef8a", "#f8dd00", "#fb8c59", "blue")) +
+    ylab("Odsetek absolwentów")
+  
+  levels(tab_wyk$typ) <- linebreak(levels(tab_wyk$typ), align = "l")
+  
+  tab_wyk <- tab_wyk %>%
+    select(-lab) %>%
+    pivot_wider(names_from = name) %>%
+    mutate(across(2:6,
+                  ~ round(. * 100))) %>%
+    mutate(across(2:6,
+                  ~ paste0(., "\\%"))) %>%
+    select(typ,
+           `Tylko samozatrudnieni`,
+           `Tylko zatrudnieni na podstawie innej formy umowy niż umowa o pracę`,
+           `Zatrudnieni na podstawie więcej niż jednej formy umowy`,
+           `Zatrudnieni tylko na podstawie umowy o pracę`,
+           `Zatrudnieni tylko w rolnicwie`) %>% 
+    kable("latex", booktabs = TRUE, escape = FALSE, longtable = TRUE,
+          linesep = "",
+          align = "lccccc",
+          col.names = NULL,
+          digits = 0) %>%
+    kable_styling(position = wyrownanieTabWykr,
+                  latex_options = c("hold_position", "repeat_header"),
+                  font_size = 10,
+                  full_width = FALSE,
+                  repeat_header_text = "(ciąg dalszy tabeli)") %>%
+    add_header_above(
+      c(
+        " ",
+        "Tylko\nsamozatrudnienie" = 1,
+        "Tylko inna\nforma" = 1,
+        "Więcej niż\njedna forma" = 1,
+        "Tylko UOP" = 1,
+        "Tylko\nrolnictwo" = 1
+      ),
+      align = c("l", "c", "c", "c", "c", "c"))
+  
+  zwroc_wykres_tabela(wykres, tab_wyk)
+}
+```

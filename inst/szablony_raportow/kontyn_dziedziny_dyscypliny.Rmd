@@ -1,0 +1,188 @@
+```{r}
+if (szk$typ_szk[[1]] %in% c("Technikum", "Branżowa szkoła II stopnia", "Szkoła policealna", "Liceum ogólnokształcące dla dorosłych", "Liceum ogólnokształcące")) {
+  cat(
+    "## Kontynuowanie nauki na studiach w poszczególnych dziedzinach i dyscyplinach\n\n",
+    "Kierunki studiów są przypisane do dziedzin i dyscyplin, zgodnie z klasyfikacją ministra właściwego ds. szkolnictwa wyższego i nauki (poszczególne dziedziny obejmują od kilku do kilkunastu dyscyplin).\n\n"
+  )
+}
+```
+
+```{r}
+if (szk$typ_szk[[1]] %in% c("Technikum", "Branżowa szkoła II stopnia", "Szkoła policealna", "Liceum ogólnokształcące dla dorosłych", "Liceum ogólnokształcące")) {
+  if (szk$liczebnosc_dziedziny[[1]]$n >= progLiczebnosci) {
+    if (round(szk$E2_nauka_kontyn[[1]]$Studia * szk$E2_nauka_kontyn[[1]]$n) >= progLiczebnosci) {
+      if (sum(szk$liczebnosc_dziedziny[[1]]$pct > 0) %in% 1) {
+        cat(
+          "Jedyną dziedziną, w której w grudniu ",
+          params$rok,
+          " roku studiowali absolwenci Państwa szkoły, była dziedzina ",
+          szk$liczebnosc_dziedziny[[1]]$kont[szk$liczebnosc_dziedziny[[1]]$pct > 0],
+          sep = ""
+        )
+      } else if (sum(szk$liczebnosc_dziedziny[[1]]$pct > 0) > 1 & sum(szk$liczebnosc_dziedziny[[1]]$pct %in% max(szk$liczebnosc_dziedziny[[1]]$pct)) %in% 1) {
+        cat(
+          "Dziedziną, w której w grudniu ",
+          params$rok,
+          " roku studiowało najwięcej absolwentów Państwa szkoły, była dziedzina ",
+          szk$liczebnosc_dziedziny[[1]]$kont[szk$liczebnosc_dziedziny[[1]]$pct %in% max(szk$liczebnosc_dziedziny[[1]]$pct)],
+          ". Kształciło się w niej ",
+          round(max(szk$liczebnosc_dziedziny[[1]]$pct) * 100),
+          "% spośród absolwentów, którzy w grudniu ",
+          params$rok,
+          " roku studiowali.",
+          sep = ""
+        )
+      } else if (sum(szk$liczebnosc_dziedziny[[1]]$pct > 0) > 1 & sum(szk$liczebnosc_dziedziny[[1]]$pct %in% max(szk$liczebnosc_dziedziny[[1]]$pct)) > 1) {
+        cat(
+          "Dziedzinami, w których w grudniu ",
+          params$rok,
+          " roku absolwenci Państwa szkoły najczęściej studiowali, były: ",
+          paste(
+            szk$liczebnosc_dziedziny[[1]]$kont[szk$liczebnosc_dziedziny[[1]]$pct %in% max(szk$liczebnosc_dziedziny[[1]]$pct)],
+            collapse = ", "),
+          ".",
+          sep = ""
+        )
+      }
+    } else {
+      cat(
+        "Liczba absolwentów Państwa szkoły, którzy w grudniu ",
+        params$rok,
+        " roku studiowali, nie była wystarczająca, żeby możliwe było przedstawienie wyników dla tej grupy zgodnie z zasadą chroniącą anonimowość absolwentów.",
+        sep = "")
+    }
+  } else {
+    cat(
+      "Liczba absolwentów Państwa szkoły, którzy w grudniu ",
+      params$rok,
+      " roku studiowali, nie była wystarczająca, żeby możliwe było przedstawienie wyników dla tej grupy zgodnie z zasadą chroniącą anonimowość absolwentów.",
+      sep = "")
+  }
+}
+```
+
+```{r}
+if (szk$typ_szk[[1]] %in% c("Technikum", "Branżowa szkoła II stopnia", "Szkoła policealna", "Liceum ogólnokształcące dla dorosłych", "Liceum ogólnokształcące")) {
+  if (szk$liczebnosc_dziedziny[[1]]$n >= progLiczebnosci) {
+    if (round(szk$E2_nauka_kontyn[[1]]$Studia * szk$E2_nauka_kontyn[[1]]$n) >= progLiczebnosci) {
+      cat("Tabela ",
+          tab_num(),
+          ": Dziedziny, w których absolwenci Państwa szkoły najczęściej studiowali w grudniu ",
+          params$rok,
+          " roku - ogółem (%) - maksymalnie 10 dziedzin",
+          sep = "")
+      
+      tabelka <- szk$liczebnosc_dziedziny[[1]] %>% 
+        as_tibble() %>% 
+        select(-n) %>% 
+        slice_max(order_by = pct, n = 10, with_ties = FALSE) %>% 
+        mutate(across(pct,
+                      ~paste0(round(. * 100), "\\%"))) %>% 
+        kable(format = "latex",
+              booktabs = TRUE,
+              escape = FALSE,
+              longtable = TRUE,
+              linesep = "",
+              align = "lc",
+              col.names = NULL,
+              digits = 0) %>%
+        kable_styling(position = wyrownanieTabWykr,
+                      latex_options = c("hold_position", "repeat_header"),
+                      full_width = FALSE,
+                      repeat_header_text = "(ciąg dalszy tabeli)") %>%
+        add_header_above(c(paste0("Dziedziny, w których absolwenci Państwa\nszkoły studiowali w grudniu ", params$rok, " roku"), "% wśród absolwentów studiujących" = 1),
+                         align = c("l", "c")) %>% 
+        add_footnote("W tabeli prezentowanych jest maksymalnie 10 dziedzin o najwyższych odsetkach kontynuacji",
+                     notation = "none")
+      
+      cat(tabelka)
+      
+      cat("\\textcolor{black}{\\relscale{0.75}Odsetki mogą sumować się do więcej niż 100\\% ze względu na możliwość studiowania w więcej niż jednej dziedzinie.}")
+    }
+  }
+}
+```
+
+```{r}
+if (szk$typ_szk[[1]] %in% c("Technikum", "Branżowa szkoła II stopnia", "Szkoła policealna", "Liceum ogólnokształcące dla dorosłych", "Liceum ogólnokształcące")) {
+  if (szk$liczebnosc_dyscypliny[[1]]$n >= progLiczebnosci) {
+    if (round(szk$E2_nauka_kontyn[[1]]$Studia * szk$E2_nauka_kontyn[[1]]$n) >= progLiczebnosci) {
+      if (sum(szk$liczebnosc_dyscypliny[[1]]$pct > 0) %in% 1) {
+        cat(
+          "Jedyną dyscypliną, w której w grudniu ",
+          params$rok,
+          " roku studiowali absolwenci Państwa szkoły, była dyscyplina ",
+          szk$liczebnosc_dyscypliny[[1]]$kont[szk$liczebnosc_dyscypliny[[1]]$pct > 0],
+          sep = ""
+        )
+      } else if (sum(szk$liczebnosc_dyscypliny[[1]]$pct > 0) > 1 & sum(szk$liczebnosc_dyscypliny[[1]]$pct %in% max(szk$liczebnosc_dyscypliny[[1]]$pct)) %in% 1) {
+        cat(
+          "Dyscypliną, w której w grudniu ",
+          params$rok,
+          " roku studiowało najwięcej absolwentów Państwa szkoły, była dyscyplina ",
+          szk$liczebnosc_dyscypliny[[1]]$kont[szk$liczebnosc_dyscypliny[[1]]$pct %in% max(szk$liczebnosc_dyscypliny[[1]]$pct)],
+          ". Kształciło się w niej ",
+          round(max(szk$liczebnosc_dyscypliny[[1]]$pct) * 100),
+          "% spośród absolwentów, którzy w grudniu ",
+          params$rok,
+          " roku studiowali.",
+          sep = ""
+        )
+      } else if (sum(szk$liczebnosc_dyscypliny[[1]]$pct > 0) > 1 & sum(szk$liczebnosc_dyscypliny[[1]]$pct %in% max(szk$liczebnosc_dyscypliny[[1]]$pct)) > 1) {
+        cat(
+          "Dyscyplinami, w których w grudniu ",
+          params$rok,
+          " roku absolwenci Państwa szkoły najczęściej studiowali, były: ",
+          paste(
+            szk$liczebnosc_dyscypliny[[1]]$kont[szk$liczebnosc_dyscypliny[[1]]$pct %in% max(szk$liczebnosc_dyscypliny[[1]]$pct)],
+            collapse = ", "),
+          ".",
+          sep = ""
+        )
+      }
+    }
+  }
+}
+```
+
+```{r}
+if (szk$typ_szk[[1]] %in% c("Technikum", "Branżowa szkoła II stopnia", "Szkoła policealna", "Liceum ogólnokształcące dla dorosłych", "Liceum ogólnokształcące")) {
+  if (szk$liczebnosc_dyscypliny[[1]]$n >= progLiczebnosci) {
+    if (round(szk$E2_nauka_kontyn[[1]]$Studia * szk$E2_nauka_kontyn[[1]]$n) >= progLiczebnosci) {
+      cat("Tabela ",
+          tab_num(),
+          ": Dyscypliny, w których absolwenci Państwa szkoły najczęściej studiowali w grudniu ",
+          params$rok,
+          " roku - ogółem (%) - maksymalnie 10",
+          sep = "")
+      
+      tabelka <- szk$liczebnosc_dyscypliny[[1]] %>% 
+        as_tibble() %>% 
+        select(-n) %>% 
+        slice_max(order_by = pct, n = 10, with_ties = FALSE) %>%
+        mutate(across(pct,
+                      ~paste0(round(. * 100), "\\%"))) %>% 
+        kable(format = "latex",
+              booktabs = TRUE,
+              escape = FALSE,
+              longtable = TRUE,
+              linesep = "",
+              align = "lc",
+              col.names = NULL,
+              digits = 0) %>%
+        kable_styling(position = wyrownanieTabWykr,
+                      latex_options = c("hold_position", "repeat_header"),
+                      full_width = FALSE,
+                      repeat_header_text = "(ciąg dalszy tabeli)") %>%
+        add_header_above(c(paste0("Dyscypliny, w których absolwenci Państwa\nszkoły studiowali w grudniu ", params$rok, " roku"), "% wśród absolwentów studiujących" = 1),
+                         align = c("l", "c")) %>% 
+        add_footnote("W tabeli prezentowanych jest maksymalnie 10 dyscyplin o najwyższych odsetkach kontynuacji",
+                     notation = "none")
+      
+      cat(tabelka)
+      
+      cat("\\textcolor{black}{\\relscale{0.75}Odsetki mogą sumować się do więcej niż 100\\% ze względu na możliwość studiowania w więcej niż jednej dyscyplinie.}")
+    }
+  }
+}
+```

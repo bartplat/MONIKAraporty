@@ -1,6 +1,6 @@
 ---
 title: |
-  | Raport roczny z monitoringu karier absolwentów, którzy ukończyli `r get(params$obiektWskazniki)$typ_szk` w roku szkolnym `r params$rok - 1`/`r params$rok`
+  | Raport roczny z monitoringu karier absolwentów, którzy ukończyli `r get(params$obiektWskazniki)$odmiany[[1]]$typ_szk_biernik_poj` w roku szkolnym `r params$rok - 1`/`r params$rok`
 subtitle: |
   | `r get(params$obiektWskazniki)$dane_szkoly[[1]]$nazwa`
   | `r get(params$obiektWskazniki)$dane_szkoly[[1]]$adres`
@@ -28,13 +28,11 @@ params:
   progLiczebnosci: 10
   typDokumentu: pdf
   wyrownanieTabWykr: center
-  rok: 2024
+  rok: 2025
 ---
 
 ```{r setup, echo=FALSE, include=FALSE}
-source("setup.R",
-       echo = FALSE,
-       local = TRUE)
+source("setup.R", echo = FALSE, local = TRUE)
 
 # sprawdzić czy działa jeśli to jest tylko w pliku setup.R
 
@@ -54,12 +52,14 @@ source("setup.R",
 `r if (typDokumentu == "pdf") "\\vfill"`
 
 ```{r, echo=FALSE, eval=(typDokumentu == "pdf"), out.width="100%"}
-knitr::include_graphics("Belka-Losy-absolwentow-Kolor-PL.png")
+# knitr::include_graphics("Belka-Losy-absolwentow-Kolor-PL.png")
 ```
+
+![](`r system.file("szablony_raportow/Belka-Losy-absolwentow-Kolor-PL.png", package = "MONIKAraporty")`)
 
 `r ifelse(typDokumentu %in% "pdf", "\\newpage", "")`
 
-```{r, child="wstep-child.Rmd"}
+```{r, child="wstep_child.Rmd"}
 
 ```
 
@@ -67,7 +67,7 @@ knitr::include_graphics("Belka-Losy-absolwentow-Kolor-PL.png")
 
 # 2. Ścieżki edukacyjno-zawodowe
 
-W porównaniu z raportami przygotowywanymi w latach 2021-2023, zwiększono liczbę prezentowanych statusów, opisujących sytuację edukacyjno-zawodową absolwentów. Status „Brak nauki i brak pracy” rozdzielono na „Bezrobocie” oraz „Brak danych o aktywności”. Poniższa tabela objaśnia konstrukcję poszczególnych statusów.
+W porównaniu z raportami przygotowywanymi w poprzednich latach zmieniła się definicja statusów opisujących sytuację edukacyjno-zawodową absolwentów. Dzięki uwzględnieniu w systemie monitoringu danych KRUS poprawiły się dane o zatrudnieniu absolwentów i zmalał udział osób o statusie „Brak danych o aktywności”. Poniższa tabela objaśnia konstrukcję poszczególnych statusów.
 
 ```{r}
 statusy_df |> 
@@ -90,4 +90,122 @@ statusy_df |>
 
 ```
 
-`r ifelse(typDokumentu %in% "pdf" & zawodowa == 1L, "## Status edukacyjno-zawodowy absolwentów według zawodu kształcenia", "")`
+`r ifelse(typDokumentu %in% "pdf" & zawodowa == 1L, "\\newpage", "")`
+
+```{r, child="status_edzaw_zawkszt_child.Rmd"}
+
+```
+
+`r ifelse(typDokumentu %in% "pdf", "\\newpage", "")`
+
+## Status edukacyjno-zawodowy absolwentów miesiąc po miesiącu
+
+```{r, child="status_edzaw_month_child.Rmd"}
+
+```
+
+# 3. Kontynuowanie nauki
+
+## Sposoby kontynuowania kształcenia w grudniu `r params$rok` roku
+
+```{r, child="kontyn_grudzien.Rmd"}
+
+```
+
+```{r, child="kontyn_dziedziny_dyscypliny.Rmd"}
+
+```
+
+```{r, child="kontyn_plec_dziedziny_dyscypliny.Rmd"}
+
+```
+
+```{r, child="kontyn_studia_zawod.Rmd"}
+
+```
+
+```{r, child="kontyn_bs2_branza.Rmd"}
+
+```
+
+```{r, child="kontyn_bs2_zawod.Rmd"}
+
+```
+
+`r ifelse(typDokumentu %in% "pdf", "\\newpage", "")`
+
+# 4. Praca po ukończeniu `r szk$odmiany[[1]]$typ_szk_dop_poj`
+
+## Odsetek miesięcy, w których absolwenci pracowali od września do grudnia `r params$rok` roku
+
+Poszczególni absolwenci w okresie od września do grudnia `r params$rok` roku mogli pracować w ciągu maksymalnie 4 miesięcy. W takim przypadku wartość wskaźnika dla danego absolwenta wynosi 100%. Z kolei wartość minimalną, czyli 0%, wskaźnik przyjmuje dla absolwentów, którzy nie pracowali w tym okresie w ciągu żadnego miesiąca.
+
+W przypadku absolwentów, którzy w danym miesiącu byli studentami lub uczniami szkoły policealnej, bierzemy pod uwagę jedynie pracę na etat, samozatrudnienie oraz pracę w rolnictwie, ponieważ w ich przypadku brak informacji na temat zatrudnienia na podstawie umów cywilnoprawnych^[Ze względu na brak w rejestrze ZUS danych dotyczące ewentualnego wykonywania pracy na podstawie umów zlecenia przez uczniów i studentów do 26. roku życia.].
+
+W przypadku absolwentów, którzy w danym miesiącu nie kontynuowali nauki na uczelni ani w szkole policealnej, jako „pracę” uwzględniamy zarówno pracę na etat, samozatrudnienie oraz pracę w rolnictwie, jak i pracę na podstawie umowy zlecenia. 
+
+W związku z tym wskaźnik jest prezentowany oddzielnie dla każdej z tych grup^[Ten sam absolwent, jeżeli był uczniem tylko przez część rozpatrywanego okresu, jest uwzględniany w dwóch grupach. Na przykład absolwent, który uczył się od września do listopada a pracował od października do grudnia zostanie uwzględniony z wartością wskaźnika 67% (2/3) w grupie absolwentów będących uczniami oraz z wartością wskaźnika 100% (1/1) w grupie absolwentów nieuczących się.].
+
+```{r, child="praca_odsetek_miesiecy.Rmd"}
+
+```
+
+## Formy wykonywania pracy w grudniu `r params$rok` roku
+
+W tym rozdziale opisując sytuację zawodową absolwentów rozróżniono 5 form wykonywania pracy:
+
+* „Zatrudnieni tylko na UOP” - osoby zatrudnione tylko na umowę o pracę (UOP)
+* „Tylko samozatrudnieni” - prowadzący własną działalność gospodarczą jako jedyną aktywność zawodową
+* „Tylko inna forma” - osoby zatrudnione wyłącznie na podstawie pozostałych form umów - np. umowa zlecenie, umowa agencyjna, umowa o świadczenie usług i inne (np. osoby zatrudnione na umowie o staż z urzędu pracy, będące w czynnej służbie wojskowej czy otrzymujący stypendia sportowe)
+* „Więcej niż jedna forma” - absolwenci łączący więcej niż jedną z powyższych form zatrudnienia
+* "Zatrudnieni tylko w rolnictwie" - absolwenci objęci ubezpieczeniem społecznym lub zdrowotnym rolników
+
+```{r, child="praca_formy.Rmd"}
+
+```
+
+```{r, child="praca_mlodociany.Rmd"}
+
+```
+
+## Przychody absolwentów z pracy etatowej w okresie od września do grudnia `r params$rok` roku w odniesieniu do średniego wynagrodzenia w powiatach, w których mieszkali
+
+Wskaźnik, którego wartości prezentujemy w tej części raportu, pokazuje stosunek wynagrodzeń absolwentów Państwa szkoły z pracy na umowę o pracę (w przeliczeniu na pełen etat)^[Średnią (arytmetyczną) obliczono wyłącznie dla miesięcy, w których absolwenci pracowali. Nie uwzględniono przychodów przekraczających  kwotę rocznego ograniczenia podstawy wymiaru składek na ubezpieczenie emerytalne i rentowe (tj. 30 krotność prognozowanego wynagrodzenia brutto, czyli w `r params$rok` roku 208 050 zł), w miesiącach, w których to przekroczenie wystąpiło.] do przeciętnego miesięcznego wynagrodzenia^[Według danych publikowanych w [Banku Danych Lokalnych Głównego Urzędu Statystycznego](https://stat.gov.pl/metainformacje/slownik-pojec/pojecia-stosowane-w-statystyce-publicznej/693,pojecie.html?pdf=1)] osób mieszkających w tych samych powiatach. Dla poszczególnych absolwentów wartość wskaźnika równa 100% oznaczałaby, że ich średnie wynagrodzenia z umowy o pracę (w przeliczeniu na pełen etat) były takie same, jak przeciętne wynagrodzenie mieszkańców danego powiatu.
+
+Warto odnotować, że wyrażenie wynagrodzeń uzyskiwanych przez absolwentów jako odsetka przeciętnego miesięcznego wynagrodzenia w danym powiecie podawanego przez GUS, pozwala uwzględnić lokalny kontekst. Ponadto przedstawianie wartości wskaźnika w ten sposób jest bardziej dogodne do porównywania wynagrodzeń uzyskiwanych przez absolwentów w kolejnych latach niż prezentowanie przychodów w złotych, na których wartość wpływa inflacja.
+
+Na poniższej ilustracji opisano sposób prezentowania danych na wykresie typu boxplot wraz z ich interpretacją. Dane na tym wykresie są fikcyjne – służy on tylko objaśnieniu jakiego rodzaju informacje można znaleźć na tego typu wykresach.
+
+![](`r system.file("boxplot_wzor.png", package = "MONIKAraporty")`)
+
+```{r, out.width='100%'}
+# knitr::include_graphics("../boxplot_wzor.png")
+```
+
+```{r, child="praca_wynagrodzenie.Rmd"}
+
+```
+
+`r ifelse(typDokumentu %in% "pdf", "\\newpage", "")`
+
+# 5. Bezrobocie rejestrowane^[Wyniki prezentowane w tym rozdziale opierają się na danych dotyczących absolwentów zarejestrowanych jako osoby bezrobotne, niezależnie od tego czy kontynuowały naukę. Natomiast w rozdziale 2 z kategorii absolwentów, którym przypisano status “Bezrobocie” wykluczono osoby, które zarazem kontynuowały edukację.] od września do grudnia `r params$rok` roku
+
+Poszczególni absolwenci Państwa szkoły pomiędzy jej ukończeniem a końcem roku kalendarzowego, w którym to nastąpiło (tj. w okresie od września do grudnia `r params$rok` roku) mogli być zarejestrowani jako bezrobotni w ciągu maksymalnie czterech miesięcy. 
+
+```{r, child="bezrobocie.Rmd"}
+
+```
+
+`r ifelse(typDokumentu %in% "pdf", "---", "")`
+
+Więcej informacji o monitorowaniu karier absolwentów znajdą Państwo na stronie:
+
+<https://losyabsolwentow.ibe.edu.pl/>
+
+`r ifelse(typDokumentu %in% "pdf", "\\newpage", "")`
+
+# 6. Aneks: wyniki dla absolwentów `r szk$odmiany[[1]]$typ_szk_dop_lm` `r ifelse(woj$l_abs[[1]] < progLiczebnosci, paste0(""), paste0("z województwa i", "\u00A0"))`z`r paste0("\u00A0")`całego kraju
+
+```{r, child="aneks_child.Rmd"}
+
+```

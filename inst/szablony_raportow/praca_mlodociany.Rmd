@@ -1,0 +1,306 @@
+```{r}
+if (szk$typ_szk[[1]] == c("Branżowa szkoła I stopnia")) {
+  cat(
+    "## Kontynuowanie pracy we wrześniu",
+    params$rok,
+    "roku u pracodawcy zatrudniającego absolwenta jako młodocianego\n\n"
+  )
+}
+```
+
+```{r}
+if (szk$typ_szk[[1]] == c("Branżowa szkoła I stopnia")) {
+  if (szk$Z9_mlod_ucz[[1]]$n + szk$Z9_mlod_nie_ucz[[1]]$n >= progLiczebnosci) {
+    cat(
+      "Wśród uczniów Państwa szkoły, którzy ukończyli ją w roku ",
+      rocznik,
+      " ",
+      round(((szk$Z9_mlod_ucz[[1]]$n + szk$Z9_mlod_nie_ucz[[1]]$n) / szk$l_abs[[1]]) * 100),
+      "% uczyło się w niej odbywając praktyczną naukę zawodu na podstawie umowy o pracę w celu przygotowania zawodowego, zawartej z pracodawcą i było zatrudnionych we wrześniu ",
+      params$rok,
+      " roku.",
+      sep = ""
+    )
+  } else {
+    cat("Liczba absolwentów Państwa szkoły, którzy uczyli się w niej jako młodociani pracownicy, nie była wystarczająca, żeby możliwe było przedstawienie wyników dla tej grupy, zgodnie z zasadą chroniącą anonimowość respondentów.")
+  }
+}
+```
+
+### Absolwenci kontynuujący naukę
+
+```{r}
+if (szk$typ_szk[[1]] == c("Branżowa szkoła I stopnia")) {
+  if (szk$Z9_mlod_ucz[[1]]$n >= progLiczebnosci) {
+    cat(
+      "We wrześniu ",
+      params$rok,
+      " roku spośród absolwentów, którzy w Państwa szkole uczyli się jako młodociani pracownicy, a następnie kontynuowali naukę w kolejnej szkole ponadpodstawowej, ",
+      round(szk$Z9_mlod_ucz[[1]]$kont_uop * 100),
+      "% było zatrudnionych u tego samego pracodawcy, na podstawie umowy o pracę.\n",
+      sep = ""
+    )
+    
+    etykiety <- c(
+      "Uczący się, niekontynuujący pracy u danego\npracodawcy (ale pracujący gdzie indziej)",
+      "Uczący się, kontynuujący pracę u danego\npracodawcy na podstawie umowy o pracę",
+      "Uczący się, kontynuujący pracę u danego pracodawcy w\nformie innej niż umowa o pracę"
+    )
+    
+    if (length(god$Z9_mlod_ucz[[1]]) > 1 | god$Z9_mlod_ucz[[1]]$n != 0) {
+      tab_wyk <- tab_wykres(szk$Z9_mlod_ucz[[1]],
+                            god$Z9_mlod_ucz[[1]],
+                            NULL,
+                            powiaty_dop,
+                            etykiety,
+                            szk$typ_szk[[1]],
+                            80)
+      
+      wyk_tyt <- wrapper(paste0("Wykres ",
+                                wyk_num(),
+                                ": Kontynuowanie pracy u pracodawców, u których absolwenci Państwa szkoły oraz pozostałych branżowych szkół I stopnia z ",
+                                powiaty_dop,
+                                " odbywali praktyczną naukę zawodu jako młodociani pracownicy, we wrześniu ",
+                                params$rok,
+                                " roku - młodociani kontynuujący naukę (%)"),
+                         width = 85)
+    } else {
+      tab_wyk <- tab_wykres(szk$Z9_mlod_ucz[[1]],
+                            NULL,
+                            NULL,
+                            powiaty_dop,
+                            etykiety,
+                            szk$typ_szk[[1]],
+                            80)
+      
+      wyk_tyt <- wrapper(paste0("Wykres ",
+                                wyk_num(),
+                                ": Kontynuowanie pracy u pracodawców, u których absolwenci Państwa szkoły odbywali praktyczną naukę zawodu jako młodociani pracownicy, we wrześniu ",
+                                params$rok,
+                                " roku - młodociani kontynuujący naukę (%)"),
+                         width = 85)
+    }
+    
+    tab_wyk$name <- factor(tab_wyk$name, levels = c(
+      "Uczący się, niekontynuujący pracy u danego\npracodawcy (ale pracujący gdzie indziej)",
+      "Uczący się, kontynuujący pracę u danego\npracodawcy na podstawie umowy o pracę",
+      "Uczący się, kontynuujący pracę u danego pracodawcy w\nformie innej niż umowa o pracę"
+    ))
+    wykres <- wykres_poziomy_statusy(tab_wyk, wyk_tyt) +
+      scale_fill_manual(values = c(
+        "#d62f26",
+        "#d8ef89",
+        "#fb8c59"
+      ))
+    
+    levels(tab_wyk$typ) <- linebreak(levels(tab_wyk$typ), align = "c")
+    
+    if (length(god$Z9_mlod_ucz[[1]]) > 1 | god$Z9_mlod_ucz[[1]]$n != 0) {
+      tab_wyk <- tab_wyk %>%
+        select(-lab) %>%
+        pivot_wider(names_from = typ) %>%
+        mutate(across(2:3,
+                      ~ round(. * 100))) %>%
+        mutate(across(2:3,
+                      ~ paste0(., "\\%"))) %>%
+        arrange(desc(name)) %>% 
+        rename(` ` = name) %>% 
+        kable(format = "latex",
+              booktabs = TRUE,
+              escape = FALSE,
+              longtable = TRUE,
+              linesep = "",
+              align = "lcc",
+              digits = 0) %>%
+        kable_styling(position = wyrownanieTabWykr,
+                      latex_options = c("hold_position", "repeat_header"),
+                      font_size = 10,
+                      full_width = FALSE,
+                      repeat_header_text = "(ciąg dalszy tabeli)") %>% 
+        column_spec(1, width = "6cm") %>% 
+        column_spec(1, width = "5cm") %>% 
+        column_spec(1, width = "5cm") %>% 
+        row_spec(1, hline_after = TRUE)
+    } else {
+      tab_wyk <- tab_wyk %>%
+        select(-lab) %>%
+        pivot_wider(names_from = typ) %>%
+        mutate(across(2,
+                      ~ round(. * 100))) %>%
+        mutate(across(2,
+                      ~ paste0(., "\\%"))) %>%
+        arrange(desc(name)) %>% 
+        rename(` ` = name) %>% 
+        kable(format = "latex",
+              booktabs = TRUE,
+              escape = FALSE,
+              longtable = TRUE,
+              linesep = "",
+              align = "lcc",
+              digits = 0) %>%
+        kable_styling(position = wyrownanieTabWykr,
+                      latex_options = c("hold_position", "repeat_header"),
+                      font_size = 10,
+                      full_width = FALSE,
+                      repeat_header_text = "(ciąg dalszy tabeli)") %>% 
+        column_spec(1, width = "6cm") %>% 
+        column_spec(1, width = "5cm") %>% 
+        row_spec(1, hline_after = TRUE)
+    }
+    
+    zwroc_wykres_tabela(wykres, tab_wyk)
+    
+    if (god$Z9_mlod_ucz[[1]]$n %in% 0) {
+      cat("Wyniki dla grupy odniesienia nie zostały przedstawione ze względu na zbyt małą liczbę absolwentów (mniej niż 10) lub szkół (mniej niż 3)")
+    }
+  } else {
+    cat(
+      "Liczba absolwentów Państwa szkoły, którzy uczyli się w niej jako młodociani pracownicy, a we wrześniu ",
+      params$rok,
+      " roku uczyli się w kolejnej szkole ponadpodstawowej, nie była wystarczająca, żeby możliwe było przedstawienie wyników dla tej grupy, zgodnie z zasadą chroniącą anonimowość respondentów.",
+      sep = ""
+    )
+  }
+}
+```
+
+### Absolwenci niekontynuujący nauki
+
+```{r}
+if (szk$typ_szk[[1]] == c("Branżowa szkoła I stopnia")) {
+  if (szk$Z9_mlod_nie_ucz[[1]]$n >= progLiczebnosci) {
+    cat(
+      "We wrześniu ",
+      params$rok,
+      " roku spośród absolwentów, którzy w Państwa szkole uczyli się jako młodociani pracownicy, a następnie nie kontynuowali nauki w kolejnej szkole ponadpodstawowej, ",
+      round(szk$Z9_mlod_nie_ucz[[1]]$kont_uop * 100),
+      "% było zatrudnionych na podstawie umowy o pracę u tego samego pracodawcy, z którym w okresie nauki w Państwa szkole mieli zawartą umowę o pracę w celu przygotowania zawodowego.\n\n",
+      "Ponadto wśród niekontynuujących nauki absolwentów Państwa szkoły, którzy uczyli się w niej jako młodociani pracownicy, ",
+      round(szk$Z9_mlod_nie_ucz[[1]]$kont_inne * 100),
+      "% pracowało dla tego samego pracodawcy na podstawie innej niż umowa o pracę.",
+      sep = ""
+    )
+    
+    etykiety <- c(
+      "Nieuczący się, niekontynuujący pracy u danego pracodawcy\n(ale pracujący gdzie indziej)",
+      "Nieuczący się, kontynuujący pracę u danego pracodawcy na\npodstawie umowy o pracę",
+      "Nieuczący się, kontynuujący pracę u danego pracodawcy w\nformie innej niż umowa o pracę"
+    )
+    
+    if (length(god$Z9_mlod_nie_ucz[[1]]) > 1 | god$Z9_mlod_nie_ucz[[1]]$n != 0) {
+      tab_wyk <- tab_wykres(szk$Z9_mlod_nie_ucz[[1]],
+                            god$Z9_mlod_nie_ucz[[1]],
+                            NULL,
+                            powiaty_dop,
+                            etykiety,
+                            szk$typ_szk[[1]],
+                            80)
+      
+      wyk_tyt <- wrapper(paste0("Wykres ",
+                                wyk_num(),
+                                ": Kontynuowanie pracy u pracodawców, u których absolwenci Państwa szkoły oraz pozostałych branżowych szkół I stopnia z ",
+                                powiaty_dop,
+                                " odbywali praktyczną naukę zawodu jako młodociani pracownicy, we wrześniu ",
+                                params$rok,
+                                " roku - młodociani niekontynuujący nauki (%)"),
+                         width = 85)
+    } else {
+      tab_wyk <- tab_wykres(szk$Z9_mlod_nie_ucz[[1]],
+                            NULL,
+                            NULL,
+                            powiaty_dop,
+                            etykiety,
+                            szk$typ_szk[[1]],
+                            80)
+      
+      wyk_tyt <- wrapper(paste0("Wykres ",
+                                wyk_num(),
+                                ": Kontynuowanie pracy u pracodawców, u których absolwenci Państwa szkoły odbywali praktyczną naukę zawodu jako młodociani pracownicy, we wrześniu ",
+                                params$rok,
+                                " roku - młodociani niekontynuujący nauki (%)"),
+                         width = 85)
+    }
+    
+    tab_wyk$name <- factor(tab_wyk$name, levels = c(
+      "Nieuczący się, niekontynuujący pracy u danego pracodawcy\n(ale pracujący gdzie indziej)",
+      "Nieuczący się, kontynuujący pracę u danego pracodawcy w\nformie innej niż umowa o pracę",
+      "Nieuczący się, kontynuujący pracę u danego pracodawcy na\npodstawie umowy o pracę"
+    ))
+    
+    wykres <- wykres_poziomy_statusy(tab_wyk, wyk_tyt) +
+      scale_fill_manual(values = c(
+        "#d62f26",
+        "#d8ef89",
+        "#fb8c59"
+      ))
+    
+    levels(tab_wyk$typ) <- linebreak(levels(tab_wyk$typ), align = "c")
+    
+    if (length(god$Z9_mlod_nie_ucz[[1]]) > 1 | god$Z9_mlod_nie_ucz[[1]]$n != 0) {
+      tab_wyk <- tab_wyk %>%
+        select(-lab) %>%
+        pivot_wider(names_from = typ) %>%
+        mutate(across(2:3,
+                      ~ round(. * 100))) %>%
+        mutate(across(2:3,
+                      ~ paste0(., "\\%"))) %>%
+        arrange(desc(name)) %>% 
+        rename(` ` = name) %>% 
+        kable(format = "latex",
+              booktabs = TRUE,
+              escape = FALSE,
+              longtable = TRUE,
+              linesep = "",
+              align = "lcc",
+              digits = 0) %>%
+        kable_styling(position = wyrownanieTabWykr,
+                      latex_options = c("hold_position", "repeat_header"),
+                      font_size = 10,
+                      full_width = FALSE,
+                      repeat_header_text = "(ciąg dalszy tabeli)") %>% 
+        column_spec(1, width = "6cm") %>% 
+        column_spec(1, width = "5cm") %>% 
+        column_spec(1, width = "5cm") %>% 
+        row_spec(1:2, hline_after = TRUE)
+    } else {
+      tab_wyk <- tab_wyk %>%
+        select(-lab) %>%
+        pivot_wider(names_from = typ) %>%
+        mutate(across(2,
+                      ~ round(. * 100))) %>%
+        mutate(across(2,
+                      ~ paste0(., "\\%"))) %>%
+        arrange(desc(name)) %>% 
+        rename(` ` = name) %>% 
+        kable(format = "latex",
+              booktabs = TRUE,
+              escape = FALSE,
+              longtable = TRUE,
+              linesep = "",
+              align = "lcc",
+              digits = 0) %>%
+        kable_styling(position = wyrownanieTabWykr,
+                      latex_options = c("hold_position", "repeat_header"),
+                      font_size = 10,
+                      full_width = FALSE,
+                      repeat_header_text = "(ciąg dalszy tabeli)") %>% 
+        column_spec(1, width = "6cm") %>% 
+        column_spec(1, width = "5cm") %>% 
+        row_spec(1:2, hline_after = TRUE)
+    }
+    
+    zwroc_wykres_tabela(wykres, tab_wyk)
+    
+    if (god$Z9_mlod_nie_ucz[[1]]$n %in% 0) {
+      cat("Wyniki dla grupy odniesienia nie zostały przedstawione ze względu na zbyt małą liczbę absolwentów (mniej niż 10) lub szkół (mniej niż 3)")
+    }
+  } else {
+    cat(
+      "Liczba absolwentów Państwa szkoły, którzy uczyli się w niej jako młodociani pracownicy, a we wrześniu ",
+      params$rok,
+      " roku nie uczyli się w kolejnej szkole ponadpodstawowej, nie była wystarczająca, żeby możliwe było przedstawienie wyników dla tej grupy, zgodnie z zasadą chroniącą anonimowość respondentów.",
+      sep = ""
+    )
+  }
+}
+```

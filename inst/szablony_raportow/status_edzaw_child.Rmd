@@ -10,7 +10,7 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
     " roku kształciło się ",
     round((szk$S3_12[[1]]$ucz_prac + szk$S3_12[[1]]$tylko_ucz) * 100),
     "%, podczas gdy spośród absolwentów pozostałych ",
-    rap_odmiany$typ_szk_dop_lm,
+    szk$odmiany[[1]]$typ_szk_dop_lm,
     " z ",
     powiaty_dop,
     " ",
@@ -20,7 +20,7 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
   )
   
   cat(
-    "Naukę w systemie edukacji formalnej z zatrudnieniem na podstawie umowy o pracę lub z wykonywaniem własnej działalności gospodarczej (samozatrudnieniem) łączyło ",
+    "Naukę w systemie edukacji formalnej z zatrudnieniem na podstawie umowy o pracę lub z wykonywaniem własnej działalności gospodarczej (samozatrudnieniem) lub objęciem ubezpieczeniem społecznym lub zdrowotnym rolników łączyło ",
     round(szk$S3_12[[1]]$ucz_prac * 100),
     "% absolwentów Państwa szkoły. Odsetek takich osób wśród absolwentów Państwa szkoły był ",
     case_when(
@@ -29,7 +29,7 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
       round(szk$S3_12[[1]]$ucz_prac * 100) %in% round(god$S3_12[[1]]$ucz_prac * 100) ~ "taki sam, jak"
     ),
     " wśród absolwentów pozostałych ",
-    rap_odmiany$typ_szk_dop_lm,
+    szk$odmiany[[1]]$typ_szk_dop_lm,
     " z ", 
     powiaty_dop,
     " (",
@@ -41,7 +41,7 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
   cat(
     "W tym samym miesiącu ",
     round(szk$S3_12[[1]]$tylko_prac * 100),
-    "% absolwentów Państwa technikum pracowało^[Wskaźnik osób pracujących i uczących się obejmuje jedynie osoby pracujące na podstawie umowy o pracę lub w ramach samozatrudnienia, ponieważ w przypadku umowy zlecenia osoba ucząca się zwolniona jest z opłacania składek. Z kolei wskaźnik osób pracujących, ale nie uczących się obejmuje także osoby pracujące na umowy zlecenia, ponieważ osoby te zobligowane są do samodzielnego odprowadzania składek do ZUS.], ale nie kontynuowało nauki. Do grupy pracujących, ale nie kontynuujących edukacji formalnej należało ",
+    "% absolwentów Państwa szkoły pracowało^[Wskaźnik osób pracujących i uczących się obejmuje jedynie osoby pracujące na podstawie umowy o pracę, w ramach samozatrudnienia lub pracujących w rolnictwie, ponieważ w przypadku umowy zlecenia osoba ucząca się zwolniona jest z opłacania składek. Z kolei wskaźnik osób pracujących, ale nie uczących się obejmuje także osoby pracujące na umowy zlecenia, ponieważ osoby te zobligowane są do samodzielnego odprowadzania składek do ZUS.], ale nie kontynuowało nauki. Do grupy pracujących, ale nie kontynuujących edukacji formalnej należało ",
     round(god$S3_12[[1]]$tylko_prac * 100),
     "% absolwentów z ",
     powiaty_dop,
@@ -56,7 +56,9 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
     round(szk$S3_12[[1]]$bezrob * 100),
     "% było zarejestrowanych w urzędzie pracy jako osoby bezrobotne. W takiej samej sytuacji było ",
     round(god$S3_12[[1]]$bezrob * 100),
-    "% absolwentów pozostałych techników z ",
+    "% absolwentów pozostałych ",
+    szk$odmiany[[1]]$typ_szk_dop_lm,
+    " z ",
     powiaty_dop,
     ".\n\n",
     sep = ""
@@ -67,9 +69,13 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
     params$rok,
     " nie odnotowano żadnej aktywności związanej z pracą zawodową lub nauką (tj. wykonywania pracy, kontynuowania edukacji formalnej ani zarejestrowanego bezrobocia) w przypadku ",
     round(szk$S3_12[[1]]$brak_danych * 100),
-    "% absolwentów Państwa technikum oraz ",
+    "% absolwentów Państwa ",
+    szk$odmiany[[1]]$typ_szk_dop_poj,
+    " oraz ",
     round(god$S3_12[[1]]$brak_danych * 100),
-    "% absolwentów pozostałych techników z ",
+    "% absolwentów pozostałych ",
+    szk$odmiany[[1]]$typ_szk_dop_lm,
+    " z ",
     powiaty_dop,
     ".\n",
     sep = ""
@@ -94,16 +100,35 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
     NULL,
     powiaty_dop,
     nazwy_wierszy,
-    rap_odmiany$typ_szk_mian_lm,
+    szk$odmiany[[1]]$typ_szk_mian_lm,
     80
     )
+  
+  tab <- tab |> 
+    mutate(
+      name = ordered(
+        name,
+        levels = c(
+          "Brak danych o aktywności",
+          "Bezrobocie",
+          "Tylko praca",
+          "Nauka i praca",
+          "Tylko nauka"),
+        labels = c(
+          "Brak danych o aktywności",
+          "Bezrobocie",
+          "Tylko praca",
+          "Nauka i praca",
+          "Tylko nauka")
+        )
+      )
   
   wykres <- wykres_poziomy_statusy(
     tab,
     wrapper(paste0("Wykres ",
                    wyk_num(),
                    ": Status edukacyjno-zawodowy absolwentów Państwa szkoły oraz absolwentów pozostałych ",
-                   rap_odmiany$typ_szk_dop_lm,
+                   szk$odmiany[[1]]$typ_szk_dop_lm,
                    " z ",
                    powiaty_dop,
                    " w grudniu ",

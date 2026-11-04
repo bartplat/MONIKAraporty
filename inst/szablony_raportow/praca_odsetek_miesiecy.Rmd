@@ -1,0 +1,223 @@
+### Absolwenci kontynuujący naukę
+
+```{r}
+if (szk$Z4_ucz[[1]]$n >= progLiczebnosci) {
+  przeprac_ods <- szk$Z4_ucz[[1]] %>% 
+    as_tibble() %>% 
+    select(-n) %>% 
+    pivot_longer(everything()) %>% 
+    as.list()
+  przeprac_ods$name <- c(
+    paste0("od września do grudnia ", params$rok, " roku nie pracowały"),
+    paste0("pracowały przez część miesięcy w okresie od września do grudnia ", params$rok),
+    paste0("pracowały w każdym miesiącu w okresie od września do grudnia ", params$rok))
+  
+  if (length(przeprac_ods$name[przeprac_ods$value %in% max(przeprac_ods$value)]) %in% 1) {
+    cat(
+      "Wśród absolwentów Państwa szkoły kontynuujących naukę najliczniejsza była grupa osób, które ",
+      przeprac_ods$name[przeprac_ods$value %in% max(przeprac_ods$value)],
+      ". Grupa ta stanowiła ",
+      round(max(przeprac_ods$value) * 100),
+      "% absolwentów Państwa szkoły.\n\n",
+      sep = ""
+    )
+  } else if (length(przeprac_ods$name[przeprac_ods$value %in% max(przeprac_ods$value)]) > 1) {
+    cat(
+      "Wśród absolwentów Państwa szkoły kontynuujących naukę najliczniejsze były osoby, które ",
+      paste0(przeprac_ods$name[przeprac_ods$value %in% max(przeprac_ods$value)], collapse = ", "),
+      ". Grupy te stanowiły po ",
+      round(max(przeprac_ods$value) * 100),
+      "% absolwentów Państwa szkoły.\n\n",
+      sep = ""
+    )
+  } else if ((sum(przeprac_ods$value) / 3) == max(przeprac_ods$value)) {
+    cat(
+      "Wśród absolwentów Państwa szkoły kontynuujących naukę wszystkie grupy osób, wyróżnione ze względu na to przez jaką część okresu poświęconego na naukę pracowały (między wrześniem a grudniem ",
+      params$rok,
+      " roku) były równoliczne. Każda z tych grup stanowiła ",
+      round(max(przeprac_ods$value) * 100),
+      "% absolwentów Państwa szkoły.\n\n",
+      sep = ""
+    )
+  }
+} else {
+  cat("Liczba absolwentów Państwa szkoły studiujących lub uczących się w szkole policealnej nie była wystarczająca, żeby możliwe było przedstawienie wyników dla tej grupy, zgodnie z zasadą chroniącą anonimowość absolwentów.\n\n")
+}
+```
+
+```{r}
+if (szk$Z4_ucz[[1]]$n >= progLiczebnosci) {
+  etykiety <- c("p0", "czesc", "p100")
+  
+  tab_wyk <- tab_wykres(szk$Z4_ucz[[1]],
+                       god$Z4_ucz[[1]],
+                       NULL,
+                       powiaty_dop,
+                       etykiety,
+                       szk$odmiany[[1]]$typ_szk_mian_lm,
+                       80) %>% 
+    select(-lab) %>% 
+    pivot_wider() %>% 
+    pivot_longer(cols = p0:p100) %>%  
+    mutate(lab = ifelse(round(value, 2) >= 0.06,
+                              paste0(round(value * 100), "%"),
+                              ""))
+  
+  tab_wyk$name <- ordered(tab_wyk$name,
+                         levels = c("p0", "czesc", "p100"),
+                         labels = c("brak pracy", "praca przez część okresu", "praca przez cały okres"))
+  
+  wykres <- wykres_pion_skum(tab_wyk,
+                              wrapper(paste0("Wykres ",
+                                    wyk_num(),
+                                    ": Procentowy udział grup wyróżnionych ze względu na część przepracowanego okresu wśród absolwentów Państwa szkoły oraz absolwentów pozostałych ",
+                                    szk$odmiany[[1]]$typ_szk_dop_lm,
+                                    " z ",
+                                    powiaty_dop,
+                                    ", w okresie od września do grudnia ",
+                                    params$rok,
+                                    " roku - kontynuujący naukę"),
+                             width = 85)) +
+      scale_fill_manual(values = c("#fb8c59",
+                                   "#f8dd00",
+                                   "#90cf60")) +
+      ylab("Odsetek absolwentów") + 
+      guides(fill = guide_legend(nrow = 1, byrow = TRUE))
+  
+  levels(tab_wyk$typ) <- linebreak(levels(tab_wyk$typ), align = "l")
+  
+  tab_wyk <- tab_wyk %>%
+    select(-lab) %>% 
+    pivot_wider(names_from = name) %>%
+    mutate(across(2:4,
+                  ~ round(. * 100))) %>%
+    mutate(across(2:4,
+                  ~ paste0(., "\\%"))) %>%
+    kable("latex", booktabs = TRUE, escape = FALSE, longtable = TRUE,
+          linesep = "",
+          align = "lccc",
+          col.names = NULL,
+          digits = 0) %>%
+    kable_styling(position = wyrownanieTabWykr,
+                  latex_options = c("hold_position", "repeat_header"),
+                  font_size = 10,
+                  full_width = FALSE,
+                  repeat_header_text = "(ciąg dalszy tabeli)") %>%
+    add_header_above(c(" ", "Brak pracy" = 1, "Praca przez\nczęść okresu" = 1, "Praca przez\ncały okres" = 1),
+                     align = c("l", "c", "c", "c"))
+  
+  zwroc_wykres_tabela(wykres, tab_wyk)
+}
+```
+
+### Absolwenci niekontynuujący nauki
+
+```{r}
+if (szk$Z4_nie_ucz[[1]]$n >= progLiczebnosci) {
+  przeprac_ods <- szk$Z4_nie_ucz[[1]] %>% 
+    as_tibble() %>% 
+    select(-n) %>% 
+    pivot_longer(everything()) %>% 
+    as.list()
+  przeprac_ods$name <- c(
+    paste0("od września do grudnia ", params$rok, " roku nie pracowały"),
+    paste0("pracowały przez część miesięcy w okresie od września do grudnia ", params$rok),
+    paste0("pracowały w każdym miesiącu w okresie od września do grudnia ", params$rok))
+  
+  if (length(przeprac_ods$name[przeprac_ods$value %in% max(przeprac_ods$value)]) %in% 1) {
+    cat(
+      "Wśród absolwentów Państwa szkoły niekontynuujących nauki najliczniejsza była grupa osób, które ",
+      przeprac_ods$name[przeprac_ods$value %in% max(przeprac_ods$value)],
+      ". Grupa ta stanowiła ",
+      round(max(przeprac_ods$value) * 100),
+      "% absolwentów Państwa szkoły.\n\n",
+      sep = ""
+    )
+  } else if (length(przeprac_ods$name[przeprac_ods$value %in% max(przeprac_ods$value)]) > 1) {
+    cat(
+      "Wśród niekontynuujących nauki absolwentów Państwa szkoły najliczniejsza była grupa osób, które ",
+      paste0(przeprac_ods$name[przeprac_ods$value %in% max(przeprac_ods$value)], collapse = ", "),
+      ". Grupy te stanowiły po ",
+      round(max(przeprac_ods$value) * 100),
+      "% absolwentów Państwa szkoły.\n\n",
+      sep = ""
+    )
+  } else if ((sum(przeprac_ods$value) / 3) == max(przeprac_ods$value)) {
+    cat(
+      "WWśród absolwentów Państwa szkoły niekontynuujących nauki wszystkie grupy osób, wyróżnione ze względu na przepracowaną część okresu od września do grudnia ",
+      params$rok,
+      " roku były równoliczne. Każda z tych grup stanowiła ",
+      round(max(przeprac_ods$value) * 100),
+      "% absolwentów Państwa szkoły.\n\n",
+      sep = ""
+    )
+  }
+} else {
+  cat("Liczba absolwentów Państwa szkoły niestudiujących ani nieuczących się w szkole policealnej nie była wystarczająca, żeby możliwe było przedstawienie wyników dla tej grupy, zgodnie z zasadą chroniącą anonimowość absolwentów.\n\n")
+}
+```
+
+```{r}
+if (szk$Z4_nie_ucz[[1]]$n >= progLiczebnosci) {
+  etykiety <- c("p0", "czesc", "p100")
+  
+  tab_wyk <- tab_wykres(szk$Z4_nie_ucz[[1]],
+                       god$Z4_nie_ucz[[1]],
+                       NULL,
+                       powiaty_dop,
+                       etykiety,
+                       szk$odmiany[[1]]$typ_szk_mian_lm,
+                       80) %>% 
+    select(-lab) %>% 
+    pivot_wider() %>% 
+    pivot_longer(cols = p0:p100) %>% 
+    mutate(lab = ifelse(round(value, 2) >= 0.06,
+                              paste0(round(value * 100), "%"),
+                              ""))
+  
+  tab_wyk$name <- ordered(tab_wyk$name,
+                         levels = c("p0", "czesc", "p100"),
+                         labels = c("brak pracy", "praca przez część okresu", "praca przez cały okres"))
+  
+  wykres <- wykres_pion_skum(tab_wyk,
+                              wrapper(paste0("Wykres ",
+                                    wyk_num(),
+                                    ": Procentowy udział grup wyróżnionych ze względu na część przepracowanego okresu wśród absolwentów Państwa szkoły oraz absolwentów pozostałych ",
+                                    szk$odmiany[[1]]$typ_szk_dop_lm,
+                                    " z ",
+                                    powiaty_dop,
+                                    ", w okresie od września do grudnia ",
+                                    params$rok,
+                                    " - niekontynuujący nauki"),
+                             width = 85)) +
+      scale_fill_manual(values = c("#fb8c59",
+                                   "#f8dd00",
+                                   "#90cf60")) +
+      ylab("Odsetek absolwentów") + 
+      guides(fill = guide_legend(nrow = 1, byrow = TRUE))
+  
+  levels(tab_wyk$typ) <- linebreak(levels(tab_wyk$typ), align = "l")
+  
+  tab_wyk <- tab_wyk %>%
+    select(-lab) %>% 
+    pivot_wider(names_from = name) %>%
+    mutate(across(2:4,
+                  ~ round(. * 100))) %>%
+    mutate(across(2:4,
+                  ~ paste0(., "\\%"))) %>%
+    kable("latex", booktabs = TRUE, escape = FALSE, longtable = TRUE,
+          linesep = "",
+          align = "lccc",
+          col.names = NULL,
+          digits = 0) %>%
+    kable_styling(position = wyrownanieTabWykr,
+                  latex_options = c("hold_position", "repeat_header"),
+                  font_size = 10,
+                  full_width = FALSE,
+                  repeat_header_text = "(ciąg dalszy tabeli)") %>%
+    add_header_above(c(" ", "Brak pracy" = 1, "Praca przez\nczęść okresu" = 1, "Praca przez\ncały okres" = 1),
+                     align = c("l", "c", "c", "c"))
+  
+  zwroc_wykres_tabela(wykres, tab_wyk)
+}
+```

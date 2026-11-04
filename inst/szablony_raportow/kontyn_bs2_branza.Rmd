@@ -1,0 +1,91 @@
+```{r}
+if (szk$typ_szk[[1]] %in% c("Branżowa szkoła I stopnia")) {
+  cat(
+    "## Kontynuowanie nauki w branżowych szkołach II stopnia w poszczególnych branżach\n\n"
+  )
+}
+```
+
+```{r}
+if (szk$typ_szk[[1]] %in% c("Branżowa szkoła I stopnia")) {
+  if (round(szk$E2_nauka_kontyn[[1]]$`Branżowa szkoła II stopnia` * szk$E2_nauka_kontyn[[1]]$n) >= progLiczebnosci & szk$liczebnosc_branze_kont[[1]]$n >= progLiczebnosci) {
+    if (sum(szk$liczebnosc_branze_kont[[1]]$odsetek > 0) %in% 1) {
+      cat(
+        "Jedyną branżą, w której w grudniu ",
+        params$rok,
+        " roku absolwenci Państwa szkoły uczyli się w branżowej szkole II stopnia, była branża ",
+        szk$liczebnosc_branze_kont[[1]]$branza_kont[szk$liczebnosc_branze_kont[[1]]$odsetek > 0],
+        sep = ""
+      )
+    } else if (sum(szk$liczebnosc_branze_kont[[1]]$odsetek > 0) > 1 & sum(szk$liczebnosc_branze_kont[[1]]$odsetek %in% max(szk$liczebnosc_branze_kont[[1]]$odsetek)) %in% 1) {
+      cat(
+        "Branżą, w której w grudniu ",
+        params$rok,
+        " roku najwięcej absolwentów Państwa szkoły uczyło się w branżowych szkołach II stopnia, była branża ",
+        szk$liczebnosc_branze_kont[[1]]$branza_kont[szk$liczebnosc_branze_kont[[1]]$odsetek %in% max(szk$liczebnosc_branze_kont[[1]]$odsetek)],
+        ". Kształciło się w niej ",
+        round(max(szk$liczebnosc_branze_kont[[1]]$odsetek) * 100),
+        "% spośród absolwentów, którzy w grudniu ",
+        params$rok,
+        " roku uczyli się w branżowych szkołach II stopnia.",
+        sep = ""
+      )
+    } else if (sum(szk$liczebnosc_branze_kont[[1]]$odsetek > 0) > 1 & sum(szk$liczebnosc_branze_kont[[1]]$odsetek %in% max(szk$liczebnosc_branze_kont[[1]]$odsetek)) > 1) {
+      cat(
+        "Branżami, w których w grudniu ",
+        params$rok,
+        " roku absolwenci Państwa szkoły najczęściej uczyli się w branżowych szkołach II stopnia, były: ",
+        paste(
+          szk$liczebnosc_branze_kont[[1]]$branza_kont[szk$liczebnosc_branze_kont[[1]]$odsetek %in% max(szk$liczebnosc_branze_kont[[1]]$odsetek)],
+          collapse = ", "),
+        ".",
+        sep = ""
+      )
+    }
+  } else {
+    cat(
+      "Liczba absolwentów Państwa szkoły, którzy w grudniu ",
+      params$rok,
+      " roku uczyli się w branżowych szkołach II stopnia, nie była wystarczająca, żeby możliwe było przedstawienie wyników dla tej grupy zgodnie z zasadą chroniącą anonimowość absolwentów.",
+      sep = "")
+  }
+}
+```
+
+```{r}
+if (szk$typ_szk[[1]] %in% c("Branżowa szkoła I stopnia")) {
+  if (round(szk$E2_nauka_kontyn[[1]]$`Branżowa szkoła II stopnia` * szk$E2_nauka_kontyn[[1]]$n) >= progLiczebnosci & szk$liczebnosc_branze_kont[[1]]$n >= progLiczebnosci) {
+    if (length(szk$liczebnosc_branze_kont[[1]]) > 1) {
+      cat("Tabela ",
+          tab_num(),
+          ": Branże, w których absolwenci Państwa szkoły najczęściej uczyli się w branżowych szkołach II stopnia w grudniu ",
+          params$rok,
+          " roku - ogółem (%)",
+          sep = "")
+      
+      szk$liczebnosc_branze_kont[[1]] %>% 
+        as_tibble() %>% 
+        select(-n) %>% 
+        slice_max(order_by = pct, n = 10, with_ties = FALSE) %>% 
+        mutate(across(pct,
+                      ~paste0(round(. * 100), "\\%"))) %>% 
+        kable(format = "latex",
+              booktabs = TRUE,
+              escape = FALSE,
+              longtable = TRUE,
+              linesep = "",
+              align = "lc",
+              col.names = NULL,
+              digits = 0) %>%
+        kable_styling(position = wyrownanieTabWykr,
+                      latex_options = c("hold_position", "repeat_header"),
+                      full_width = FALSE,
+                      repeat_header_text = "(ciąg dalszy tabeli)") %>%
+        add_header_above(c(paste0("Branże, w których absolwenci Państwa\nszkoły uczyli się w BS II w grudniu ", params$rok, " roku"), "% wśród absolwentów uczących się w BS II" = 1),
+                         align = c("l", "c")) %>% 
+        add_footnote("W tabeli prezentowanych jest maksymalnie 10 branż o najwyższych odsetkach kontynuacji",
+                     notation = "none")
+    }
+  }
+}
+```

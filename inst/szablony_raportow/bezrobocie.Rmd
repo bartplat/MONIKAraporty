@@ -1,0 +1,80 @@
+```{r}
+if (szk$l_abs[[1]] >= progLiczebnosci) {
+  cat(
+    "Wśród absolwentów Państwa szkoły ",
+    round(szk$B2_bezrob[[1]]$pct[szk$B2_bezrob[[1]]$bezrobocie_r0_wrzgru == "Brak bezrobocia"] * 100),
+    "% absolwentów w rozpatrywanym okresie w ogóle nie było zarejestrowanych jako osoby bezrobotne, natomiast ",
+    round(szk$B2_bezrob[[1]]$pct[szk$B2_bezrob[[1]]$bezrobocie_r0_wrzgru == "4 miesiące"] * 100),
+    "% pozostawało w rejestrze osób bezrobotnych przez cały ten okres.\n\nWśród absolwentów pozostałych ",
+    szk$odmiany[[1]]$typ_szk_dop_lm,
+    " z ",
+    powiaty_dop,
+    " analogiczne wartości wynosiły ",
+    round(god$B2_bezrob[[1]]$pct[god$B2_bezrob[[1]]$bezrobocie_r0_wrzgru == "Brak bezrobocia"] * 100),
+    "% i ",
+    round(god$B2_bezrob[[1]]$pct[god$B2_bezrob[[1]]$bezrobocie_r0_wrzgru == "4 miesiące"] * 100),
+    "%.\n\n",
+    sep = ""
+  )
+} else {
+  cat("Liczba absolwentów Państwa szkoły nie była wystarczająca, żeby możliwe było przedstawienie wyników dla tej grupy, zgodnie z zasadą chroniącą anonimowość absolwentów.")
+}
+```
+
+```{r, fig.height=3}
+if (szk$l_abs[[1]] >= progLiczebnosci) {
+  tab_wyk <- tab_facet(szk$B2_bezrob[[1]],
+                      god$B2_bezrob[[1]],
+                      NULL,
+                      powiaty_dop,
+                      szk$odmiany[[1]]$typ_szk_dop_lm,
+                      80)
+  
+  tab_wyk$mies <- ordered(tab_wyk$mies, labels = c(
+    "brak\nbezrobocia", "1 msc.", "2 msc.", "3 msc.", "4 msc."))
+  
+  wyk_tyt <- wrapper(paste0("Wykres ",
+                           wyk_num(),
+                           ": Odsetek absolwentów Państwa szkoły oraz pozostałych ",
+                           szk$odmiany[[1]]$typ_szk_dop_lm,
+                           " z ",
+                           powiaty_dop,
+                           ", którzy byli bezrobotni przez daną liczbę miesięcy, od września do grudnia ",
+                           params$rok,
+                           " roku"),
+           width = 85)
+  
+  wykres <- wyk_facet(tab_wyk,
+            wyk_tyt,
+            "mies",
+            "Liczba miesięcy bezrobocia") +
+    geom_text(data = tab_wyk,
+              aes(x = mies, y = pct, label = lab, group = typ),
+              nudge_y = 0.03,
+              size = 2.5)
+  
+  levels(tab_wyk$typ) <- linebreak(levels(tab_wyk$typ), align = "l")
+  
+  tab_wyk <- tab_wyk %>%
+    select(-lab) %>% 
+    pivot_wider(names_from = mies, values_from = pct) %>%
+    mutate(across(2:6,
+                  ~ round(. * 100))) %>%
+    mutate(across(2:6,
+                  ~ paste0(., "\\%"))) %>%
+    kable("latex", booktabs = TRUE, escape = FALSE, longtable = TRUE,
+          linesep = "",
+          align = "lccccc",
+          col.names = NULL,
+          digits = 0) %>%
+    kable_styling(position = wyrownanieTabWykr,
+                  latex_options = c("hold_position", "repeat_header"),
+                  font_size = 10,
+                  full_width = FALSE,
+                  repeat_header_text = "(ciąg dalszy tabeli)") %>%
+    add_header_above(c(" ", "Brak\nbezrobocia" = 1, "1 miesiąc" = 1, "2 miesiące" = 1, "3 miesiące" = 1, "4 miesiące" = 1),
+                     align = c("l", "c", "c", "c", "c", "c"))
+  
+  zwroc_wykres_tabela(wykres, tab_wyk)
+}
+```

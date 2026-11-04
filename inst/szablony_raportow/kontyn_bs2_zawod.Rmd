@@ -1,0 +1,69 @@
+```{r}
+if (szk$typ_szk[[1]] %in% c("Branżowa szkoła I stopnia")) {
+  cat(
+    "## Kontynuowanie nauki w branżowych szkołach II stopnia w podziale na wyuczony zawód\n\n"
+  )
+}
+```
+
+```{r}
+if (szk$typ_szk[[1]] %in% c("Branżowa szkoła I stopnia")) {
+  if (round(szk$E2_nauka_kontyn[[1]]$`Branżowa szkoła II stopnia` * szk$E2_nauka_kontyn[[1]]$n) >= progLiczebnosci & szk$branze_zawody[[1]]$n >= progLiczebnosci) {
+    l_col <- length(szk$branze_zawody[[1]])
+    if (length(szk$branze_zawody[[1]]) > 1 & l_col > 0) {
+      cat(
+        "W poniższej tabeli przedstawione zostały informacje o branżach, w których w branżowych szkołach II stopnia uczyli się absolwenci Państwa szkoły, należący do poszczególnych grup (liczących co najmniej 10 osób) wyróżnionych ze względu na zawód, w którym się kształcili.")
+      
+      naz_wiersze_nag <- character()
+      for (i in 3:l_col) {
+        naz_wiersze_nag <- paste(
+          c(naz_wiersze_nag, paste(i - 2, "-", names(szk$branze_zawody[[1]])[i])),
+          collapse = "\n")
+      }
+      wiersze_nag <- l_col - 2
+      names(wiersze_nag) <- paste0("% wśród uczących się w BS II absolwentów Państwa\nszkoły, którzy kształcili się w niej w zawodzie:\n", naz_wiersze_nag)
+      
+      nagl <- rep(1, l_col - 2, by = 1)
+      names(nagl) <- lapply(1:(l_col - 2), as.character)
+      
+      cat("\n\nTabela ",
+          tab_num(),
+          ": Branże, w których absolwenci Państwa szkoły najczęściej uczyli się w branżowych szkołach II stopnia w grudniu ",
+          params$rok,
+          " roku - w grupach wyróżnionych ze względu na zawód wyuczony w branżowej szkole I stopnia (%)",
+          sep = "")
+      
+      # tu nie ma ograniczenia na max 10 branż, natomiast jest ograniczenie na liczbę zawodów
+      tab <- szk$branze_zawody[[1]][-1] %>% 
+        as_tibble() %>% 
+        mutate(across(2:ncol(.),
+                      ~paste0(round(. * 100), "\\%")))
+      
+      tab$kont <- unname(sapply(tab$kont, wrapper, width = 50))
+      tab$kont <- linebreak(tab$kont, align = "l")
+      
+      tab <- tab %>% 
+        kable(format = "latex",
+              booktabs = TRUE,
+              escape = FALSE,
+              longtable = TRUE,
+              linesep = "",
+              col.names = NULL,
+              digits = 0) %>%
+        kable_styling(position = wyrownanieTabWykr,
+                      latex_options = c("hold_position", "repeat_header"),
+                      full_width = FALSE,
+                      repeat_header_text = "(ciąg dalszy tabeli)") %>%
+        add_header_above(header = c(paste0("Branże, w których absolwenci Państwa\nszkoły uczyli się w BS II w grudniu ", params$rok, " roku"), nagl),
+                         align = "l") %>% 
+        add_header_above(header = c(" ", wiersze_nag), align = "l")
+    } 
+    
+    if (round(szk$E2_nauka_kontyn[[1]]$`Branżowa szkoła II stopnia` * szk$E2_nauka_kontyn[[1]]$n) >= progLiczebnosci & !(length(szk$branze_zawody[[1]]) > 1 & l_col > 0)) {
+      cat("Żadna grupa uczących się w branżowych szkołach II stopnia absolwentów Państwa szkoły wyróżniona ze względu na zawód, którego uczyli się w BS I, nie liczyła co najmniej 10 osób. Dlatego, zgodnie z zasadą chroniącą anonimowość absolwentów, informacje dotyczące branż, w których w branżowych szkołach II stopnia uczyli się absolwenci Państwa szkoły wykształceni w poszczególnych zawodach nie zostały przedstawione.")
+    }
+  } else {
+    cat("Żadna grupa uczących się w branżowych szkołach II stopnia absolwentów Państwa szkoły wyróżniona ze względu na zawód, którego uczyli się w BS I, nie liczyła co najmniej 10 osób. Dlatego, zgodnie z zasadą chroniącą anonimowość absolwentów, informacje dotyczące branż, w których w branżowych szkołach II stopnia uczyli się absolwenci Państwa szkoły wykształceni w poszczególnych zawodach nie zostały przedstawione.")
+  }
+}
+```

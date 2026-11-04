@@ -20,7 +20,7 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
   cat(
     "W okresie od lipca do sierpnia ",
     params$rok,
-    " roku^[Tj. do momentu, kiedy obecni absolwenci Państwa szkoły przestali być jej uczniami.] odsetek uczniów ostatnich klas Państwa szkoły pracujących na podstawie umowy o pracę^[W tym okresie dla żadnego z obecnych absolwentów Państwa szkoły nie możemy zaobserwować zatrudnienia na podstawie umowy zlecenia, ponieważ byli jeszcze uczniami - w przypadku uczniów i studentów do 26. roku życia nie są dostępne dane dotyczące ewentualnego wykonywania pracy na podstawie umów zleceń.] lub samozatrudnionych wynosił ",
+    " roku^[Tj. do momentu, kiedy obecni absolwenci Państwa szkoły przestali być jej uczniami.] odsetek uczniów ostatnich klas Państwa szkoły pracujących na podstawie umowy o pracę^[W tym okresie dla żadnego z obecnych absolwentów Państwa szkoły nie możemy zaobserwować zatrudnienia na podstawie umowy zlecenia, ponieważ byli jeszcze uczniami - w przypadku uczniów i studentów do 26. roku życia nie są dostępne dane dotyczące ewentualnego wykonywania pracy na podstawie umów zleceń.] samozatrudnionych lub pracujących w rolnictwie  wynosił ",
     if (length(unique(lip_sier)) %in% 1) {
       paste0(round(szk$S3_07[[1]]$ucz_prac * 100) + round(szk$S3_07[[1]]$tylko_prac * 100), "%.\n\n")
     } else {
@@ -43,7 +43,7 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
   cat(
     "Natomiast w okresie od września do grudnia ",
     params$rok,
-    " roku odsetek absolwentów Państwa szkoły pracujących na podstawie umowy o pracę, samozatrudnionych, a także - w przypadku osób niekontynuujących nauki - pracujących na podstawie umowy zlecenia, wynosił łącznie ",
+    " roku odsetek absolwentów Państwa szkoły pracujących na podstawie umowy o pracę, samozatrudnionych, pracujących w rolnictwie, a także - w przypadku osób niekontynuujących nauki - pracujących na podstawie umowy zlecenia, wynosił łącznie ",
     if (length(unique(wrz_gru)) %in% 1) {
       paste0(round(szk$S3_09[[1]]$ucz_prac * 100) + round(szk$S3_09[[1]]$tylko_prac * 100), "%.")
     } else {

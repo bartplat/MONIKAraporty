@@ -1,0 +1,118 @@
+```{r}
+if (szk$E2_nauka_kontyn[[1]]$n >= progLiczebnosci) {
+  kontyn <- as_tibble(szk$E2_nauka_kontyn[[1]]) %>% 
+    select(-c(n, `Brak kontynuacji nauki`)) %>% 
+    pivot_longer(everything()) %>% 
+    mutate(nazwa = case_when(
+      name %in% "Branżowa szkoła II stopnia" ~ paste0("* w branżowych szkołach II stopnia (", round(value[name == "Branżowa szkoła II stopnia"] * 100), "%)"),
+      name %in% "Liceum dla dorosłych" ~ paste0("* w liceach dla dorosłych (", round(value[name == "Liceum dla dorosłych"] * 100), "%)"),
+      name %in% "Szkoła policealna" ~ paste0("* w szkole policealnej (", round(value[name == "Szkoła policealna"] * 100), "%)"),
+      name %in% "Studia" ~ paste0("* studiując na uczelni (", round(value[name == "Studia"] * 100), "%)"),
+      name %in% "KKZ" ~ paste0("* na KKZ (", round(value[name == "KKZ"] * 100), "%)"),
+      name %in% "KUZ" ~ paste0("* na KUZ (", round(value[name == "KUZ"] * 100), "%)"))
+    )
+  
+  sposoby <- kontyn %>% 
+    pull(value) %>% 
+    sum(. * 100) %>% 
+    round()
+  
+  if (sposoby != 0) {
+    if (!sposoby %in% c(50, 100)) {
+      cat(
+        "Wśród absolwentów Państwa szkoły z rocznika ",
+        rocznik,
+        " przeważały osoby, które w grudniu ",
+        params$rok,
+        " roku ",
+        if (round(sposoby) < 50) {
+          paste0("nie kontynuowały kształcenia (uwzględniono również KKZ i KUZ).\n\n")
+        } else if (round(sposoby) > 50) {
+          paste0("kontynuowały kształcenie (uwzględniono również KKZ i KUZ).\n\n")
+        },
+        sep = ""
+      )
+      
+      cat("Absolwenci Państwa szkoły kontynuowali naukę:\n\n")
+      kontyn <- kontyn %>% 
+        arrange(desc(value)) %>% 
+        filter(round(value * 100) > 0)
+      cat(
+        paste(kontyn$nazwa, collapse = "\n")
+      )
+    } else if (sposoby == 100) {
+      cat(
+        "\n\nWśród absolwentów Państwa szkoły z rocznika ",
+        rocznik,
+        " w grudniu ",
+        params$rok,
+        " roku wszyscy kontynuowali kształcenie.\n\n",
+        sep = ""
+      )
+    }
+    if (round(szk$E2_nauka_kontyn[[1]]$`Brak kontynuacji nauki` * 100) == 50) {
+      cat(
+        "\n\nWśród absolwentów Państwa szkoły z rocznika ",
+        rocznik,
+        " połowa absolwentów nie kontynuowała kształcenia w grudniu ",
+        params$rok,
+        " roku.\n\n",
+        sep = ""
+      )
+    }
+  } else {
+    cat("Żaden z absolwentów Państwa szkoły z rocznika ",
+        rocznik,
+        " w grudniu ",
+        params$rok,
+        " roku nie kontynuował nauki w systemie edukacji formalnej.",
+        sep = "")
+  }
+} else {
+  cat("Liczba absolwentów w Państwa szkole nie była wystarczająca, żeby możliwe było przedstawienie wyników zgodnie z zasadą chroniącą anonimowość absolwentów.")
+}
+```
+
+```{r, fig.height=3}
+if (szk$E2_nauka_kontyn[[1]]$n >= progLiczebnosci) {
+  nazwy_wierszy <- c(
+    "Studia",
+    "Szkoła policealna",
+    "Liceum dla dorosłych",
+    "Branżowa szkoła II stopnia",
+    "Kwalifikacyjny Kurs Zawodowy",
+    "Kurs Umiejętności Zawodowych",
+    "Nie kontynuują kształcenia")
+  
+  tab <- tab_wykres(szk$E2_nauka_kontyn[[1]],
+                    NULL,
+                    NULL,
+                    powiaty_dop,
+                    nazwy_wierszy,
+                    szk$typ_szk[[1]],
+                    80) %>%
+    select(-typ) %>% 
+    arrange(desc(value))
+
+  tab <- rbind(
+    tab %>% filter(name != "Nie kontynuują kształcenia"),
+    tab %>% filter(name == "Nie kontynuują kształcenia")
+  ) %>% 
+    mutate(lab = ifelse(round(value, 2) > 0,
+                          paste0(round(value * 100), "%"),
+                          ""))
+  tab$name <- ordered(tab$name, tab$name)
+  
+  wykres <- wykres_poziomy_slupki(
+    tab,
+    wrapper(paste0("Wykres ",
+                   wyk_num(),
+                   ": Sposoby kontynuowania nauki przez absolwentów Państwa szkoły w grudniu ",
+                   params$rok,
+                   " roku - ogółem (%)"), 80))
+  
+  print(wykres)
+  
+  cat("\\textcolor{black}{\\relscale{0.75}Odsetki mogą sumować się do więcej niż 100\\% ze względu na możliwość kontynuowania edukacji w więcej niż jednej formie.}")
+}
+```

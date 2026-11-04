@@ -11,7 +11,7 @@ typ_szk_mian_lm <- case_when(
   szk$typ_szk[[1]] == "Technikum" ~ "technika",
   szk$typ_szk[[1]] == "Szkoła policealna" ~ "szkoły policealne",
   szk$typ_szk[[1]] == "Liceum ogólnokształcące" ~ "licea ogólnokształcące dla młodzieży",
-  szk$typ_szk[[1]] == "Liceum dla dorosłych" ~ "licea ogólnokształcące dla dorosłych")
+  szk$typ_szk[[1]] == "Liceum ogólnokształcące dla dorosłych" ~ "licea ogólnokształcące dla dorosłych")
 
 typ_szk_dop_lm <- case_when(
   szk$typ_szk[[1]] == "Branżowa szkoła I stopnia" ~ "branżowych szkół I stopnia", 
@@ -19,7 +19,7 @@ typ_szk_dop_lm <- case_when(
   szk$typ_szk[[1]] == "Technikum" ~ "techników",
   szk$typ_szk[[1]] == "Szkoła policealna" ~ "szkół policealnych",
   szk$typ_szk[[1]] == "Liceum ogólnokształcące" ~ "liceów ogólnokształcących dla młodzieży",
-  szk$typ_szk[[1]] == "Liceum dla dorosłych" ~ "liceów ogólnokształcących dla dorosłych")
+  szk$typ_szk[[1]] == "Liceum ogólnokształcące dla dorosłych" ~ "liceów ogólnokształcących dla dorosłych")
 ```
 
 ```{r wprowadzenie}
@@ -74,28 +74,28 @@ cat("\n\n## Absolwenci Państwa szkoły uwzględnieni w raporcie\n\n",
     params$rok + 1,
     " roku. Absolwentami są uczniowie ostatnich klas Państwa szkoły, którym w Systemie Informacji Oświatowej (SIO) zakończono przypisanie do oddziału wybierając status „Ukończył szkołę”. Ze względu na zapewnienie kompletności danych w kolejnych raportach, ważne jest nadawanie przez szkoły takiego statusu absolwentom do końca roku kalendarzowego, w którym zakończyli naukę.",
     "\n\nLiczebność grup, dla których prezentowane są wyniki, zależy od dostępności informacji o Państwa absolwentach w poszczególnych rejestrach.",
-    if (szk$typ_szk[[1]] != "Branżowa szkoła I stopnia") {
-      paste0(
-        "\n\n* Ośrodek Przetwarzania Informacji przekazał dane dotyczące **",
-        szk$l_abs_zrodla[[1]]$n_polon,
-        szk$odmiany[[1]]$abs_polon,
-        "** Państwa szkoły, którzy rozpoczęli naukę w szkołach wyższych do końca grudnia ", 
-        params$rok,
-        " roku (według stanu na 31 grudnia ",
-        params$rok,
-        " roku)."
-      )
-    },    
     "\n\n* Dane z Zakładu Ubezpieczeń Społecznych informują o rejestrowanej przez ZUS aktywności zawodowej **",
     szk$l_abs_zrodla[[1]]$n_zus,
     szk$odmiany[[1]]$abs_zus,
     "** Państwa szkoły (według stanu na 1 kwietnia ",
     params$rok + 1,
     " roku).
-    # \n\n* Od 2026 roku w Monitoringu dostępne są też dane z Kasy Rolniczego Ubezpieczenia Społecznego (KRUS) dla **",
-    # szk$l_abs_zrodla[[1]]$n_krus,
-    # szk$odmiany[[1]]$abs_zus,
-    # "** Państwa szkoły."
+    \n\n* Od 2026 roku w Monitoringu dostępne są też dane z Kasy Rolniczego Ubezpieczenia Społecznego (KRUS) dla **",
+    szk$l_abs_zrodla[[1]]$n_krus,
+    szk$odmiany[[1]]$abs_zus,
+    "** Państwa szkoły.",
+    if (szk$typ_szk[[1]] != "Branżowa szkoła I stopnia") {
+      paste0(
+        "\n\n* Ośrodek Przetwarzania Informacji przekazał dane dotyczące **",
+        szk$l_abs_zrodla[[1]]$n_polon,
+        szk$odmiany[[1]]$abs_opi,
+        "** Państwa szkoły, którzy rozpoczęli naukę w szkołach wyższych do końca grudnia ", 
+        params$rok,
+        " roku (według stanu na 31 grudnia ",
+        params$rok,
+        " roku)."
+      )
+    },
     sep = "")
 ```
 
@@ -117,14 +117,16 @@ cat("\n\n## Sposób prezentowania wyników\n\n",
     "Szczegółowe informacje dotyczące definiowania poszczególnych statusów edukacyjno-zawodowych w monitoringu losów absolwentów i sposobu ich przypisywania absolwentom, w tym istotne informacje o ograniczeniach danych rejestrowych, znajdują się w rozdziale 2. Ścieżki edukacyjno-zawodowe.\n\n",
     "Wyniki monitoringu prezentujemy w różnych ujęciach:\n\n",
     "* W ujęciu na koniec roku ", params$rok, " (grudzień ", params$rok, "). Zestawienia dotyczące sytuacji edukacyjnej i zawodowej absolwentów ogółem oraz w grupach wyodrębnionych ze względu na wyuczony zawód, a także szczegółowe informacje na temat dalszej edukacji, zatrudnienia lub prowadzenia własnej działalności gospodarczej, odnoszą się do ich sytuacji w grudniu ", params$rok, " roku",
-    ifelse(szk$typ_szk == "Branżowa szkoła I stopnia",
+    ifelse(szk$typ_szk[[1]] == "Branżowa szkoła I stopnia",
            ".\n\n",
            ", co pozwala na uwzględnienie m.in. kontynuowania przez część absolwentów nauki na studiach.\n\n"),
     "* W ujęciu miesięcznym (lipiec - grudzień ", params$rok, "). Wartości danego wskaźnika opisującego status edukacyjno-zawodowy absolwentów w kolejnych miesiącach pozwalają śledzić, jak zmieniała się sytuacja absolwentów Państwa szkoły.\n\n",
     "* Zbiorczo dla okresu od września do grudnia ", params$rok, " roku. Niektóre wskaźniki są zdefiniowane jako średnia wartość w tym okresie (wynagrodzenia z pracy na umowę o pracę) lub jako liczba miesięcy, w których absolwent miał określony status (praca, zarejestrowane bezrobocie). Wrzesień jest pierwszym miesiącem, w którym absolwenci formalnie nie byli już uczniami Państwa szkoły, a grudzień ostatnim, dla którego w momencie sporządzania tego raportu dysponujemy kompletnymi danymi o absolwentach figurujących w rejestrach.\n\n",
     "Niektóre wyniki dotyczące absolwentów Państwa szkoły zostały zestawione z wynikami dotyczącymi grupy odniesienia. Grupę odniesienia stanowią absolwenci, którzy ukończyli inne ", typ_szk_mian_lm, " – niezależnie od tego czy były to szkoły publiczne czy niepubliczne i jaki podmiot był ich organem prowadzącym. W rozdziale „Ścieżki edukacyjno-zawodowe” grupa odniesienia jest dynamiczna: dobierana z najmniejszego obszaru – powiatu, podregionu^[Informacje nt. administracyjnego podziału Polski na podregiony (jednostki NUTS 3) są dostępne na stronie:\nhttps://stat.gov.pl/statystyka-regionalna/jednostki-terytorialne/klasyfikacja-nuts/klasyfikacja-nuts-w-polsce/], województwa lub kraju – w którym jest łącznie co najmniej 10 absolwentów co najmniej 3 ", typ_szk_dop_lm, " innych^[Absolwenci Państwa szkoły są wykluczani z grupy odniesienia, ponieważ w niektórych przypadkach ich sytuacja mogłaby w dużym stopniu rzutować na wyniki dotyczące tej grupy.] niż Państwa szkoła. Zasada ta chroni anonimowość absolwentów, a także uniemożliwia przypisanie wyników dotyczących grupy odniesienia do konkretnej szkoły.",
     ifelse(zawodowa == 1,
-           " Absolwenci Państwa szkoły mogą być zestawiani z różnymi grupami odniesienia, w zależności od tego, czy prezentowane są wyniki dla ogółu absolwentów, czy w podziale ze względu na wyuczony zawód^[Na przykład dla ogółu absolwentów szkoły, której dotyczy raport, grupę odniesienia mogą stanowić absolwenci pozostałych techników z danego powiatu, ale dla absolwentów wykształconych w danym zawodzie grupa odniesienia z poziomu powiatu mogłaby nie spełniać wymogów dotyczących liczebności. W takiej sytuacji zostałaby dobrana z poziomu podregionu, województwa lub kraju - w zależności od tego, na ile powszechne jest kształcenie w danym zawodzie.].\n\n",
+           paste0(" Absolwenci Państwa szkoły mogą być zestawiani z różnymi grupami odniesienia, w zależności od tego, czy prezentowane są wyniki dla ogółu absolwentów, czy w podziale ze względu na wyuczony zawód^[Na przykład dla ogółu absolwentów szkoły, której dotyczy raport, grupę odniesienia mogą stanowić absolwenci pozostałych ",
+                  szk$odmiany[[1]]$typ_szk_dop_lm,
+                  " z danego powiatu, ale dla absolwentów wykształconych w danym zawodzie grupa odniesienia z poziomu powiatu mogłaby nie spełniać wymogów dotyczących liczebności. W takiej sytuacji zostałaby dobrana z poziomu podregionu, województwa lub kraju - w zależności od tego, na ile powszechne jest kształcenie w danym zawodzie.].\n\n"),
            "\n\n"),
     "**Ze względu na potrzebę zachowania anonimowości absolwentów, dane dla grup liczących poniżej 10 osób nie są prezentowane również w przypadku absolwentów Państwa szkoły.** W celu zachowania czytelności, na wykresach nie są umieszczane wartości etykiet poniżej 6%.\n\n",
     sep = "")
@@ -155,7 +157,7 @@ if (szk$l_abs[[1]] >= progLiczebnosci) {
   cat(
     "\n\nW każdym raporcie szkolnym umieszczono inny link do ankiety. Po wypełnieniu, ankieta nie będzie już dla Państwa dostępna. W przypadku prośby o podanie kodu dostępu prosimy wpisać następujący ciąg znaków: ", szk$token, "\n\n",
     "Wypełnienie ankiety zajmie około 10 minut. Ankieta będzie dostępna do końca sierpnia ",
-    params$rok + 2,
+    params$rok + 3,
     " roku.",
     ifelse(typDokumentu %in% "pdf", "\\newpage", ""),
     sep = ""
@@ -168,7 +170,7 @@ statusy_df = data.frame(
   `Kategoria` = "Znaczenie kategorii",
   `1. Tylko nauka` = "Status ten przypisywany jest osobom, o których wiadomo, że odbywają edukację formalną w Polsce i jednocześnie nie pracują.
   \nStatusu tego nie można przypisać osobom, które uczą się za granicą, ze względu na brak takiej informacji w danych rejestrowych, na których opiera się monitoring.
-  \nW grupie tej mogą znaleźć się osoby pracujące, ale nie odprowadzają składek do ZUS, bowiem na podstawie tej informacji identyfikowanie są w monitoringu karier absolwentów osoby pracujące. Są to absolwenci zatrudnieni na umowy cywilnoprawne (wyjątkiem od opisanej sytuacji są osoby uczące się powyżej 26 roku życia, które przestają być zwolnienie z obowiązku opłacania składek do ZUS, a więc w monitoringu karier zaklasyfikowane są jako osoby pracujące, ale sytuacja ta dotyczyć może jedynie absolwentów liceów dla dorosłych oraz szkół policealnych), prowadzący działalność nierejestrowaną, a także pracujący „na czarno”.
+  \nW grupie tej mogą znaleźć się osoby pracujące, ale nie odprowadzają składek do ZUS, bowiem na podstawie tej informacji identyfikowanie są w monitoringu karier absolwentów osoby pracujące. Są to absolwenci zatrudnieni na umowy cywilnoprawne (wyjątkiem od opisanej sytuacji są osoby uczące się powyżej 26. roku życia, które przestają być zwolnienie z obowiązku opłacania składek do ZUS, a więc w monitoringu karier zaklasyfikowane są jako osoby pracujące, ale sytuacja ta dotyczyć może jedynie absolwentów liceów dla dorosłych oraz szkół policealnych), prowadzący działalność nierejestrowaną, a także pracujący „na czarno”.
   \nPrzebywanie na urlopie macierzyńskim, rodzicielskim lub zwolnieniu lekarskim osoby będącej uczniem/studentem nie odbiera jej statusu osoby uczącej się.
   \nNa potrzeby wskaźnika, status „tylko nauka” przypisany jest także osobom zarejestrowanym jako bezrobotne, które jednocześnie kontynuują naukę w trybie niestacjonarnym.",
   `2. Nauka i praca` = "Status ten przypisywany jest osobom, które łączą naukę w ramach edukacji formalnej w Polsce i pracują w kraju. Statusu tego dotyczą zastrzeżenia opisane dla statusów „Tylko nauka” i „Tylko praca”.",

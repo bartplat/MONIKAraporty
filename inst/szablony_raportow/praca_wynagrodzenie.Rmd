@@ -1,0 +1,137 @@
+### Absolwenci zatrudnieni na umowę o pracę i zarazem kontynuujący naukę
+
+```{r}
+if (szk$W3_ucz[[1]]$n >= progLiczebnosci) {
+  cat(
+    "Mediana średnich miesięcznych wynagrodzeń z pracy absolwentów Państwa szkoły, zatrudnionych na podstawie umowy o pracę i kontynuujących naukę, wynosiła ",
+    round(szk$W3_ucz[[1]]$med * 100),
+    "% średnich wynagrodzeń mieszkańców powiatów, w których mieszkali.\n\nDla pracujących na etat i kontynuujących edukację absolwentów pozostałych ",
+    szk$odmiany[[1]]$typ_szk_dop_lm,
+    " z ",
+    powiaty_dop,
+    " wartość wskaźnika wynosiła ",
+    round(god$W3_ucz[[1]]$med * 100),
+    "%.",
+    sep = ""
+  )
+} else {
+  cat("Liczba absolwentów Państwa szkoły pracujących na etat i kontynuujących naukę na uczelni lub w szkole policealnej nie była wystarczająca, żeby możliwe było przedstawienie wyników dla tej grupy, zgodnie z zasadą chroniącą anonimowość absolwentów.")
+}
+```
+
+```{r}
+if (szk$W3_ucz[[1]]$n >= progLiczebnosci) {
+  etykiety <- c("sred", "q5", "q25", "med", "q75", "q95")
+  
+  tab_wyk <- tab_wykres(szk$W3_ucz[[1]],
+                       god$W3_ucz[[1]],
+                       NULL,
+                       powiaty_dop,
+                       etykiety,
+                       szk$odmiany[[1]]$typ_szk_dop_lm,
+                       80) %>% 
+    select(-lab) %>% 
+    pivot_wider(names_from = name) %>% 
+    select(-sred)
+  
+  wyk_lab <- tab_wyk %>% 
+    group_by(typ) %>% 
+    reframe(value = list(q5, q25, med, q75, q95)) %>% 
+    unnest(cols = c(value)) %>% 
+    mutate(lab = paste0(round(value * 100), "%"))
+  
+  wyk_tyt <- wrapper(paste0("Wykres ",
+                           wyk_num(),
+                           ": Średnie miesięczne wynagrodzenie brutto z pracy uzyskiwane przez absolwentów Państwa szkoły oraz pozostałych ",
+                           szk$odmiany[[1]]$typ_szk_dop_lm,
+                           " z ",
+                           powiaty_dop,
+                           " w odniesieniu do przeciętnego miesięcznego wynagrodzenia brutto w poszczególnych zamieszkiwanych przez nich powiatach, od września do grudnia ",
+                           params$rok,
+                           " roku - pracujący i kontynuujący naukę"),
+                    width = 85)
+  
+  wykres <- boxplot_proc(tab_wyk, wyk_tyt) +
+    ylab("Wynagrodzenia absolwentów z pracy\nna umowę o pracę w odniesieniu do\nprzeciętnego wynagrodzenia w powiatach") +
+    geom_text(data = wyk_lab,
+              aes(x = typ, y = value, label = lab),
+              nudge_x = -0.4,
+              size = 2.5)
+  
+  print(wykres)
+  
+  cat(
+    "\\textcolor{black}{\\relscale{0.75}Na powyższym wykresie pogrubiona linia oznacza medianę wartości prezentowanego wskaźnika. Elementem wykresu jest również prostokąt reprezentujący tzw. rozstęp międzyćwiartkowy. Prostokąt ten „obejmuje” 50\\% absolwentów, którzy stanowią grupę środkową pod względem wartości analizowanego wskaźnika. Z kolei nad i pod prostokątem znajdują się poziome linie (tzw. wąsy). Pomiędzy tymi liniami zawierają się wartości wskaźnika dla „środkowych” 90\\% absolwentów. Im bardziej zróżnicowane są wartości wskaźnika w danej grupie, tym prostokąt jest wyższy, a odległość pomiędzy wspomnianymi liniami większa.}\n\n",
+    sep = ""
+  )
+}
+```
+
+### Absolwenci zatrudnieni na umowę o pracę, ale nie kontynuujący nauki
+
+```{r}
+if (szk$W3_nie_ucz[[1]]$n >= progLiczebnosci) {
+  cat(
+    "Mediana średnich miesięcznych wynagrodzeń absolwentów Państwa szkoły (w przeliczeniu na pełen etat), zatrudnionych na podstawie umowy o pracę i niekontynuujących nauki, wynosiła ",
+    round(szk$W3_nie_ucz[[1]]$med * 100),
+    "% średnich wynagrodzeń mieszkańców powiatów, w których mieszkali.\n\nDla pracujących na etat i niekontynuujących edukacji absolwentów pozostałych ",
+    szk$odmiany[[1]]$typ_szk_dop_lm,
+    " z ",
+    powiaty_dop,
+     " wartość mediany wynosiła ",
+    round(god$W3_nie_ucz[[1]]$med * 100),
+    "%.",
+    sep = ""
+  )
+} else {
+  cat("Liczba absolwentów Państwa szkoły pracujących na etat i niekontynuujących nauki na uczelni ani w szkole policealnej nie była wystarczająca, żeby możliwe było przedstawienie wyników dla tej grupy, zgodnie z zasadą chroniącą anonimowość absolwentów.")
+}
+```
+
+```{r}
+if (szk$W3_nie_ucz[[1]]$n >= progLiczebnosci) {
+  etykiety <- c("sred", "q5", "q25", "med", "q75", "q95")
+  
+  tab_wyk <- tab_wykres(szk$W3_nie_ucz[[1]],
+                       god$W3_nie_ucz[[1]],
+                       NULL,
+                       powiaty_dop,
+                       etykiety,
+                       szk$odmiany[[1]]$typ_szk_dop_lm,
+                       80) %>% 
+    select(-lab) %>% 
+    pivot_wider(names_from = name) %>% 
+    select(-sred)
+  
+  wyk_lab <- tab_wyk %>% 
+    group_by(typ) %>% 
+    reframe(value = list(q5, q25, med, q75, q95)) %>% 
+    unnest(cols = c(value)) %>% 
+    mutate(lab = paste0(round(value * 100), "%"))
+  
+  wyk_tyt <- wrapper(paste0("Wykres ",
+                           wyk_num(),
+                           ": Średnie miesięczne wynagrodzenie brutto z pracy uzyskiwane przez absolwentów Państwa szkoły oraz pozostałych ",
+                           szk$odmiany[[1]]$typ_szk_dop_lm,
+                           " z ",
+                           powiaty_dop,
+                           " w odniesieniu do przeciętnego miesięcznego wynagrodzenia brutto w poszczególnych zamieszkiwanych przez nich powiatach, od września do grudnia ",
+                           params$rok,
+                           " roku - pracujący i niekontynuujący nauki"),
+           width = 85)
+  
+  wykres <- boxplot_proc(tab_wyk, wyk_tyt) +
+    ylab("Wynagrodzenia absolwentów z pracy\nna umowę o pracę w odniesieniu do\nprzeciętnego wynagrodzenia w powiatach") +
+    geom_text(data = wyk_lab,
+              aes(x = typ, y = value, label = lab),
+              nudge_x = -0.4,
+              size = 2.5)
+  
+  print(wykres)
+  
+  cat(
+    "\\textcolor{black}{\\relscale{0.75}Na powyższym wykresie pogrubiona linia oznacza medianę wartości prezentowanego wskaźnika. Elementem wykresu jest również prostokąt reprezentujący tzw. rozstęp międzyćwiartkowy. Prostokąt ten „obejmuje” 50\\% absolwentów, którzy stanowią grupę środkową pod względem wartości analizowanego wskaźnika. Z kolei nad i pod prostokątem znajdują się poziome linie (tzw. wąsy). Pomiędzy tymi liniami zawierają się wartości wskaźnika dla „środkowych” 90\\% absolwentów. Im bardziej zróżnicowane są wartości wskaźnika w danej grupie, tym prostokąt jest wyższy, a odległość pomiędzy wspomnianymi liniami większa.}\n\n",
+    sep = ""
+  )
+}
+```
