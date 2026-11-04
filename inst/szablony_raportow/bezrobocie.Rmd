@@ -27,7 +27,7 @@ if (szk$l_abs[[1]] >= progLiczebnosci) {
                       god$B2_bezrob[[1]],
                       NULL,
                       powiaty_dop,
-                      szk$odmiany[[1]]$typ_szk_dop_lm,
+                      szk$odmiany[[1]]$typ_szk_mian_lm,
                       80)
   
   tab_wyk$mies <- ordered(tab_wyk$mies, labels = c(

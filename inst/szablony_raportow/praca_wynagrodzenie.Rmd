@@ -28,7 +28,7 @@ if (szk$W3_ucz[[1]]$n >= progLiczebnosci) {
                        NULL,
                        powiaty_dop,
                        etykiety,
-                       szk$odmiany[[1]]$typ_szk_dop_lm,
+                       szk$odmiany[[1]]$typ_szk_mian_lm,
                        80) %>% 
     select(-lab) %>% 
     pivot_wider(names_from = name) %>% 
@@ -97,7 +97,7 @@ if (szk$W3_nie_ucz[[1]]$n >= progLiczebnosci) {
                        NULL,
                        powiaty_dop,
                        etykiety,
-                       szk$odmiany[[1]]$typ_szk_dop_lm,
+                       szk$odmiany[[1]]$typ_szk_mian_lm,
                        80) %>% 
     select(-lab) %>% 
     pivot_wider(names_from = name) %>% 
