@@ -24,7 +24,6 @@ Imports:
     rmarkdown (>= 2.25)
 Remotes: bartplat/MLASZraporty
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
 Suggests: 
     knitr,
     rmarkdown,
@@ -33,3 +32,4 @@ Config/testthat/edition: 3
 VignetteBuilder: knitr
 LazyData: true
 Language: pl
+Config/roxygen2/version: 8.1.0
