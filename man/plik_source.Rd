@@ -7,7 +7,7 @@
 plik_source(sciezka_docelowa)
 }
 \arguments{
-\item{sciezka_docelowa}{ścieżka w formacie tekstowym, w ktorej ma być
+\item{sciezka_docelowa}{ścieżka w formacie tekstowym, w której ma być
 zapisany plik source - jest to równocześnie ścieżka, w której powinny
 znajdować się skrypty według podziału, który ma być zastosowany w
 zrównoleglaniu}

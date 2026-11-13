@@ -4,47 +4,18 @@
 \alias{skrypt_wzor}
 \title{Generowanie skryptów służących do obliczania wskaźników}
 \usage{
-skrypt_wzor(
-  sciezka_docelowa,
-  plik_tab_posrednie,
-  rok_ukonczenia = 2025,
-  rodzaj_wsk,
-  podzial_grupy_df
-)
+skrypt_wzor(sciezka_wd, rok_ukonczenia = 2025)
 }
 \arguments{
-\item{sciezka_docelowa}{ścieżka w formacie tekstowym, w ktorej mają być
-zapisane wygenerowane skrypty}
-
-\item{plik_tab_posrednie}{ścieżka do pliku w formacie tekstowym, w ktorej
-znajdują się tabele pośrednie}
+\item{sciezka_wd}{ścieżka do katalogu roboczego w formacie tekstowym}
 
 \item{rok_ukonczenia}{rok, którym absolwent ukończył szkołę (jest to tym
 samym rok monitoringu)}
-
-\item{rodzaj_wsk}{ciąg znaków określający dla jakiego rodzaju wskaźników
-należy zwórócić definicję podziału na grupy. Możliwe wartości:
-\describe{
-\item{\code{"szk_god"}}{Główny podział na szkołę oraz jej grupę odniesienia z
-wykluczeniem}
-\item{\code{"god1_god2"}}{}
-\item{\code{"szkozaw"}}{Zbiór, gdzie jednostką podziału jest zawód nauczany (i
-posiadający absolwentów) w danej szkol - szkoło-zawod.}
-\item{\code{"woj"}}{}
-}}
-
-\item{podzial_grupy_df}{ramka danych wygenerowana zwykle za pomocą funkcji
-\code{\link[=skrypty_podzial]{skrypty_podzial()}}}
 }
 \value{
-pliki txt będące skryptami uruchamianymi podczas zrównoleglania
+skrypty .R do uruchomienia podczas zrównoleglania
 }
 \description{
-Funkcja ta zapisuje w zadanej lokalizacji zadany typ skryptu w liczbie
-ustalonej w argumencie \code{podzial} funkcji \code{\link[=skrypty_podzial]{skrypty_podzial()}}.
-}
-\seealso{
-\code{\link[=skrypty_podzial]{skrypty_podzial()}}
-
-\code{\link[MONIKAdane:przygotuj_tabele_posrednie_fst]{MONIKAdane::przygotuj_tabele_posrednie_fst()}}
+Funkcja ta zapisuje w zadanej lokalizacji zadany typ skryptu dla danego typu
+szkoły.
 }

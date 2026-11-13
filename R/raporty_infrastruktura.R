@@ -1,161 +1,100 @@
-#' @title Funkcja tworząca podział na skrypty
-#' @details Funkcja zwraca ramkę danych będącą definicją podziału na zbliżoną
-#' liczbę wierszy w amce danych z definicją podziału na grupy. Podział ten jest
-#' potrzebny do zrównoleglenia obliczeń - do stworzenia poszczególnych skryptów
-#' będących częścią infrastruktury zrównoleglającej obliczenia.
-#' @param nrow liczba wierszy w ramce danych wygenerowanej za pomocą funkcji
-#' [MONIKAdane::utworz_grupowanie_odn_teryt()]
-#' @param podzial liczba opisująca na ile części ma zostać podzielona liczba
-#' wierszy (tyle będzie finalnie działających sesji R podczas zrównoleglania)
-#' @return ramka danych zawierająca zakres wierszy dla każdej jednostki podziału
+#' @title Zmiana ukośników w ścieżce na Windowsowe
+#' @description
+#' Funkcja przyjmuje ścieżkę pliku jako ciąg znaków i zamienia wszystkie ukośniki
+#' z formatu Unixowego (`/`) na format Windowsowy (`\\`).#'
+#' @param path Ścieżka pliku jako ciąg znaków (string). Musi być niepusty.
+#' @return Zwraca tekst z poprawionymi ukośnikami, gotowy do użycia w Windows.
+#' @examples
+#' normal_windows_path("folder/podfolder/plik.txt")
+#' # [1] "folder\\podfolder\\plik.txt"
 #' @export
-skrypty_podzial <- function(wsk_szk) {
-  stopifnot(
-    is_tibble(wsk_szk) | is.data.frame(wsk_szk)
-  )
-  
-  row_per_part <- nrow %/% podzial
-  reszta <- nrow %% podzial
-  
-  skrypt <- integer(podzial)
-  od <- integer(podzial)
-  do <- integer(podzial)
-  start <- 1
-  
-  for (i in 1:podzial) {
-    current_part_rows <- row_per_part + ifelse(i <= reszta, 1, 0)
-    
-    skrypt[i] <- i
-    od[i] <- start
-    do[i] <- start + current_part_rows - 1
-    start <- start + current_part_rows
+normal_windows_path <- function(path) {
+  if (!is.character(path) || length(path) != 1 || is.na(path)) {
+    stop("Argument 'path' musi być niepustym ciągiem znaków.")
   }
-  
-  stopifnot("Liczba wierszy powinna być równa liczbie w pierwszym argumencie" = sum(do - od + 1) == nrow)
-  stopifnot("Zakresy 'd' i 'do' nie powinny nachodzić na siebie" = all(od[-1] == do[-length(do)] + 1))
-  
-  df <- data.frame(skrypt = skrypt,
-                  od = od,
-                  do = do)
-  
-  stopifnot("Zwracana ramka danych powinna mieć dokładnie tyle wierszy ile w argumencie 'podzial'" = nrow(df) == podzial)
-  
-  return(df)
+  gsub("/", "\\\\", path)
 }
 #' @title Generowanie skryptów służących do obliczania wskaźników
 #' @description
-#' Funkcja ta zapisuje w zadanej lokalizacji zadany typ skryptu w liczbie
-#' ustalonej w argumencie `podzial` funkcji [skrypty_podzial()].
-#' @param sciezka_docelowa ścieżka w formacie tekstowym, w ktorej mają być
-#' zapisane wygenerowane skrypty
-#' @param plik_tab_posrednie ścieżka do pliku w formacie tekstowym, w ktorej
-#' znajdują się tabele pośrednie
+#' Funkcja ta zapisuje w zadanej lokalizacji zadany typ skryptu dla danego typu
+#' szkoły.
+#' @param sciezka_wd ścieżka do katalogu roboczego w formacie tekstowym
 #' @param rok_ukonczenia rok, którym absolwent ukończył szkołę (jest to tym
 #' samym rok monitoringu)
-#' @param rodzaj_wsk ciąg znaków określający dla jakiego rodzaju wskaźników
-#' należy zwórócić definicję podziału na grupy. Możliwe wartości:
-#' \describe{
-#'   \item{`"szk_god"`}{Główny podział na szkołę oraz jej grupę odniesienia z
-#'   wykluczeniem}
-#'   \item{`"god1_god2"`}{}
-#'   \item{`"szkozaw"`}{Zbiór, gdzie jednostką podziału jest zawód nauczany (i
-#'   posiadający absolwentów) w danej szkol - szkoło-zawod.}
-#'   \item{`"woj"`}{}
-#' }
-#' @param podzial_grupy_df ramka danych wygenerowana zwykle za pomocą funkcji
-#' [skrypty_podzial()]
 #' @importFrom tibble is_tibble
-#' @return pliki txt będące skryptami uruchamianymi podczas zrównoleglania
-#' @seealso [skrypty_podzial()]
-#' @seealso [MONIKAdane::przygotuj_tabele_posrednie_fst()]
+#' @return skrypty .R do uruchomienia podczas zrównoleglania
 #' @export
-skrypt_wzor <- function(sciezka_docelowa, plik_tab_posrednie,
-                        rok_ukonczenia = 2025, rodzaj_wsk,
-                        podzial_grupy_df) {
+skrypt_wzor <- function(sciezka_wd,
+                        rok_ukonczenia = 2025) {
+  stopifnot(
+    is.character(sciezka_wd) & length(sciezka_wd) > 0,
+    is.numeric(rok_ukonczenia)
+  )
   
-  stopifnot(is.character(sciezka_docelowa) & length(sciezka_docelowa) > 0,
-            is.character(plik_tab_posrednie) & length(plik_tab_posrednie) > 0,
-            rodzaj_wsk %in% rodzaje,
-            "Do argumentu `rodzaj_wsk` należy przekazać tylko jedną wartość." = length(rodzaj_wsk) == 1,
-            is.numeric(rok_ukonczenia),
-            is_tibble(podzial_grupy_df) | is.data.frame(podzial_grupy_df),
-            nrow(podzial_grupy_df) > 1)
+  typy_szk <- list(
+    "bs1" = "Branżowa szkoła I stopnia",
+    "tech" = "Technikum",
+    "spolic" = "Szkoła policealna",
+    "lo" = "Liceum ogólnokształcące",
+    "lodd" = "Liceum dla dorosłych",
+    "bs2" = "Branżowa szkoła II stopnia"
+  )
   
-  if (rodzaj_wsk == "szk_god") {
-    stale <- paste(
-      "# biblioteki",
-      "library(dplyr)",
-      "library(MONIKAdane)",
-      "library(beepr)",
-      "# ładownaie danych",
-      paste0("load(\"", plik_tab_posrednie, "\")"),
-      paste0("load(\"", sciezka_docelowa, "grupy_szk_god.RData\")"),
-      "grupy1 <- grupy_szk[maska,]",
-      "# liczenie wskaźników",
-      paste0("wsk <- agreguj_1rokpo_adm(wsk2 = p2, wsk3 = p3, wsk4 = p4, podzial_grupy = grupy1, rok_abso = ", rok_ukonczenia, ")"),
-      "szk <- wsk$grupy",
-      "god <- wsk$grupyOdniesienia",
-      sep = "\n"
+  stala <- paste(
+    "czas_start <- Sys.time()",
+    "cat(\"Start: \", format(czas_start, \"%Y.%m.%d %H:%M:%S\"), sep = \"\")",
+    "# biblioteki",
+    "library(dplyr)",
+    "library(ggplot2)",
+    "library(kableExtra)",
+    "library(tidyr)",
+    "library(MONIKAraporty)",
+    "# ścieżki",
+    "source(\"R/helpers.R\")",
+    "parametry <- parametry()",
+    "# dane",
+    "cat(\"Ładowanie danych: \", format(Sys.time(), \"%Y.%m.%d %H:%M:%S\"), sep = \"\")",
+    "load(paste0(parametry$project_path, \"data/02_wskazniki_zagregowane/wskazniki_szk_god_final.RData\"))",
+    "load(paste0(parametry$project_path, \"data/02_wskazniki_zagregowane/wskazniki_god1_god2.RData\"))",
+    "load(paste0(parametry$project_path, \"data/02_wskazniki_zagregowane/wskazniki_szkozaw.RData\"))",
+    "load(paste0(parametry$project_path, \"data/02_wskazniki_zagregowane/wskazniki_woj.RData\"))\n",
+    sep = "\n"
+  )
+  
+  for (szkola in names(typy_szk)) {
+    nazwa_pliku = paste0(sciezka_wd, "scripts/03_raporty/skrypt_", szkola, ".R")
+    cat(
+      "# --- ", szkola, " ---\n",
+      "cat(\"Generowanie raportów dla szkoły typu: ", typy_szk[[szkola]], "\\n\")",
+      stala,
+      
+      szkola, "_szk <- szk %>% filter(typ_szk %in% \"", typy_szk[[szkola]], "\")\n",
+      szkola, "_god <- god %>% filter(id_szk %in% ", szkola, "_szk$id_szk)\n",
+      "cat(\"Generowanie raportów: \", format(Sys.time(), \"%Y.%m.%d %H:%M:%S\"), sep = \"\")\n",
+      "setwd(paste0(parametry$project_path, \"raporty/final/", szkola, "/\"))\n",
+      "generuj_raporty(\n",
+      "  pakiet = \"MONIKAraporty\",\n",
+      "  szablon = \"adm_master_1rokpo.Rmd\",\n",
+      "  wskazniki = ", szkola, "_szk,\n",
+      "  wskaznikiGrPor = ", szkola, "_god,\n",
+      "  kolumnaNazwaPliku = nazwa_pliku,\n",
+      "  parametry = list(plikZObiektami = \"\",\n",
+      "                   obiektWskazniki = \"", szkola, "_szk\",\n",
+      "                   obiektWskaznikiPorownanie = \"", szkola, "_god\",\n",
+      "                   obiektWskaznikiKraj1 = \"god1\",\n",
+      "                   obiektWskaznikiKraj2 = \"god2\",\n",
+      "                   obiektSzkoloZawody = \"szkozaw\",\n",
+      "                   obiektWoj = \"woj\",\n",
+      "                   progLiczebnosci = 10,\n",
+      "                   typDokumentu = \"pdf\",\n",
+      "                   wyrownanieTabWykr = \"center\",\n",
+      "                   rok = ", rok_ukonczenia, "))\n",
+      "czas_stop = Sys.time()\n",
+      "czas_roznica = round(czas_stop - czas_start, 2)\n",
+      "cat(\"Koniec: \", format(czas_stop, \"%Y.%m.%d %H:%M:%S\"), \"\\nComputation duration: \", paste(as.numeric(czas_roznica), attr(czas_roznica, \"units\")), \"\\n\", sep = \"\")\n",
+      sep = "",
+      file = nazwa_pliku
     )
-    
-    for (i in 1:nrow(podzial_grupy_df)) {
-      nazwa_pliku = paste0(sciezka_docelowa, "skrypt_N", podzial_grupy_df$skrypt[i], ".R")
-      cat(
-        "# parametry\nmaska <- ",
-        podzial_grupy_df$od[i],
-        ":",
-        podzial_grupy_df$do[i],
-        "\nprefiks <- \"N",
-        podzial_grupy_df$skrypt[i],
-        "\"\n",
-        stale,
-        "\n",
-        "# zapisywanie wskaźników\n",
-        paste0("plik <- paste0(\"", sciezka_docelowa, "partial/wsk_szk_god_\", prefiks, \".RData\")\n"),
-        "save(szk, god, file = plik)\n",
-        "beep(5)",
-        sep = "",
-        file = nazwa_pliku
-      )
-    }
-  } else if (rodzaj_wsk == "szkozaw") {
-    stale <- paste(
-      "# biblioteki",
-      "library(dplyr)",
-      "library(MONIKAdane)",
-      "library(beepr)",
-      "# ładownaie danych",
-      paste0("load(\"", plik_tab_posrednie, "\")"),
-      paste0("load(\"", sciezka_docelowa, "grupy_szkozaw.RData\")"),
-      "grupy1 <- grupy_szkozaw[maska,]",
-      "# liczenie wskaźników",
-      paste0("wsk <- agreguj_szkozaw_1rokpo_adm(wsk3 = p3, wsk4 = p4, podzial_grupy = grupy1, rok_abso = ", rok_ukonczenia, ")"),
-      "szkozaw <- wsk$grupyOdniesienia",
-      sep = "\n"
-    )
-    
-    for (i in 1:nrow(podzial_grupy_df)) {
-      nazwa_pliku = paste0(sciezka_docelowa, "skrypt_N", podzial_grupy_df$skrypt[i], ".R")
-      cat(
-        "# parametry\nmaska <- ",
-        podzial_grupy_df$od[i],
-        ":",
-        podzial_grupy_df$do[i],
-        "\nprefiks <- \"N",
-        podzial_grupy_df$skrypt[i],
-        "\"\n",
-        stale,
-        "\n",
-        "# zapisywanie wskaźników\n",
-        paste0("plik <- paste0(\"", sciezka_docelowa, "partial/wsk_szkozaw_\", prefiks, \".RData\")\n"),
-        "save(szkozaw, file = plik)\n",
-        "beep(5)",
-        sep = "",
-        file = nazwa_pliku
-      )
-    }
-  } else if (rodzaj_wsk %in% c("god1_god2", "woj")) {
-    message(paste0("Wskaźniki *", rodzaj_wsk, "* nie są zwykle obliczane równolegle, więc nie przewidziadno dla nich tworzenia infrastruktury dla zrównoleglania. Należy je policzyć \"ręcznie\"."))
   }
 }
 #' @title Funkcja generująca plik ze ścieżkami do skryptów
@@ -164,7 +103,7 @@ skrypt_wzor <- function(sciezka_docelowa, plik_tab_posrednie,
 #' które tworzone są za pomocą funkcji [skrypt_wzor()] - mogą również być
 #' stworzone w inny sposób, ale ważne żeby ich nazewnictwo i struktura były
 #' zgodne z tymi, które zwraca wspomniana funkcja. 
-#' @param sciezka_docelowa ścieżka w formacie tekstowym, w ktorej ma być
+#' @param sciezka_docelowa ścieżka w formacie tekstowym, w której ma być
 #' zapisany plik source - jest to równocześnie ścieżka, w której powinny
 #' znajdować się skrypty według podziału, który ma być zastosowany w
 #' zrównoleglaniu
@@ -217,7 +156,7 @@ skrypt_bat <- function(sciezka_docelowa) {
     "\n    :: Remove quotes from the line",
     "\n    set line=%%A",
     "\n\n    :: Run the R script using Rscript.exe simultaneously",
-    "\n    start \"\" \"C:\\PROGRA~1\\R\\R-4.4.1\\bin\\x64\\Rscript.exe\" !line!",
+    "\n    start \"\" \"C:\\PROGRA~1\\R\\R-4.6.1\\bin\\x64\\Rscript.exe\" !line!",
     "\n)",
     "\n\nendlocal",
     "\npause"
