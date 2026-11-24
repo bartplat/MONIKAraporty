@@ -104,7 +104,7 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
     80
     )
   
-  tab <- tab |> 
+  tab <- tab |>
     mutate(
       name = ordered(
         name,
@@ -135,7 +135,7 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
                    params$rok,
                    " roku - ogółem"), 80))
   
-  tab <- tab |> 
+  tab <- tab |>
     mutate(
       name = ordered(
         name,

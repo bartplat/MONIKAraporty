@@ -3,7 +3,7 @@
 ```{r}
 if (szk$W3_ucz[[1]]$n >= progLiczebnosci) {
   cat(
-    "Mediana średnich miesięcznych wynagrodzeń z pracy absolwentów Państwa szkoły, zatrudnionych na podstawie umowy o pracę i kontynuujących naukę, wynosiła ",
+    "Mediana średniej miesięcznej stawki wynagrodzenia z pracy absolwentów Państwa szkoły, zatrudnionych na podstawie umowy o pracę i kontynuujących naukę, wynosiła ",
     round(szk$W3_ucz[[1]]$med * 100),
     "% średnich wynagrodzeń mieszkańców powiatów, w których mieszkali.\n\nDla pracujących na etat i kontynuujących edukację absolwentów pozostałych ",
     szk$odmiany[[1]]$typ_szk_dop_lm,
@@ -42,17 +42,17 @@ if (szk$W3_ucz[[1]]$n >= progLiczebnosci) {
   
   wyk_tyt <- wrapper(paste0("Wykres ",
                            wyk_num(),
-                           ": Średnie miesięczne wynagrodzenie brutto z pracy uzyskiwane przez absolwentów Państwa szkoły oraz pozostałych ",
+                           ": Średnia miesięczna stawka wynagrodzenie z pracy uzyskiwana przez absolwentów Państwa szkoły oraz pozostałych ",
                            szk$odmiany[[1]]$typ_szk_dop_lm,
                            " z ",
                            powiaty_dop,
-                           " w odniesieniu do przeciętnego miesięcznego wynagrodzenia brutto w poszczególnych zamieszkiwanych przez nich powiatach, od września do grudnia ",
+                           " w odniesieniu do przeciętnej miesięcznej stawki wynagrodzenia w poszczególnych zamieszkiwanych przez nich powiatach, od września do grudnia ",
                            params$rok,
-                           " roku - pracujący i kontynuujący naukę"),
+                           " roku \u2013 pracujący i kontynuujący naukę"),
                     width = 85)
   
   wykres <- boxplot_proc(tab_wyk, wyk_tyt) +
-    ylab("Wynagrodzenia absolwentów z pracy\nna umowę o pracę w odniesieniu do\nprzeciętnego wynagrodzenia w powiatach") +
+    ylab("Stawka wynagrodzenia absolwentów z pracy\nna umowę o pracę w odniesieniu do\nprzeciętnego wynagrodzenia w powiatach") +
     geom_text(data = wyk_lab,
               aes(x = typ, y = value, label = lab),
               nudge_x = -0.4,
@@ -72,7 +72,7 @@ if (szk$W3_ucz[[1]]$n >= progLiczebnosci) {
 ```{r}
 if (szk$W3_nie_ucz[[1]]$n >= progLiczebnosci) {
   cat(
-    "Mediana średnich miesięcznych wynagrodzeń absolwentów Państwa szkoły (w przeliczeniu na pełen etat), zatrudnionych na podstawie umowy o pracę i niekontynuujących nauki, wynosiła ",
+    "Mediana średniej miesięcznej stawki wynagrodzenia z pracy absolwentów Państwa szkoły, zatrudnionych na podstawie umowy o pracę i niekontynuujących nauki, wynosiła ",
     round(szk$W3_nie_ucz[[1]]$med * 100),
     "% średnich wynagrodzeń mieszkańców powiatów, w których mieszkali.\n\nDla pracujących na etat i niekontynuujących edukacji absolwentów pozostałych ",
     szk$odmiany[[1]]$typ_szk_dop_lm,
@@ -111,13 +111,13 @@ if (szk$W3_nie_ucz[[1]]$n >= progLiczebnosci) {
   
   wyk_tyt <- wrapper(paste0("Wykres ",
                            wyk_num(),
-                           ": Średnie miesięczne wynagrodzenie brutto z pracy uzyskiwane przez absolwentów Państwa szkoły oraz pozostałych ",
+                           ": Średnia miesięczna stawka wynagrodzenie z pracy uzyskiwana przez absolwentów Państwa szkoły oraz pozostałych ",
                            szk$odmiany[[1]]$typ_szk_dop_lm,
                            " z ",
                            powiaty_dop,
-                           " w odniesieniu do przeciętnego miesięcznego wynagrodzenia brutto w poszczególnych zamieszkiwanych przez nich powiatach, od września do grudnia ",
+                           " w odniesieniu do przeciętnej miesięcznej stawki wynagrodzenia w poszczególnych zamieszkiwanych przez nich powiatach, od września do grudnia ",
                            params$rok,
-                           " roku - pracujący i niekontynuujący nauki"),
+                           " roku \u2013 pracujący i niekontynuujący nauki"),
            width = 85)
   
   wykres <- boxplot_proc(tab_wyk, wyk_tyt) +

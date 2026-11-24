@@ -92,7 +92,7 @@ if (isTRUE(zawodowa == 1L)) {
                                     powiaty_dop_petla,
                                     " w grudniu ",
                                     params$rok,
-                                    " roku - w zawodzie ",
+                                    " roku w zawodzie ",
                                     i), 85)
         } else {
           tab_szk$typ <- "Państwa szkoła"
@@ -120,7 +120,7 @@ if (isTRUE(zawodowa == 1L)) {
                                     wyk_num(),
                                     ": Status edukacyjno-zawodowy absolwentów Państwa szkoły w grudniu ",
                                     params$rok,
-                                    " roku - w zawodzie ",
+                                    " roku w zawodzie ",
                                     i), 85)
         }
         
@@ -161,7 +161,7 @@ if (isTRUE(zawodowa == 1L)) {
         zwroc_wykres_tabela(wykres, tabela)
         
         if (nrow(tab_god) %in% 0) {
-          cat("Liczba absolwentów w grupie odniesienia lub szkół, do których uczęszczali, nie była wystarczająca, żeby możliwe było przedstawienie dla niej wyników zgodnie z zasadą chroniącą anonimowość absolwentów.")
+          cat("Liczba absolwentów w grupie odniesienia lub szkół, do których uczęszczali, nie była wystarczająca, żeby możliwe było przedstawienie dla niej wyników zgodnie z zasadą chroniącą anonimowość absolwentów.\n\n")
         }
       }
     }

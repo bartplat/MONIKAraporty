@@ -40,7 +40,7 @@ if (szk$Z8_formy_ucz[[1]]$n >= progLiczebnosci) {
                "Tylko samozatrudnieni",
                "Tylko zatrudnieni na podstawie innej formy umowy niż umowa o pracę",
                "Zatrudnieni na podstawie więcej niż jednej formy umowy",
-               "Zatrudnieni tylko w rolnicwie")
+               "Zatrudnieni tylko w rolnictwie")
   
   tab_wyk <- tab_wykres(szk$Z8_formy_ucz[[1]],
                         god$Z8_formy_ucz[[1]],
@@ -62,7 +62,8 @@ if (szk$Z8_formy_ucz[[1]]$n >= progLiczebnosci) {
            width = 85)
   
   wykres <- wykres_pion_skum(tab_wyk, wyk_tyt) +
-    scale_fill_manual(values = c("#90cf60", "#d8ef8a", "#f8dd00", "#fb8c59", "blue")) +
+    scale_fill_losy(type = "formyZatrudn") +
+    scale_colour_losy_fg(type = "formyZatrudn") +
     ylab("Odsetek absolwentów")
   
   levels(tab_wyk$typ) <- linebreak(levels(tab_wyk$typ), align = "l")
@@ -79,7 +80,7 @@ if (szk$Z8_formy_ucz[[1]]$n >= progLiczebnosci) {
            `Tylko zatrudnieni na podstawie innej formy umowy niż umowa o pracę`,
            `Zatrudnieni na podstawie więcej niż jednej formy umowy`,
            `Zatrudnieni tylko na podstawie umowy o pracę`,
-           `Zatrudnieni tylko w rolnicwie`) %>% 
+           `Zatrudnieni tylko w rolnictwie`) %>% 
     kable("latex", booktabs = TRUE, escape = FALSE, longtable = TRUE,
           linesep = "",
           align = "lccccc",
@@ -163,7 +164,7 @@ if (szk$Z8_formy_nie_ucz[[1]]$n >= progLiczebnosci) {
                "Tylko samozatrudnieni",
                "Tylko zatrudnieni na podstawie innej formy umowy niż umowa o pracę",
                "Zatrudnieni na podstawie więcej niż jednej formy umowy",
-               "Zatrudnieni tylko w rolnicwie")
+               "Zatrudnieni tylko w rolnictwie")
   
   tab_wyk <- tab_wykres(szk$Z8_formy_nie_ucz[[1]],
                         god$Z8_formy_nie_ucz[[1]],
@@ -185,7 +186,8 @@ if (szk$Z8_formy_nie_ucz[[1]]$n >= progLiczebnosci) {
            width = 85)
   
   wykres <- wykres_pion_skum(tab_wyk, wyk_tyt) +
-    scale_fill_manual(values = c("#90cf60", "#d8ef8a", "#f8dd00", "#fb8c59", "blue")) +
+    scale_fill_losy(type = "formyZatrudn") +
+    scale_colour_losy_fg(type = "formyZatrudn") +
     ylab("Odsetek absolwentów")
   
   levels(tab_wyk$typ) <- linebreak(levels(tab_wyk$typ), align = "l")
@@ -202,7 +204,7 @@ if (szk$Z8_formy_nie_ucz[[1]]$n >= progLiczebnosci) {
            `Tylko zatrudnieni na podstawie innej formy umowy niż umowa o pracę`,
            `Zatrudnieni na podstawie więcej niż jednej formy umowy`,
            `Zatrudnieni tylko na podstawie umowy o pracę`,
-           `Zatrudnieni tylko w rolnicwie`) %>% 
+           `Zatrudnieni tylko w rolnictwie`) %>% 
     kable("latex", booktabs = TRUE, escape = FALSE, longtable = TRUE,
           linesep = "",
           align = "lccccc",

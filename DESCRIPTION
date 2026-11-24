@@ -1,6 +1,6 @@
 Package: MONIKAraporty
 Title: Generowanie raportów automatycznych na potrzeby Monitoringu Karier (MoniKA)
-Version: 5.0.1
+Version: 6.0.0
 Authors@R: 
     person("Bartłomiej", "Płatkowski", 
            email = "b.platkowski@ibe.edu.pl", role = c("aut", "cre"),
@@ -13,7 +13,8 @@ Encoding: UTF-8
 Depends:
     R (>= 4.3.1),
     dplyr (>= 1.1.4),
-    MLASZraporty (>= 0.2.0)
+    MLASZraporty (>= 0.2.0),
+    LOSYkolory (>= 0.7.0)
 Imports:
     rlang (>= 1.1.2),
     tibble (>= 3.2.1),
@@ -22,7 +23,9 @@ Imports:
     knitr (>= 1.45),
     kableExtra (>= 1.4.0),
     rmarkdown (>= 2.25)
-Remotes: bartplat/MLASZraporty
+Remotes:
+    bartplat/MLASZraporty,
+    tzoltak/LOSYkolory
 Roxygen: list(markdown = TRUE)
 Suggests: 
     knitr,

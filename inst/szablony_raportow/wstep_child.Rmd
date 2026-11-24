@@ -147,9 +147,9 @@ if (szk$l_abs[[1]] >= progLiczebnosci) {
 ```
 
 ```{r qr_code1}
-# if (szk$l_abs[[1]] >= progLiczebnosci) {
-#   knitr::include_graphics(szk$qr_code)
-# }
+if (szk$l_abs[[1]] >= progLiczebnosci) {
+  knitr::include_graphics(szk$qr_code)
+}
 ```
 
 ```{r prosba_o_wypelnienie_ankiety_cz2}
@@ -157,7 +157,7 @@ if (szk$l_abs[[1]] >= progLiczebnosci) {
   cat(
     "\n\nW każdym raporcie szkolnym umieszczono inny link do ankiety. Po wypełnieniu, ankieta nie będzie już dla Państwa dostępna. W przypadku prośby o podanie kodu dostępu prosimy wpisać następujący ciąg znaków: ", szk$token, "\n\n",
     "Wypełnienie ankiety zajmie około 10 minut. Ankieta będzie dostępna do końca sierpnia ",
-    params$rok + 3,
+    params$rok + 2,
     " roku.",
     ifelse(typDokumentu %in% "pdf", "\\newpage", ""),
     sep = ""
@@ -168,18 +168,18 @@ if (szk$l_abs[[1]] >= progLiczebnosci) {
 ```{r statusy_data_frame}
 statusy_df = data.frame(
   `Kategoria` = "Znaczenie kategorii",
-  `1. Tylko nauka` = "Status ten przypisywany jest osobom, o których wiadomo, że odbywają edukację formalną w Polsce i jednocześnie nie pracują.
+  `1. Tylko nauka` = "Status ten przypisywany jest osobom, o których wiadomo, że odbywają edukację formalną w Polsce lub w zagranicznej filii polskiej uczelni i jednocześnie nie pracują.
   \nStatusu tego nie można przypisać osobom, które uczą się za granicą, ze względu na brak takiej informacji w danych rejestrowych, na których opiera się monitoring.
   \nW grupie tej mogą znaleźć się osoby pracujące, ale nie odprowadzają składek do ZUS, bowiem na podstawie tej informacji identyfikowanie są w monitoringu karier absolwentów osoby pracujące. Są to absolwenci zatrudnieni na umowy cywilnoprawne (wyjątkiem od opisanej sytuacji są osoby uczące się powyżej 26. roku życia, które przestają być zwolnienie z obowiązku opłacania składek do ZUS, a więc w monitoringu karier zaklasyfikowane są jako osoby pracujące, ale sytuacja ta dotyczyć może jedynie absolwentów liceów dla dorosłych oraz szkół policealnych), prowadzący działalność nierejestrowaną, a także pracujący „na czarno”.
   \nPrzebywanie na urlopie macierzyńskim, rodzicielskim lub zwolnieniu lekarskim osoby będącej uczniem/studentem nie odbiera jej statusu osoby uczącej się.
   \nNa potrzeby wskaźnika, status „tylko nauka” przypisany jest także osobom zarejestrowanym jako bezrobotne, które jednocześnie kontynuują naukę w trybie niestacjonarnym.",
-  `2. Nauka i praca` = "Status ten przypisywany jest osobom, które łączą naukę w ramach edukacji formalnej w Polsce i pracują w kraju. Statusu tego dotyczą zastrzeżenia opisane dla statusów „Tylko nauka” i „Tylko praca”.",
+  `2. Nauka i praca` = "Status ten przypisywany jest osobom, które łączą naukę w ramach edukacji formalnej w Polsce lub w zagranicznej filii polskiej uczelni i pracują w kraju. Statusu tego dotyczą zastrzeżenia opisane dla statusów „Tylko nauka” i „Tylko praca”.",
   `3. Tylko praca` = "Status ten przypisywany jest osobom, które nie odbywają edukacji formalnej w Polsce, ale pracują w kraju.
   \nPrzydzielanie tego statusu opiera się na informacji o objęciu ubezpieczeniem społecznym lub zdrowotnym rolników lub odprowadzaniu składek do ZUS, co oznacza, że możliwe jest zidentyfikowanie osób pracujących na umowę o pracę, osób prowadzących działalność gospodarczą, a w przypadku osób powyżej 26 roku życia także absolwentów pracujących na umowę zlecenie. Nie jest możliwe zidentyfikowanie osób pracujących na umowę o dzieło, osób pracujących na umowę zlecenie poniżej 26 roku życia, absolwentów prowadzących działalność nierejestrowaną, pracujących na czarno, a także pracujących.
   \nMożliwa jest również sytuacja, w której osoby znajdujące się w tej grupie uczą się zagranicą.",
   `4. Bezrobocie` = "Status ten przypisywany jest osobom, które figurują w rejestrze ZUS z tytułu zarejestrowania w powiatowym urzędzie pracy jako bezrobotne - z wyjątkiem osób, które jednocześnie odbywają naukę formalną w Polsce. Absolwentom łączącym status osoby bezrobotnej z odbywaniem edukacji (co jest możliwe w przypadku nauki w szkole dla dorosłych, branżowej szkole II stopnia lub szkole policealnej, a także studiowania na studiach niestacjonarnych) przypisywany jest status „Tylko nauka”.
   \nNie jest wykluczone, że osoby zarejestrowane jako bezrobotne wykonują pracę „na czarno”.",
-  `5. Brak danych o aktywności` = "Status ten przypisywany jest osobom, dla których brak informacji o odbywaniu nauki w Polsce lub wykonywaniu pracy związanej z odprowadzeniem składek do ZUS.
+  `5. Brak danych o aktywności` = "Status ten przypisywany jest osobom, dla których brak informacji o odbywaniu nauki w Polsce lub zagranicznej filii polskiej uczelni, wykonywaniu pracy związanej z odprowadzaniem składek do ZUS lub objęciu ubezpieczeniem społecznym lub zdrowotnym rolników.
   \nNie jest wykluczone, że osoby te uczą się zagranicą, zaś jeśli się nie uczą, to pracują za granicą u zagranicznego pracodawcy, pracują na umowę o dzieło, wykonują pracę nierejestrowaną lub pracę „na czarno”.",
   check.names = FALSE) %>% 
   pivot_longer(everything()) %>% 

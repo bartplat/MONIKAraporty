@@ -43,7 +43,7 @@ if (szk$S3_12[[1]]$n >= progLiczebnosci) {
   cat(
     "Natomiast w okresie od września do grudnia ",
     params$rok,
-    " roku odsetek absolwentów Państwa szkoły pracujących na podstawie umowy o pracę, samozatrudnionych, pracujących w rolnictwie, a także - w przypadku osób niekontynuujących nauki - pracujących na podstawie umowy zlecenia, wynosił łącznie ",
+    " roku odsetek absolwentów Państwa szkoły pracujących na podstawie umowy o pracę, samozatrudnionych, pracujących w rolnictwie, a także - w przypadku osób niekontynuujących nauki - pracujących na podstawie umowy zlecenia, wynosił łącznie ",
     if (length(unique(wrz_gru)) %in% 1) {
       paste0(round(szk$S3_09[[1]]$ucz_prac * 100) + round(szk$S3_09[[1]]$tylko_prac * 100), "%.")
     } else {
@@ -106,7 +106,7 @@ if (min(szkoly_month$n) >= progLiczebnosci) {
                                                  wyk_num(),
                                                  ": Status edukacyjno-zawodowy absolwentów Państwa szkoły w poszczególnych miesiącach ",
                                                  params$rok,
-                                                 " roku - ogółem (%)"), 80)) +
+                                                 " roku \u2013 ogółem (%)"), 80)) +
     scale_x_discrete(labels = c("7" = "lip", "8" = "sie", "9" = "wrz", "10" = "paź", "11" = "lis", "12" = "gru"))
   
   tabelka <- szkoly_month %>%

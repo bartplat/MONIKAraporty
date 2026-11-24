@@ -14,7 +14,7 @@ normal_windows_path <- function(path) {
   }
   gsub("/", "\\\\", path)
 }
-#' @title Generowanie skryptów służących do obliczania wskaźników
+#' @title Generowanie skryptów służących do generowania raportów szkolnych
 #' @description
 #' Funkcja ta zapisuje w zadanej lokalizacji zadany typ skryptu dla danego typu
 #' szkoły.
@@ -24,8 +24,7 @@ normal_windows_path <- function(path) {
 #' @importFrom tibble is_tibble
 #' @return skrypty .R do uruchomienia podczas zrównoleglania
 #' @export
-skrypt_wzor <- function(sciezka_wd,
-                        rok_ukonczenia = 2025) {
+skrypt_wzor <- function(sciezka_wd, rok_ukonczenia = 2025) {
   stopifnot(
     is.character(sciezka_wd) & length(sciezka_wd) > 0,
     is.numeric(rok_ukonczenia)
@@ -36,12 +35,11 @@ skrypt_wzor <- function(sciezka_wd,
     "tech" = "Technikum",
     "spolic" = "Szkoła policealna",
     "lo" = "Liceum ogólnokształcące",
-    "lodd" = "Liceum dla dorosłych",
+    "lodd" = "Liceum ogólnokształcące dla dorosłych",
     "bs2" = "Branżowa szkoła II stopnia"
   )
   
   stala <- paste(
-    "czas_start <- Sys.time()",
     "cat(\"Start: \", format(czas_start, \"%Y.%m.%d %H:%M:%S\"), sep = \"\")",
     "# biblioteki",
     "library(dplyr)",
@@ -50,7 +48,7 @@ skrypt_wzor <- function(sciezka_wd,
     "library(tidyr)",
     "library(MONIKAraporty)",
     "# ścieżki",
-    "source(\"R/helpers.R\")",
+    "source(\"../../R/helpers.R\")",
     "parametry <- parametry()",
     "# dane",
     "cat(\"Ładowanie danych: \", format(Sys.time(), \"%Y.%m.%d %H:%M:%S\"), sep = \"\")",
@@ -65,14 +63,16 @@ skrypt_wzor <- function(sciezka_wd,
     nazwa_pliku = paste0(sciezka_wd, "scripts/03_raporty/skrypt_", szkola, ".R")
     cat(
       "# --- ", szkola, " ---\n",
-      "cat(\"Generowanie raportów dla szkoły typu: ", typy_szk[[szkola]], "\\n\")",
+      "cat(\"Generowanie raportów dla szkoły typu: ", typy_szk[[szkola]], "\")\n",
+      "czas_start <- Sys.time()\n",
+      "log_file <- paste0(\"raport_", szkola, "_logfile_\", format(Sys.time(), \"%Y%m%d_%H%M\"), \".txt\")\n",
+      "sink(log_file)\n",
       stala,
-      
       szkola, "_szk <- szk %>% filter(typ_szk %in% \"", typy_szk[[szkola]], "\")\n",
       szkola, "_god <- god %>% filter(id_szk %in% ", szkola, "_szk$id_szk)\n",
       "cat(\"Generowanie raportów: \", format(Sys.time(), \"%Y.%m.%d %H:%M:%S\"), sep = \"\")\n",
       "setwd(paste0(parametry$project_path, \"raporty/final/", szkola, "/\"))\n",
-      "generuj_raporty(\n",
+      "tryCatch({generuj_raporty(\n",
       "  pakiet = \"MONIKAraporty\",\n",
       "  szablon = \"adm_master_1rokpo.Rmd\",\n",
       "  wskazniki = ", szkola, "_szk,\n",
@@ -89,9 +89,16 @@ skrypt_wzor <- function(sciezka_wd,
       "                   typDokumentu = \"pdf\",\n",
       "                   wyrownanieTabWykr = \"center\",\n",
       "                   rok = ", rok_ukonczenia, "))\n",
-      "czas_stop = Sys.time()\n",
-      "czas_roznica = round(czas_stop - czas_start, 2)\n",
-      "cat(\"Koniec: \", format(czas_stop, \"%Y.%m.%d %H:%M:%S\"), \"\\nComputation duration: \", paste(as.numeric(czas_roznica), attr(czas_roznica, \"units\")), \"\\n\", sep = \"\")\n",
+      "czas_stop <- Sys.time() + 1\n",
+      "czas_roznica <- round(czas_stop - czas_start, 2)\n",
+      "cat(\"Koniec: \", format(czas_stop, \"%Y.%m.%d %H:%M:%S\"), \"\\nComputation duration: \", paste(as.numeric(czas_roznica), attr(czas_roznica, \"units\")), \"\\n\", sep = \"\")},\n",
+      "error = function(e) {\n",
+      "cat(\"Skrypt zwrócił błąd: \", conditionMessage(e), \"\\n\")\n",
+      "cat(\"Traceback:\\n\")\n",
+      "traceback()},\n",
+      "finally = {\n",
+      "sink()\n",
+      "message(\"Zamknięto plik log.\")})\n",
       sep = "",
       file = nazwa_pliku
     )
@@ -123,7 +130,7 @@ plik_source <- function(sciezka_docelowa) {
   }
   
   plik <- paste(
-    gsub("/", "\\\\", paste0(sciezka_docelowa, list.files(sciezka_docelowa)[grep("^skrypt_", list.files(sciezka_docelowa))])),
+    paste0(sciezka_docelowa, list.files(sciezka_docelowa)[grep("^skrypt_", list.files(sciezka_docelowa))]),
     collapse = "\n", sep = ""
   )
   
@@ -149,14 +156,11 @@ skrypt_bat <- function(sciezka_docelowa) {
   bat_script <- paste0(
     "@echo off",
     "\nsetlocal enabledelayedexpansion",
-    "\n\n:: Path to the txt file",
-    paste0("\nset file=", normal_windows_path(sciezka_docelowa), "source_raporty.txt"),
-    "\n\n:: Read the file line by line",
+    "\nset \"RSTUDIO_PANDOC=C:\\Program Files\\RStudio\\resources\\app\\bin\\quarto\\bin\\tools\"",
+    paste0("\nset \"file=", normal_windows_path(sciezka_docelowa), "source_raporty.txt\""),
     "\nfor /f \"usebackq delims=\" %%A in (\"%file%\") do (",
-    "\n    :: Remove quotes from the line",
-    "\n    set line=%%A",
-    "\n\n    :: Run the R script using Rscript.exe simultaneously",
-    "\n    start \"\" \"C:\\PROGRA~1\\R\\R-4.6.1\\bin\\x64\\Rscript.exe\" !line!",
+    "\n    set line=%%~A",
+    "\n    start \"\" cmd /k C:\\PROGRA~1\\R\\R-4.6.1\\bin\\x64\\Rscript.exe -e \"source('!line!', chdir = TRUE, encoding = 'UTF-8')\"",
     "\n)",
     "\n\nendlocal",
     "\npause"

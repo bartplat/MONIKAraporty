@@ -50,39 +50,38 @@ if (szk$Z4_ucz[[1]]$n >= progLiczebnosci) {
   etykiety <- c("p0", "czesc", "p100")
   
   tab_wyk <- tab_wykres(szk$Z4_ucz[[1]],
-                       god$Z4_ucz[[1]],
-                       NULL,
-                       powiaty_dop,
-                       etykiety,
-                       szk$odmiany[[1]]$typ_szk_mian_lm,
-                       80) %>% 
+                        god$Z4_ucz[[1]],
+                        NULL,
+                        powiaty_dop,
+                        etykiety,
+                        szk$odmiany[[1]]$typ_szk_mian_lm,
+                        80) %>% 
     select(-lab) %>% 
     pivot_wider() %>% 
     pivot_longer(cols = p0:p100) %>%  
     mutate(lab = ifelse(round(value, 2) >= 0.06,
-                              paste0(round(value * 100), "%"),
-                              ""))
+                        paste0(round(value * 100), "%"),
+                        ""))
   
   tab_wyk$name <- ordered(tab_wyk$name,
-                         levels = c("p0", "czesc", "p100"),
-                         labels = c("brak pracy", "praca przez część okresu", "praca przez cały okres"))
+                          levels = c("p0", "czesc", "p100"),
+                          labels = c("Brak pracy", "Praca przez część okresu", "Praca przez cały okres"))
   
   wykres <- wykres_pion_skum(tab_wyk,
-                              wrapper(paste0("Wykres ",
-                                    wyk_num(),
-                                    ": Procentowy udział grup wyróżnionych ze względu na część przepracowanego okresu wśród absolwentów Państwa szkoły oraz absolwentów pozostałych ",
-                                    szk$odmiany[[1]]$typ_szk_dop_lm,
-                                    " z ",
-                                    powiaty_dop,
-                                    ", w okresie od września do grudnia ",
-                                    params$rok,
-                                    " roku - kontynuujący naukę"),
-                             width = 85)) +
-      scale_fill_manual(values = c("#fb8c59",
-                                   "#f8dd00",
-                                   "#90cf60")) +
-      ylab("Odsetek absolwentów") + 
-      guides(fill = guide_legend(nrow = 1, byrow = TRUE))
+                             wrapper(paste0("Wykres ",
+                                            wyk_num(),
+                                            ": Procentowy udział grup wyróżnionych ze względu na część przepracowanego okresu wśród absolwentów Państwa szkoły oraz absolwentów pozostałych ",
+                                            szk$odmiany[[1]]$typ_szk_dop_lm,
+                                            " z ",
+                                            powiaty_dop,
+                                            ", w okresie od września do grudnia ",
+                                            params$rok,
+                                            " roku - kontynuujący naukę"),
+                                     width = 85)) +
+    scale_fill_losy(type = "okresPracy") +
+    scale_colour_losy_fg(type = "okresPracy") +
+    ylab("Odsetek absolwentów") + 
+    guides(fill = guide_legend(nrow = 1, byrow = TRUE))
   
   levels(tab_wyk$typ) <- linebreak(levels(tab_wyk$typ), align = "l")
   
@@ -162,39 +161,38 @@ if (szk$Z4_nie_ucz[[1]]$n >= progLiczebnosci) {
   etykiety <- c("p0", "czesc", "p100")
   
   tab_wyk <- tab_wykres(szk$Z4_nie_ucz[[1]],
-                       god$Z4_nie_ucz[[1]],
-                       NULL,
-                       powiaty_dop,
-                       etykiety,
-                       szk$odmiany[[1]]$typ_szk_mian_lm,
-                       80) %>% 
+                        god$Z4_nie_ucz[[1]],
+                        NULL,
+                        powiaty_dop,
+                        etykiety,
+                        szk$odmiany[[1]]$typ_szk_mian_lm,
+                        80) %>% 
     select(-lab) %>% 
     pivot_wider() %>% 
     pivot_longer(cols = p0:p100) %>% 
     mutate(lab = ifelse(round(value, 2) >= 0.06,
-                              paste0(round(value * 100), "%"),
-                              ""))
+                        paste0(round(value * 100), "%"),
+                        ""))
   
   tab_wyk$name <- ordered(tab_wyk$name,
-                         levels = c("p0", "czesc", "p100"),
-                         labels = c("brak pracy", "praca przez część okresu", "praca przez cały okres"))
+                          levels = c("p0", "czesc", "p100"),
+                          labels = c("Brak pracy", "Praca przez część okresu", "Praca przez cały okres"))
   
   wykres <- wykres_pion_skum(tab_wyk,
-                              wrapper(paste0("Wykres ",
-                                    wyk_num(),
-                                    ": Procentowy udział grup wyróżnionych ze względu na część przepracowanego okresu wśród absolwentów Państwa szkoły oraz absolwentów pozostałych ",
-                                    szk$odmiany[[1]]$typ_szk_dop_lm,
-                                    " z ",
-                                    powiaty_dop,
-                                    ", w okresie od września do grudnia ",
-                                    params$rok,
-                                    " - niekontynuujący nauki"),
-                             width = 85)) +
-      scale_fill_manual(values = c("#fb8c59",
-                                   "#f8dd00",
-                                   "#90cf60")) +
-      ylab("Odsetek absolwentów") + 
-      guides(fill = guide_legend(nrow = 1, byrow = TRUE))
+                             wrapper(paste0("Wykres ",
+                                            wyk_num(),
+                                            ": Procentowy udział grup wyróżnionych ze względu na część przepracowanego okresu wśród absolwentów Państwa szkoły oraz absolwentów pozostałych ",
+                                            szk$odmiany[[1]]$typ_szk_dop_lm,
+                                            " z ",
+                                            powiaty_dop,
+                                            ", w okresie od września do grudnia ",
+                                            params$rok,
+                                            " \u2013 niekontynuujący nauki"),
+                                     width = 85)) +
+    scale_fill_losy(type = "okresPracy") +
+    scale_colour_losy_fg(type = "okresPracy") +
+    ylab("Odsetek absolwentów") + 
+    guides(fill = guide_legend(nrow = 1, byrow = TRUE))
   
   levels(tab_wyk$typ) <- linebreak(levels(tab_wyk$typ), align = "l")
   

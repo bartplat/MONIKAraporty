@@ -52,10 +52,8 @@ source("setup.R", echo = FALSE, local = TRUE)
 `r if (typDokumentu == "pdf") "\\vfill"`
 
 ```{r, echo=FALSE, eval=(typDokumentu == "pdf"), out.width="100%"}
-# knitr::include_graphics("Belka-Losy-absolwentow-Kolor-PL.png")
+knitr::include_graphics(system.file("Belka-Losy-absolwentow-Kolor-PL.png", package = "MONIKAraporty"))
 ```
-
-![](`r system.file("szablony_raportow/Belka-Losy-absolwentow-Kolor-PL.png", package = "MONIKAraporty")`)
 
 `r ifelse(typDokumentu %in% "pdf", "\\newpage", "")`
 
@@ -124,6 +122,10 @@ statusy_df |>
 
 ```
 
+```{r, child="kontyn_kierunki_studiow.Rmd"}
+
+```
+
 ```{r, child="kontyn_bs2_branza.Rmd"}
 
 ```
@@ -168,6 +170,8 @@ W tym rozdziale opisując sytuację zawodową absolwentów rozróżniono 5 form 
 
 ```
 
+`r ifelse(typDokumentu %in% "pdf", "\\newpage", "")`
+
 ## Przychody absolwentów z pracy etatowej w okresie od września do grudnia `r params$rok` roku w odniesieniu do średniego wynagrodzenia w powiatach, w których mieszkali
 
 Wskaźnik, którego wartości prezentujemy w tej części raportu, pokazuje stosunek wynagrodzeń absolwentów Państwa szkoły z pracy na umowę o pracę (w przeliczeniu na pełen etat)^[Średnią (arytmetyczną) obliczono wyłącznie dla miesięcy, w których absolwenci pracowali. Nie uwzględniono przychodów przekraczających  kwotę rocznego ograniczenia podstawy wymiaru składek na ubezpieczenie emerytalne i rentowe (tj. 30 krotność prognozowanego wynagrodzenia brutto, czyli w `r params$rok` roku 208 050 zł), w miesiącach, w których to przekroczenie wystąpiło.] do przeciętnego miesięcznego wynagrodzenia^[Według danych publikowanych w [Banku Danych Lokalnych Głównego Urzędu Statystycznego](https://stat.gov.pl/metainformacje/slownik-pojec/pojecia-stosowane-w-statystyce-publicznej/693,pojecie.html?pdf=1)] osób mieszkających w tych samych powiatach. Dla poszczególnych absolwentów wartość wskaźnika równa 100% oznaczałaby, że ich średnie wynagrodzenia z umowy o pracę (w przeliczeniu na pełen etat) były takie same, jak przeciętne wynagrodzenie mieszkańców danego powiatu.
@@ -176,10 +180,8 @@ Warto odnotować, że wyrażenie wynagrodzeń uzyskiwanych przez absolwentów ja
 
 Na poniższej ilustracji opisano sposób prezentowania danych na wykresie typu boxplot wraz z ich interpretacją. Dane na tym wykresie są fikcyjne – służy on tylko objaśnieniu jakiego rodzaju informacje można znaleźć na tego typu wykresach.
 
-![](`r system.file("boxplot_wzor.png", package = "MONIKAraporty")`)
-
 ```{r, out.width='100%'}
-# knitr::include_graphics("../boxplot_wzor.png")
+knitr::include_graphics(system.file("boxplot_wzor.png", package = "MONIKAraporty"))
 ```
 
 ```{r, child="praca_wynagrodzenie.Rmd"}

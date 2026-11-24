@@ -149,14 +149,14 @@ if (woj$l_abs[[1]] < progLiczebnosci | woj$E2_nauka_kontyn[[1]]$n < progLiczebno
                         levels = c("Studia",
                                    "Szkoła policealna",
                                    "KKZ",
-                                   "Liceum dla dorosłych",
+                                   "Liceum ogólnokształcące dla dorosłych",
                                    "Branżowa szkoła II stopnia",
                                    "KUZ",
                                    "Brak kontynuacji nauki"),
                         labels = c("Studia",
                                    "Szkoła policealna",
                                    "Kwalifikacyjny Kurs Zawodowy (KKZ)",
-                                   "Liceum dla dorosłych",
+                                   "Liceum ogólnokształcące dla dorosłych",
                                    "Branżowa szkoła II stopnia",
                                    "Kurs Umiejętności Zawodowych (KUZ)",
                                    "Nie kontynuują kształcenia"))
@@ -208,14 +208,14 @@ if (woj$l_abs[[1]] < progLiczebnosci | woj$E2_nauka_kontyn[[1]]$n < progLiczebno
                         levels = c("Studia",
                                    "Szkoła policealna",
                                    "KKZ",
-                                   "Liceum dla dorosłych",
+                                   "Liceum ogólnokształcące dla dorosłych",
                                    "Branżowa szkoła II stopnia",
                                    "KUZ",
                                    "Brak kontynuacji nauki"),
                         labels = c("Studia",
                                    "Szkoła policealna",
                                    "Kwalifikacyjny Kurs Zawodowy (KKZ)",
-                                   "Liceum dla dorosłych",
+                                   "Liceum ogólnokształcące dla dorosłych",
                                    "Branżowa szkoła II stopnia",
                                    "Kurs Umiejętności Zawodowych (KUZ)",
                                    "Nie kontynuują kształcenia"))
@@ -263,14 +263,14 @@ if (woj$l_abs[[1]] < progLiczebnosci | woj$E2_nauka_kontyn[[1]]$n < progLiczebno
                         levels = c("Studia",
                                    "Szkoła policealna",
                                    "KKZ",
-                                   "Liceum dla dorosłych",
+                                   "Liceum ogólnokształcące dla dorosłych",
                                    "Branżowa szkoła II stopnia",
                                    "KUZ",
                                    "Brak kontynuacji nauki"),
                         labels = c("Studia",
                                    "Szkoła policealna",
                                    "Kwalifikacyjny Kurs Zawodowy (KKZ)",
-                                   "Liceum dla dorosłych",
+                                   "Liceum ogólnokształcące dla dorosłych",
                                    "Branżowa szkoła II stopnia",
                                    "Kurs Umiejętności Zawodowych (KUZ)",
                                    "Nie kontynuują kształcenia"))
@@ -705,8 +705,8 @@ if (woj$l_abs[[1]] < progLiczebnosci | sum(woj$B2_bezrob[[1]]$n) < progLiczebnos
 \centering
 
 ```{r qr_code2}
-# if (szk$l_abs[[1]] >= progLiczebnosci) {
-#   cat("Link do ankiety:\n")
-#   knitr::include_graphics(szk$qr_code)
-# }
+if (szk$l_abs[[1]] >= progLiczebnosci) {
+  cat("Link do ankiety:\n")
+  knitr::include_graphics(szk$qr_code)
+}
 ```

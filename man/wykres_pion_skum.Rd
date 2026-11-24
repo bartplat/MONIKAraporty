@@ -2,7 +2,7 @@
 % Please edit documentation in R/wykresy_admin.R
 \name{wykres_pion_skum}
 \alias{wykres_pion_skum}
-\title{Wykresy w raportach z 3. rundy monitoringu na danych administracyjnych}
+\title{Wykresy w raportach z monitoringu na danych administracyjnych}
 \usage{
 wykres_pion_skum(x, tytul)
 }

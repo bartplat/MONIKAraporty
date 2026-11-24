@@ -13,17 +13,17 @@
 #'  labs geom_text coord_flip theme guides ylab xlab scale_x_discrete
 #' @importFrom dplyr .data
 wykres_poziomy_statusy <- function(x, tytul) {
-  stopifnot(is_tibble(x),
-            ifelse(is.null(tytul), FALSE, nchar(tytul) > 1))
-  
-  kolory_slupkow <- c("#d62f26", "#585cd6", "#f8dd00", "#d8ef8a", "#1a974f")
+  stopifnot(
+    is_tibble(x),
+    ifelse(is.null(tytul), FALSE, nchar(tytul) > 1)
+  )
 
   wykres <- ggplot(x, aes(x = .data$typ,
                 y = .data$value,
                 fill = .data$name)) +
     geom_bar(width = 0.75, stat = "identity", colour = "white") +
-    scale_fill_manual(values = kolory_slupkow,
-                      guide = guide_legend(reverse = TRUE)) +
+    scale_fill_losy(type = "statusy", guide = guide_legend(reverse = TRUE)) +
+    scale_colour_losy_fg(type = "statusy") +
     scale_y_continuous(labels = scales::percent) +
     scale_x_discrete(limits = rev) +
     labs(fill = NULL,
@@ -63,14 +63,12 @@ wykres_pionowy_statusy <- function(x, tytul) {
   stopifnot(is_tibble(x),
             ifelse(is.null(tytul), FALSE, nchar(tytul) > 1))
   
-  kolory_slupkow <- c("#d62f26", "#585cd6", "#f8dd00", "#d8ef8a", "#1a974f")
-  
   wykres <- ggplot(x, aes(x = .data$month,
                 y = .data$value,
                 fill = .data$name)) +
     geom_bar(width = 0.75, stat = "identity", colour = "white") +
-    scale_fill_manual(values = kolory_slupkow,
-                      guide = guide_legend(reverse = TRUE)) +
+    scale_fill_losy(type = "statusy") +
+    scale_colour_losy_fg(type = "statusy") +
     scale_y_continuous(labels = scales::percent) +
     scale_x_discrete(limits = rev) +
     labs(fill = NULL,
@@ -107,8 +105,6 @@ wykres_pionowy_statusy <- function(x, tytul) {
 wave_chart <- function(x, tytul) {
   stopifnot(is_tibble(x),
             ifelse(is.null(tytul), FALSE, nchar(tytul) > 1))
-  
-  kolory_slupkow <- c("#d62f26", "#585cd6", "#f8dd00", "#d8ef8a", "#1a974f")
 
   wykres <- ggplot(x, aes(x = .data$month, y = .data$value, fill = .data$name)) +
     geom_area(position = position_stack(reverse = TRUE), stat = "identity") +
@@ -119,8 +115,8 @@ wave_chart <- function(x, tytul) {
           axis.ticks.y = element_blank(),
           axis.ticks.x = element_blank(),
           plot.title = element_text(size = 11)) +
-    scale_fill_manual(values = kolory_slupkow,
-                      guide = guide_legend(reverse = TRUE)) +
+    scale_fill_losy(type = "statusy", guide = guide_legend(reverse = TRUE)) +
+    scale_colour_losy_fg(type = "statusy") +
     guides(fill = guide_legend(nrow = 6, byrow = TRUE, reverse = TRUE), title = NULL) +
     scale_y_continuous(labels = scales::percent) +
     ylab("Odsetek absolwentów") +
@@ -147,16 +143,15 @@ wykres_poziomy_slupki <- function(x, tytul) {
             ifelse(is.null(tytul), FALSE, nchar(tytul) > 1))
 
   wykres <- ggplot(x, aes(x = .data$name, y = .data$value)) +
-    geom_bar(width = 0.9, stat = "identity", colour = "white", fill = "#90CF60", position = position_dodge(width = 0.9)) +
+    geom_bar(width = 0.9, stat = "identity", colour = "white", fill = "#1a974f", position = position_dodge(width = 0.9)) +
     scale_y_continuous(labels = scales::percent, limits = c(0, 1)) +
     scale_x_discrete(limits = rev) +
     labs(fill = NULL,
          title = tytul) +
     geom_text(aes(label = lab),
-              # position = position_stack(vjust = ifelse(round(x$value * 100) < 6, -1, 0.5)),
-              position = position_stack(vjust = 1.05),
+              hjust = 0,
+              nudge_y = 0.015,
               size = 3,
-              # nudge_y = ifelse(round(x$value * 100) < 6, -1, 0.5),
               colour = "#000000") +
     ylab(NULL) +
     xlab(NULL) +
@@ -166,8 +161,7 @@ wykres_poziomy_slupki <- function(x, tytul) {
           axis.ticks.y = element_blank(),
           axis.ticks.x = element_blank(),
           plot.title.position = "plot",
-          plot.title = element_text(size = 11)) +
-    labs(title = tytul)
+          plot.title = element_text(size = 11))
   
   return(wykres)
 }
@@ -195,9 +189,8 @@ boxplot_proc <- function(x, tytul) {
                      ymax = .data$q95),
                  stat = "identity",
                  width = 0.5) +
-    scale_fill_manual(values = c("#8de04e",	"#f8dd00"),
+    scale_fill_manual(values = c("#1a974f",	"#f8dd00"),
                       guide = guide_legend(reverse = TRUE)) +
-    # scale_y_continuous(limits = c(0.0, 1.0), expand = c(0,0)) +
     theme(legend.position = "none",
           panel.background = element_rect(fill = "white"),
           axis.ticks.y = element_blank(),
@@ -212,7 +205,7 @@ boxplot_proc <- function(x, tytul) {
   
   return(wykres)
 }
-#' @title Wykresy w raportach z 3. rundy monitoringu na danych administracyjnych
+#' @title Wykresy w raportach z monitoringu na danych administracyjnych
 #' @description Funkcja rysująca wykres słupkowy, pionowy, skumulowany na
 #' potrzeby raportu.
 #' @param x ramka z danymi do przedstawienia na wykresie
@@ -231,10 +224,13 @@ wykres_pion_skum <- function(x, tytul) {
   wykres <- ggplot(x, aes(x = .data$typ, y = .data$value, fill = .data$name)) +
     geom_bar(width = 0.75, stat = "identity", colour = "white") +
     scale_y_continuous(labels = scales::percent) +
-    scale_fill_brewer(palette = "RdYlGn") +
     labs(fill = NULL,
          title = tytul) +
-    geom_text(aes(label = lab), position = position_stack(vjust = 0.5), size = 3, colour = "#000000") +
+    geom_text(
+      aes(label = lab),
+      position = position_stack(vjust = 0.5),
+      size = 3,
+      colour = "#000000") +
     ylab(NULL) +
     xlab(NULL) +
     theme(legend.position = "bottom",
@@ -270,9 +266,8 @@ wyk_facet <- function(x, tytul, os_x, tytul_x) {
     geom_bar(aes(fill = .data$typ), stat = "identity") +
     xlab(tytul_x) +
     facet_grid(cols = vars(.data$typ)) +
-    ylab(NULL) +
     ylim(c(0, 1)) +
-    scale_fill_manual(values = c("#8de04e",	"#f8dd00", "#fb6a59"),
+    scale_fill_manual(values = c("#1a974f",	"#f8dd00"),
                       guide = guide_legend(reverse = TRUE)) +
     theme(legend.position = "none",
           panel.background = element_rect(fill = "white", colour = "lightgrey"),

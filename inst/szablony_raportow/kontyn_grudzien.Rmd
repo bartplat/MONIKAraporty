@@ -20,9 +20,9 @@ if (szk$E2_nauka_kontyn[[1]]$n >= progLiczebnosci) {
   if (sposoby != 0) {
     if (!sposoby %in% c(50, 100)) {
       cat(
-        "Wśród absolwentów Państwa szkoły z rocznika ",
+        "Wśród absolwentów Państwa szkoły z rocznika ",
         rocznik,
-        " przeważały osoby, które w grudniu ",
+        " przeważały osoby, które w grudniu ",
         params$rok,
         " roku ",
         if (round(sposoby) < 50) {
@@ -42,9 +42,9 @@ if (szk$E2_nauka_kontyn[[1]]$n >= progLiczebnosci) {
       )
     } else if (sposoby == 100) {
       cat(
-        "\n\nWśród absolwentów Państwa szkoły z rocznika ",
+        "\n\nWśród absolwentów Państwa szkoły z rocznika ",
         rocznik,
-        " w grudniu ",
+        " w grudniu ",
         params$rok,
         " roku wszyscy kontynuowali kształcenie.\n\n",
         sep = ""
@@ -52,20 +52,20 @@ if (szk$E2_nauka_kontyn[[1]]$n >= progLiczebnosci) {
     }
     if (round(szk$E2_nauka_kontyn[[1]]$`Brak kontynuacji nauki` * 100) == 50) {
       cat(
-        "\n\nWśród absolwentów Państwa szkoły z rocznika ",
+        "\n\nWśród absolwentów Państwa szkoły z rocznika ",
         rocznik,
-        " połowa absolwentów nie kontynuowała kształcenia w grudniu ",
+        " połowa absolwentów nie kontynuowała kształcenia w grudniu ",
         params$rok,
         " roku.\n\n",
         sep = ""
       )
     }
   } else {
-    cat("Żaden z absolwentów Państwa szkoły z rocznika ",
+    cat("Żaden z absolwentów Państwa szkoły z rocznika ",
         rocznik,
-        " w grudniu ",
+        " w grudniu ",
         params$rok,
-        " roku nie kontynuował nauki w systemie edukacji formalnej.",
+        " roku nie kontynuował nauki w systemie edukacji formalnej.",
         sep = "")
   }
 } else {
@@ -76,19 +76,26 @@ if (szk$E2_nauka_kontyn[[1]]$n >= progLiczebnosci) {
 ```{r, fig.height=3}
 if (szk$E2_nauka_kontyn[[1]]$n >= progLiczebnosci) {
   nazwy_wierszy <- c(
-    "Studia",
-    "Szkoła policealna",
-    "Liceum dla dorosłych",
-    "Branżowa szkoła II stopnia",
-    "Kwalifikacyjny Kurs Zawodowy",
-    "Kurs Umiejętności Zawodowych",
-    "Nie kontynuują kształcenia")
+    "n" = "n",
+    "Studia" = "Studia",
+    "Szkoła policealna" = "Szkoła policealna",
+    "Liceum ogólnokształcące dla dorosłych" = "Liceum dla dorosłych",
+    "Branżowa szkoła II stopnia" = "Branżowa szkoła II stopnia",
+    "KKZ" = "Kwalifikacyjny Kurs Zawodowy",
+    "KUZ" = "Kurs Umiejętności Zawodowych",
+    "Brak kontynuacji nauki" = "Nie kontynuują kształcenia"
+  )
+  
+  names(szk$E2_nauka_kontyn[[1]]) <- coalesce(
+    nazwy_wierszy[names(szk$E2_nauka_kontyn[[1]])],
+    names(szk$E2_nauka_kontyn[[1]])
+  )
   
   tab <- tab_wykres(szk$E2_nauka_kontyn[[1]],
                     NULL,
                     NULL,
                     powiaty_dop,
-                    nazwy_wierszy,
+                    names(szk$E2_nauka_kontyn[[1]])[-1],
                     szk$typ_szk[[1]],
                     80) %>%
     select(-typ) %>% 
@@ -107,9 +114,9 @@ if (szk$E2_nauka_kontyn[[1]]$n >= progLiczebnosci) {
     tab,
     wrapper(paste0("Wykres ",
                    wyk_num(),
-                   ": Sposoby kontynuowania nauki przez absolwentów Państwa szkoły w grudniu ",
+                   ": Sposoby kontynuowania nauki przez absolwentów Państwa szkoły w grudniu ",
                    params$rok,
-                   " roku - ogółem (%)"), 80))
+                   " roku \u2013 ogółem (%)"), 80))
   
   print(wykres)
   

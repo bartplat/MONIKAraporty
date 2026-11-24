@@ -2,7 +2,7 @@
 % Please edit documentation in R/raporty_infrastruktura.R
 \name{skrypt_wzor}
 \alias{skrypt_wzor}
-\title{Generowanie skryptów służących do obliczania wskaźników}
+\title{Generowanie skryptów służących do generowania raportów szkolnych}
 \usage{
 skrypt_wzor(sciezka_wd, rok_ukonczenia = 2025)
 }
