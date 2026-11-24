@@ -706,7 +706,8 @@ if (woj$l_abs[[1]] < progLiczebnosci | sum(woj$B2_bezrob[[1]]$n) < progLiczebnos
 
 ```{r qr_code2}
 if (szk$l_abs[[1]] >= progLiczebnosci) {
-  cat("Link do ankiety:\n")
+  cat("Link do ankiety:\n\n")
+  
   knitr::include_graphics(szk$qr_code)
 }
 ```

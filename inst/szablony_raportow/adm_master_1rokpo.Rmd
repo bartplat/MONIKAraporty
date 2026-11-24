@@ -33,18 +33,6 @@ params:
 
 ```{r setup, echo=FALSE, include=FALSE}
 source("setup.R", echo = FALSE, local = TRUE)
-
-# sprawdzić czy działa jeśli to jest tylko w pliku setup.R
-
-# knitr::opts_chunk$set(
-#   echo = FALSE,
-#   results = "asis",
-#   message = FALSE,
-#   warning = FALSE,
-#   error = FALSE,
-#   fig.align = wyrownanieTabWykr,
-#   dev = "cairo_pdf"
-# )
 ```
 
 `r ifelse(typDokumentu %in% "pdf", "---", "")`
@@ -138,7 +126,7 @@ statusy_df |>
 
 # 4. Praca po ukończeniu `r szk$odmiany[[1]]$typ_szk_dop_poj`
 
-## Odsetek miesięcy, w których absolwenci pracowali od września do grudnia `r params$rok` roku
+## Odsetek miesięcy, w których absolwenci pracowali od września do grudnia `r params$rok` roku
 
 Poszczególni absolwenci w okresie od września do grudnia `r params$rok` roku mogli pracować w ciągu maksymalnie 4 miesięcy. W takim przypadku wartość wskaźnika dla danego absolwenta wynosi 100%. Z kolei wartość minimalną, czyli 0%, wskaźnik przyjmuje dla absolwentów, którzy nie pracowali w tym okresie w ciągu żadnego miesiąca.
 
@@ -172,9 +160,9 @@ W tym rozdziale opisując sytuację zawodową absolwentów rozróżniono 5 form 
 
 `r ifelse(typDokumentu %in% "pdf", "\\newpage", "")`
 
-## Przychody absolwentów z pracy etatowej w okresie od września do grudnia `r params$rok` roku w odniesieniu do średniego wynagrodzenia w powiatach, w których mieszkali
+## Wynagrodzenia absolwentów z pracy etatowej w okresie od września do grudnia `r params$rok` roku w odniesieniu do średniego wynagrodzenia w powiatach, w których mieszkali
 
-Wskaźnik, którego wartości prezentujemy w tej części raportu, pokazuje stosunek wynagrodzeń absolwentów Państwa szkoły z pracy na umowę o pracę (w przeliczeniu na pełen etat)^[Średnią (arytmetyczną) obliczono wyłącznie dla miesięcy, w których absolwenci pracowali. Nie uwzględniono przychodów przekraczających  kwotę rocznego ograniczenia podstawy wymiaru składek na ubezpieczenie emerytalne i rentowe (tj. 30 krotność prognozowanego wynagrodzenia brutto, czyli w `r params$rok` roku 208 050 zł), w miesiącach, w których to przekroczenie wystąpiło.] do przeciętnego miesięcznego wynagrodzenia^[Według danych publikowanych w [Banku Danych Lokalnych Głównego Urzędu Statystycznego](https://stat.gov.pl/metainformacje/slownik-pojec/pojecia-stosowane-w-statystyce-publicznej/693,pojecie.html?pdf=1)] osób mieszkających w tych samych powiatach. Dla poszczególnych absolwentów wartość wskaźnika równa 100% oznaczałaby, że ich średnie wynagrodzenia z umowy o pracę (w przeliczeniu na pełen etat) były takie same, jak przeciętne wynagrodzenie mieszkańców danego powiatu.
+Wskaźnik, którego wartości prezentujemy w tej części raportu, pokazuje stosunek wynagrodzeń absolwentów Państwa szkoły z pracy na umowę o pracę (w przeliczeniu na pełen etat)^[Średnią (arytmetyczną) obliczono wyłącznie dla miesięcy, w których absolwenci pracowali. Nie uwzględniono przychodów przekraczających  kwotę rocznego ograniczenia podstawy wymiaru składek na ubezpieczenie emerytalne i rentowe (tj. 30 krotność prognozowanego wynagrodzenia brutto, czyli w `r params$rok` roku 260 190 zł), w miesiącach, w których to przekroczenie wystąpiło.] do przeciętnego miesięcznego wynagrodzenia^[Według danych publikowanych w [Banku Danych Lokalnych Głównego Urzędu Statystycznego](https://stat.gov.pl/metainformacje/slownik-pojec/pojecia-stosowane-w-statystyce-publicznej/693,pojecie.html?pdf=1)] osób mieszkających w tych samych powiatach. Dla poszczególnych absolwentów wartość wskaźnika równa 100% oznaczałaby, że ich średnie wynagrodzenia z umowy o pracę (w przeliczeniu na pełen etat) były takie same, jak przeciętne wynagrodzenie mieszkańców danego powiatu.
 
 Warto odnotować, że wyrażenie wynagrodzeń uzyskiwanych przez absolwentów jako odsetka przeciętnego miesięcznego wynagrodzenia w danym powiecie podawanego przez GUS, pozwala uwzględnić lokalny kontekst. Ponadto przedstawianie wartości wskaźnika w ten sposób jest bardziej dogodne do porównywania wynagrodzeń uzyskiwanych przez absolwentów w kolejnych latach niż prezentowanie przychodów w złotych, na których wartość wpływa inflacja.
 

@@ -1,6 +1,4 @@
 ```{r}
-# zamknąć w funkcję to przejście z tabeli pod wykres do tej poniżej wykresu
-
 if (szk$S3_12[[1]]$n >= progLiczebnosci) {
   cat(
     "Spośród absolwentów Państwa szkoły z rocznika ",

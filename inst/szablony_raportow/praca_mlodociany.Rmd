@@ -93,7 +93,7 @@ if (szk$typ_szk[[1]] == c("Branżowa szkoła I stopnia")) {
     
     wykres <- wykres_poziomy_statusy(tab_wyk, wyk_tyt) +
       scale_fill_losy(type = "kontMlodocPracEdu") +
-      scale_colour_losy_fg(type = "kontMlodocPracEdu")
+      scale_colour_losy_fg(type = "kontMlodocPracEdu", guide = "none")
     
     levels(tab_wyk$typ) <- linebreak(levels(tab_wyk$typ), align = "c")
     
@@ -237,7 +237,7 @@ if (szk$typ_szk[[1]] == c("Branżowa szkoła I stopnia")) {
     
     wykres <- wykres_poziomy_statusy(tab_wyk, wyk_tyt) +
       scale_fill_losy(type = "kontMlodocPracNedu") +
-      scale_colour_losy_fg(type = "kontMlodocPracNedu")
+      scale_colour_losy_fg(type = "kontMlodocPracNedu", guide = "none")
     
     levels(tab_wyk$typ) <- linebreak(levels(tab_wyk$typ), align = "c")
     

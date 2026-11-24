@@ -23,14 +23,13 @@ wykres_poziomy_statusy <- function(x, tytul) {
                 fill = .data$name)) +
     geom_bar(width = 0.75, stat = "identity", colour = "white") +
     scale_fill_losy(type = "statusy", guide = guide_legend(reverse = TRUE)) +
-    scale_colour_losy_fg(type = "statusy") +
     scale_y_continuous(labels = scales::percent) +
     scale_x_discrete(limits = rev) +
     labs(fill = NULL,
          title = tytul) +
-    geom_text(aes(label = .data$lab),
-              position = position_stack(vjust = 0.5), size = 3,
-              colour = "#000000") +
+    geom_text(aes(label = .data$lab, colour = .data$name),
+              position = position_stack(vjust = 0.5), size = 3) +
+    scale_colour_losy_fg(type = "statusy", guide = "none") +
     ylab(NULL) +
     xlab(NULL) +
     coord_flip() +
@@ -68,14 +67,13 @@ wykres_pionowy_statusy <- function(x, tytul) {
                 fill = .data$name)) +
     geom_bar(width = 0.75, stat = "identity", colour = "white") +
     scale_fill_losy(type = "statusy") +
-    scale_colour_losy_fg(type = "statusy") +
     scale_y_continuous(labels = scales::percent) +
     scale_x_discrete(limits = rev) +
     labs(fill = NULL,
          title = tytul) +
-    geom_text(aes(label = .data$lab),
-              position = position_stack(vjust = 0.5), size = 3,
-              colour = "#000000") +
+    geom_text(aes(label = .data$lab, colour = .data$name),
+              position = position_stack(vjust = 0.5), size = 3) +
+    scale_colour_losy_fg(type = "statusy", guide = "none") +
     ylab(NULL) +
     xlab(NULL) +
     theme(legend.position = "bottom",
@@ -86,42 +84,6 @@ wykres_pionowy_statusy <- function(x, tytul) {
           plot.title.position = "plot",
           plot.title = element_text(size = 11)) +
     guides(fill = guide_legend(nrow = 3, ncol = 2, byrow = TRUE, reverse = TRUE))
-  
-  return(wykres)
-}
-#' @title Wykresy w raportach z 3. rundy monitoringu na danych administracyjnych
-#' @description Funkcja rysująca wykres warstwowy na potrzeby raportu. Jako
-#' argument zawierający zbiór danych należy podać ramkę danych będącą wynikiem
-#' działania funkcji \code{tab_wykres_wave_ad1()} lub inną, analogiczną.
-#' @param x ramka z danymi do przedstawienia na wykresie
-#' @param tytul tytuł wykresu w formie ciągu tekstowego lub wartość NULL dla
-#' braku tytułu
-#' @export
-#' @return wykres
-#' @importFrom tibble is_tibble
-#' @importFrom ggplot2 ggplot geom_area scale_fill_brewer theme guides ylab xlab
-#'  labs
-#' @importFrom dplyr .data
-wave_chart <- function(x, tytul) {
-  stopifnot(is_tibble(x),
-            ifelse(is.null(tytul), FALSE, nchar(tytul) > 1))
-
-  wykres <- ggplot(x, aes(x = .data$month, y = .data$value, fill = .data$name)) +
-    geom_area(position = position_stack(reverse = TRUE), stat = "identity") +
-    theme(legend.position = "bottom",
-          legend.justification = "left",
-          legend.title = element_blank(),
-          panel.background = element_rect(fill = "white"),
-          axis.ticks.y = element_blank(),
-          axis.ticks.x = element_blank(),
-          plot.title = element_text(size = 11)) +
-    scale_fill_losy(type = "statusy", guide = guide_legend(reverse = TRUE)) +
-    scale_colour_losy_fg(type = "statusy") +
-    guides(fill = guide_legend(nrow = 6, byrow = TRUE, reverse = TRUE), title = NULL) +
-    scale_y_continuous(labels = scales::percent) +
-    ylab("Odsetek absolwentów") +
-    xlab("Miesiąc") +
-    labs(title = tytul)
   
   return(wykres)
 }
@@ -227,10 +189,9 @@ wykres_pion_skum <- function(x, tytul) {
     labs(fill = NULL,
          title = tytul) +
     geom_text(
-      aes(label = lab),
+      aes(label = lab, colour = .data$name),
       position = position_stack(vjust = 0.5),
-      size = 3,
-      colour = "#000000") +
+      size = 3) +
     ylab(NULL) +
     xlab(NULL) +
     theme(legend.position = "bottom",

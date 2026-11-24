@@ -79,7 +79,7 @@ if (szk$Z4_ucz[[1]]$n >= progLiczebnosci) {
                                             " roku - kontynuujący naukę"),
                                      width = 85)) +
     scale_fill_losy(type = "okresPracy") +
-    scale_colour_losy_fg(type = "okresPracy") +
+    scale_colour_losy_fg(type = "okresPracy", guide = "none") +
     ylab("Odsetek absolwentów") + 
     guides(fill = guide_legend(nrow = 1, byrow = TRUE))
   
@@ -190,7 +190,7 @@ if (szk$Z4_nie_ucz[[1]]$n >= progLiczebnosci) {
                                             " \u2013 niekontynuujący nauki"),
                                      width = 85)) +
     scale_fill_losy(type = "okresPracy") +
-    scale_colour_losy_fg(type = "okresPracy") +
+    scale_colour_losy_fg(type = "okresPracy", guide = "none") +
     ylab("Odsetek absolwentów") + 
     guides(fill = guide_legend(nrow = 1, byrow = TRUE))
   

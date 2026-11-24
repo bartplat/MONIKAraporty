@@ -63,7 +63,7 @@ if (szk$Z8_formy_ucz[[1]]$n >= progLiczebnosci) {
   
   wykres <- wykres_pion_skum(tab_wyk, wyk_tyt) +
     scale_fill_losy(type = "formyZatrudn") +
-    scale_colour_losy_fg(type = "formyZatrudn") +
+    scale_colour_losy_fg(type = "formyZatrudn", guide = "none") +
     ylab("Odsetek absolwentów")
   
   levels(tab_wyk$typ) <- linebreak(levels(tab_wyk$typ), align = "l")
@@ -187,7 +187,7 @@ if (szk$Z8_formy_nie_ucz[[1]]$n >= progLiczebnosci) {
   
   wykres <- wykres_pion_skum(tab_wyk, wyk_tyt) +
     scale_fill_losy(type = "formyZatrudn") +
-    scale_colour_losy_fg(type = "formyZatrudn") +
+    scale_colour_losy_fg(type = "formyZatrudn", guide = "none") +
     ylab("Odsetek absolwentów")
   
   levels(tab_wyk$typ) <- linebreak(levels(tab_wyk$typ), align = "l")

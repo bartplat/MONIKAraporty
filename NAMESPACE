@@ -8,7 +8,6 @@ export(skrypt_wzor)
 export(tab_facet)
 export(tab_num)
 export(tab_wykres)
-export(wave_chart)
 export(wrapper)
 export(wyk_facet)
 export(wyk_num)
@@ -28,7 +27,6 @@ importFrom(dplyr,
 )
 importFrom(ggplot2,
   coord_flip,
-  geom_area,
   geom_bar,
   geom_boxplot,
   geom_errorbar,
